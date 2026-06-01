@@ -1,0 +1,22 @@
+Determine whether the following text contains multi-step operations involving the use of an app, website, computer, or other machine.
+
+If the text does not contain a multi-step operational workflow, return:
+
+{
+  "multi_step": false
+}
+
+If it does, return JSON with this schema:
+
+{
+  "multi_step": true,
+  "summary": "one sentence task summary",
+  "domain": "one domain category",
+  "platform": "operator | computer | phone | machine | other",
+  "task": "one task category"
+}
+
+Use concise labels. Do not include markdown.
+
+Text:
+{{text}}

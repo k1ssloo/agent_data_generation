@@ -1,0 +1,49 @@
+You are reproducing the legacy GEM Stage 2 data-synthesis step.
+
+Given a procedural text, extract whether it contains a multi-step task, then
+produce a workflow and OpenAI-compatible function tools.
+
+Text:
+{{text}}
+
+Return valid JSON only with this schema:
+{
+  "multi_step": true,
+  "summary": "one sentence summary",
+  "domain": "short domain label",
+  "platform": "short platform or context label",
+  "task": "short task label",
+  "workflow": {
+    "description": "what the workflow accomplishes",
+    "steps": ["ordered user-visible steps"],
+    "execution_graph": "(tool_a)->(tool_b)->(tool_c)"
+  },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "snake_case_tool_name",
+        "description": "what the tool does",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "argument_name": {
+              "type": "string",
+              "description": "argument description"
+            }
+          },
+          "required": ["argument_name"]
+        }
+      }
+    }
+  ]
+}
+
+Rules:
+- Do not output an executable environment, state schema, DSL actions, effects,
+  transition functions, or validation metadata.
+- Use only information supported by the text. If a condition or fallback is
+  described, you may represent it as a conditional or retry tool.
+- Tool names must be lowercase snake_case.
+- Tool parameters must be JSON Schema object parameters.
+- Keep the tool set small and directly aligned with the workflow.

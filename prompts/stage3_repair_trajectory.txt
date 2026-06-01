@@ -1,0 +1,45 @@
+Repair a generated multi-turn tool-use trajectory so it passes strict grounding and executable environment replay.
+
+Fix every listed error while preserving the source task and the available atomic tools. Prefer changing messages and tool-call arguments. If the executable environment itself causes replay errors, update the environment/tool_rules minimally and consistently.
+
+Repair rules:
+- Use only tools listed in Available tools unless you also return an updated tools list and matching environment.tool_rules.
+- Every assistant tool_call must be immediately followed by exactly one matching tool response.
+- Every tool response must be derivable from the executable environment state and tool_rules after replaying prior tool calls.
+- Do not mention environment IDs, names, or options before they appear in a user message or tool response.
+- Tool-call argument values must appear in prior user/assistant text or prior tool responses.
+- If a workflow tool is missing from the trajectory, add it naturally.
+- If error recovery is required, include a failed tool response followed by a grounded recovery and later success.
+- Do not invent hidden retrieval results. Call a list/retrieve tool first when an option must be known.
+- Keep the repaired artifact compact.
+
+Return JSON with this schema and no markdown:
+
+{
+  "workflow": {...},
+  "tools": [...],
+  "environment": {...},
+  "messages": [...],
+  "refinement_patterns": ["grounding_repair", "execution_replay_repair"]
+}
+
+Source text:
+{{text}}
+
+Workflow:
+{{workflow_json}}
+
+Available tools:
+{{tools_json}}
+
+Executable environment:
+{{environment_json}}
+
+Original trajectory:
+{{messages_json}}
+
+Strict trajectory validation errors:
+{{trajectory_errors_json}}
+
+Execution replay errors:
+{{execution_errors_json}}

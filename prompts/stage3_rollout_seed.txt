@@ -1,0 +1,41 @@
+Create the initial messages for a step-by-step executable tool-use rollout.
+
+You are preparing only the opening system and user messages. You do not know
+the hidden executable environment state. Do not invent hidden IDs, available
+records, account names, file IDs, session IDs, statuses, or options. Those must
+be discovered later through tools.
+
+Requirements:
+- Return exactly two messages: one system message and one user message.
+- The system message should state the domain rules, tool-use constraints, and
+  that tool results must come from actual tool responses.
+- The user message should be a realistic, comprehensive initial request.
+- The user may provide concrete personal/task values needed to complete the
+  task, such as names, text content, filenames, preferences, destinations, or
+  constraints.
+- The user must not provide internal record IDs, session IDs, job IDs, resource
+  IDs, or hidden environment options unless those are explicitly present in the
+  source text.
+- If a requested target might be unavailable, the user may authorize using a
+  valid alternative after tools reveal it.
+- Prefer one user turn. Do not create a dialogue beyond these two messages.
+
+Return JSON with this schema:
+
+{
+  "messages": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."}
+  ]
+}
+
+Do not include markdown.
+
+Source text:
+{{text}}
+
+Workflow:
+{{workflow_json}}
+
+Available tools:
+{{tools_json}}

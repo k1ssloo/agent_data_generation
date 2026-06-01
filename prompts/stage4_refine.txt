@@ -1,0 +1,74 @@
+You are implementing Stage 4: Trajectory Refinement for executable multi-turn tool-use data.
+
+Rewrite the original trajectory to make it more complex, realistic, and useful for agent training while preserving executable validity.
+
+Core objective:
+- Produce a refined message sequence T' from the original trajectory T.
+- Increase complexity through non-trivial tool-call chains, realistic user ambiguity, prerequisite checks, dependency on prior tool outputs, error recovery, conditional logic, and final verification.
+- Prefer adding 2 or more executable tool calls and at least 2 refinement patterns when the environment supports them.
+- Validity is more important than complexity. If a complex edit cannot be grounded and replayed, keep the safer original behavior.
+
+Hard constraints:
+- Return messages only plus refinement metadata. Do not return workflow, tools, or environment.
+- Use only the available tools and their exact argument names and types.
+- Do not add new tools, remove tools, rename tools, or change the executable environment.
+- Every assistant tool_call must be immediately followed by exactly one matching tool response.
+- Every tool response must be immediately preceded by the matching assistant tool_call.
+- Use at most one tool_call in each assistant message.
+- Do not invent parameter values. Every non-control argument value must come from the user, an assistant statement, or a prior tool response.
+- Control arguments are enum-like selectors such as collection, view, provider, format, expected_status, resource_type, or service.
+- Do not let the assistant mention hidden environment identifiers before they are surfaced by a user message or a tool response.
+- A tool response must be derivable from the executable environment, tool_rules DSL, initial_state, and prior tool calls.
+- If a needed value is not grounded, add a retrieval/list/search/read tool call first, or ask the user for clarification.
+- If a request exceeds available tool capabilities or violates a stated rule, add a concise refusal or limitation explanation instead of fabricating execution.
+- End with a verification/read/get/list/search/poll-style tool call when such a tool is available and executable.
+
+Useful refinement patterns:
+- long_horizon_dependency: later calls depend on earlier tool outputs.
+- state_inspection: inspect records/status before writes.
+- clarification: ask for missing details when they cannot be inferred.
+- error_recovery: include a realistic failed tool response and a valid recovery path when the environment supports it.
+- conditional_branch: choose different tool calls based on retrieved state or user constraints.
+- constraint_refusal: refuse or narrow an invalid request while still helping with valid parts.
+- final_verification: verify the final state after writes.
+
+Use the validation errors as repair hints. If they are empty, focus on complexity and naturalness.
+
+Return exactly one JSON object:
+{
+  "messages": [...],
+  "refinement_patterns": ["long_horizon_dependency", "final_verification"],
+  "refinement_summary": "One short sentence describing the main refinement.",
+  "complexity_changes": [
+    {"type": "added_state_inspection", "reason": "A read call grounds the record id before mutation."}
+  ]
+}
+
+Do not include markdown.
+
+Source text:
+{{text}}
+
+Workflow:
+{{workflow_json}}
+
+Available tools:
+{{tools_json}}
+
+Executable environment:
+{{environment_json}}
+
+Original trajectory stats:
+{{trajectory_stats_json}}
+
+Complexity targets:
+{{complexity_targets_json}}
+
+Trajectory validation errors:
+{{trajectory_errors_json}}
+
+Execution validation errors:
+{{execution_errors_json}}
+
+Original trajectory:
+{{messages_json}}

@@ -1,0 +1,47 @@
+You are reproducing the legacy GEM Stage 3 trajectory-synthesis step.
+
+Given the source text, workflow, and tools, create a realistic multi-turn
+assistant trajectory that uses the provided tools. This legacy version does not
+have an executable environment; tool results may be plausible synthetic
+observations.
+
+Source text:
+{{text}}
+
+Workflow JSON:
+{{workflow_json}}
+
+Tools JSON:
+{{tools_json}}
+
+Return valid JSON only with this schema:
+{
+  "messages": [
+    {"role": "system", "content": "rules and constraints"},
+    {"role": "user", "content": "user request"},
+    {"role": "assistant", "content": "assistant text"},
+    {
+      "role": "assistant",
+      "tool_call": {
+        "name": "provided_tool_name",
+        "arguments": {"arg": "value"}
+      }
+    },
+    {
+      "role": "tool",
+      "name": "provided_tool_name",
+      "content": {"result": "synthetic observation"}
+    }
+  ],
+  "refinement_patterns": ["short labels for any repair/fallback/self-correction patterns"]
+}
+
+Rules:
+- Use only tool names from the provided tools JSON.
+- Follow the workflow order and include any conditional fallback described by
+  the source text or workflow.
+- Use several user/assistant turns when information must be collected.
+- Tool-call arguments must be concrete JSON objects.
+- Tool messages should be concise JSON-compatible observations.
+- Do not output environment state, execution traces, validation reports, or DSL
+  actions.

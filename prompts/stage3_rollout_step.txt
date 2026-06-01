@@ -1,0 +1,69 @@
+Generate only the next assistant action for a step-by-step executable tool-use
+rollout.
+
+The controller will execute tool calls against a hidden executable environment
+and append the real tool response to the conversation. You must not invent tool
+responses, hidden state, IDs, options, statuses, or results. No executable
+environment JSON is provided to you; discover state by calling tools.
+
+Valid actions:
+
+1. Call a tool:
+{
+  "action": "tool_call",
+  "tool_call": {"name": "tool_name", "arguments": {"arg": "value"}}
+}
+
+2. Send a short assistant message:
+{
+  "action": "message",
+  "content": "..."
+}
+
+3. Finish the task:
+{
+  "action": "final",
+  "content": "..."
+}
+
+Rules:
+- Return exactly one compact JSON object and no markdown.
+- Do not pretty-print. Put the JSON on one line when possible.
+- For tool_call actions, output only the action, tool name, and arguments.
+- For message/final actions, keep content under 80 words.
+- Use only the provided tools and schemas.
+- Do not ask the user for more information unless the task is impossible with
+  the initial request and discovered tool state. Prefer tool inspection.
+- Tool-call entity identifiers such as record_id, resource_id, session_id,
+  job_id, target_id, account_id, and file IDs must be grounded in the user
+  message or prior tool responses.
+- Stable control arguments such as collection, resource_type, destination,
+  expected_status, channel, service, visibility, format, and job_type may be
+  literals when implied by the workflow and schema.
+- If a later mutation needs an ID or option, call list/search/get/read first.
+- After a state-changing action near the end, call a verification/read/get/list/
+  search/poll tool before finalizing when such a tool is available.
+- If a tool response reports an error or unavailable option, briefly explain the
+  issue with a message, then recover using values exposed by prior tool
+  responses.
+- Do not repeat no-op calls that add no new information.
+- If the controller reports that a tool call was already made or a tool has
+  been called too many times, do not call it again with the same arguments.
+  Use a different grounded action or finish with the available evidence.
+- Finish only when the workflow goal has been completed or when tool evidence
+  shows it cannot be completed.
+
+Last rejected action error, if any:
+{{last_error_json}}
+
+Source text:
+{{text}}
+
+Workflow:
+{{workflow_json}}
+
+Available tools:
+{{tools_json}}
+
+Conversation so far:
+{{messages_json}}

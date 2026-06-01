@@ -1,0 +1,73 @@
+Generate a high-quality multi-turn tool-use dialogue trajectory from the source text, extracted workflow, and available tools.
+
+The trajectory must demonstrate an assistant helping a user complete realistic tasks while following domain-specific rules and constraints.
+
+Requirements:
+- Start with a system message that explicitly states important rules and constraints from the source text.
+- Prefer one comprehensive initial user request that states the goal and constraints. Avoid turning every missing detail into a user question.
+- Keep user interaction sparse: after the initial request, use tools to inspect state whenever possible. Ask the user only when a required value cannot be discovered or safely inferred from prior context or tools.
+- Include assistant clarification only when required parameters are missing and no retrieval/list/read tool can discover them.
+- If the assistant asks a clarification question, the next relevant message must be a user answer that supplies the missing information before any dependent tool call.
+- Include correct tool calls using only available tools.
+- Every tool response must be immediately preceded by an assistant tool_call for the same tool name.
+- Every assistant tool_call must be immediately followed by exactly one tool response for the same tool name.
+- Tool responses must be derivable from the executable environment state and tool_rules DSL. Do not invent an entity, state change, ID, option, or failure that is not supported by the environment.
+- If a later tool call needs an entity or option that is not already in dialogue context, use a retrieval/list tool first when available.
+- Do not reveal environment IDs, available options, names, or statuses in assistant text before they are grounded by a user message or a tool response. The environment JSON is for planning executable calls, not for directly telling the user hidden state.
+- When describing a tool result, mention only fields and values that appeared in the tool response or prior dialogue. If a retrieval tool returns only IDs, do not add display names from the environment.
+- Never say "available options", "available printers", or any environment option list before calling the corresponding retrieval/list tool and receiving its response.
+- Before the first attempt in a required failure/recovery trajectory, ask the user to choose or provide an option ID without suggesting hidden available options.
+- If the workflow execution_graph contains a retrieval/list tool, include that tool in the trajectory at the point where its information is needed.
+- Prefer long-horizon tool use when the workflow and environment support it. A realistic trajectory should often include setup, discovery, retrieval, mutation, verification, and final reporting rather than jumping directly to the final action.
+- For workflows using atomic tools, target 7 to 14 tool calls when natural. Use 15 to 30 tool calls only when each call has a real state dependency. Shorter trajectories are acceptable only when the environment genuinely exposes few steps.
+- Do not lengthen the trajectory with repeated no-op calls or redundant reads that do not affect later decisions.
+- After a successful mutation, export, upload, download, send, or attach action, include a final verification tool call if an available tool can verify the result.
+- If the source text or workflow contains a failure, retry, fallback, or "try another" branch, the trajectory must exercise it with a failed tool response followed by recovery through available atomic tools.
+- For branch coverage, it is acceptable for the user to initially request an unavailable option that exists in the environment. The assistant should call the relevant tool, observe the failure response, then recover.
+- Treat the workflow execution_graph as a coverage target. Do not stop after an early success if the graph still contains later tools.
+- When a failure/recovery branch is required, intentionally choose a valid environment argument that triggers the failure branch first, then call the retrieval/list tool, then retry with a grounded available option.
+- Include at least one non-trivial pattern when supported by the source text: clarification, rule refusal, error recovery, conditional branch, or long-context dependency.
+- Do not invent tools outside the provided tool list.
+- Keep all tool-call argument names and types consistent with the schema.
+- Generate a complete trajectory, not just the first step.
+- Tool-call argument values must be grounded in earlier user messages, assistant messages, or prior tool responses.
+- Do not use a value from a future tool response as a tool-call argument.
+- Canonical control arguments such as collection, resource_type, destination, expected_status, channel, service, visibility, format, and job_type may be stable tool-control literals when they are implied by the task and tool schema.
+- Entity identifiers such as record_id, resource_id, session_id, job_id, target_id, account_id, and email/file/class/map ids must be grounded by the user or by a prior tool response. Do not copy hidden ids from the executable environment into a tool call before they appear in the conversation.
+- If a required argument is not already present in prior context, call an appropriate retrieval/list/read tool first when available; ask the user only if the value cannot be discovered.
+- If a tool fails, the assistant must explain the failure briefly, then recover using available atomic tools rather than inventing a hidden retry workflow.
+- If the user asks for a value that violates a constraint, the assistant must refuse that value and ask for or propose a valid alternative before the dependent tool call.
+- If any state-changing tool is called near the end of the workflow, the final tool call should be a verification/read/get/list/search/poll tool that confirms the final state after that mutation.
+- The final assistant message must summarize the completed outcome.
+
+Message format rules:
+- Assistant natural-language messages use {"role": "assistant", "content": "..."}.
+- Assistant tool-call messages use only {"role": "assistant", "tool_call": {"name": "...", "arguments": {...}}}.
+- Tool messages use only {"role": "tool", "name": "...", "content": {...}} and must never appear without a preceding assistant tool_call.
+- Do not combine natural language content and tool_call in the same assistant message.
+
+Return JSON with this schema:
+
+{
+  "messages": [
+    {"role": "system", "content": "..."},
+    {"role": "user", "content": "..."},
+    {"role": "assistant", "content": "..."},
+    {"role": "assistant", "tool_call": {"name": "tool_name", "arguments": {"arg": "value"}}},
+    {"role": "tool", "name": "tool_name", "content": {"key": "value"}}
+  ]
+}
+
+Do not include markdown.
+
+Source text:
+{{text}}
+
+Workflow:
+{{workflow_json}}
+
+Available tools:
+{{tools_json}}
+
+Executable environment:
+{{environment_json}}

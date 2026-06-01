@@ -1,0 +1,151 @@
+You are a program design expert.
+
+Given a workflow description, extract workflows, select OpenAI-style function tools from the canonical tool bank, and synthesize a lightweight executable environment. The environment must be specific enough for a generic interpreter to replay later tool calls and derive tool responses.
+
+Canonical tool bank:
+{{tool_bank_json}}
+
+Requirements:
+- Extract all intermediate steps.
+- Convert each important action into a sequence of canonical atomic tools from the tool bank.
+- Do not invent task-specific tools when the same capability can be represented by existing canonical tools.
+- The "tools" array in your output must contain only exact tool definitions copied from the canonical tool bank.
+- Prefer reusable tools such as authenticate, list_records, get_record, locate_file, create_upload_session, upload_resource, set_permission, get_share_link, create_record, update_record, attach_resource, start_job, poll_job, and verify_resource.
+- If the task cannot be represented with the current tool bank, do not invent a new tool. Return a missing-tool proposal using the alternate schema below.
+- For long instructional texts, choose one coherent user-facing task path and its most important branch. Do not model every tip, subtopic, or optional article section.
+- Keep the artifact compact enough for downstream generation, but prefer decomposed workflows over one high-level shortcut. Use 5 to 10 canonical tools when the task naturally contains setup, lookup, mutation, verification, or recovery. Keep each state collection to at most 3 concrete entities, and avoid large lists, URLs, or encyclopedic reference data.
+- Prefer a small executable environment that covers success plus one meaningful failure/retry/policy branch over a broad environment that covers every sentence.
+- Represent the execution graph with canonical function names, such as (open_resource)->(authenticate)->(list_records)->(get_record)->(update_record)->(verify_resource).
+- Use the OpenAI schema tools from the tool bank. Each selected tool must implement one atomic environment capability: retrieve state, create state, update state, delete state, or execute one external action.
+- Do not create workflow/controller tools that bundle multiple steps or make decisions internally.
+- Bad tool names: process_return, handle_order, plan_and_book_trip, retry_print_with_alternative_printer_if_failed, complete_workflow, login_student, scan_to_email, upload_file_to_cloud, create_assignment_with_link, download_offline_map.
+- Good tool names are canonical tool-bank names such as list_records, get_record, authenticate, locate_file, upload_resource, set_permission, create_record, attach_resource, start_job, poll_job, verify_resource.
+- Branching, retries, fallback selection, policy decisions, and step ordering must be represented in workflow and tool semantics, not hidden in one tool.
+- Parameter names must be explicit and self-explanatory.
+- Required parameters must be listed.
+- Include read and write tools when the scenario needs both retrieval and state modification.
+- Every non-user-provided entity id needed by a later mutation must be discoverable through a prior retrieval/list/read tool response. Do not require hidden fixed IDs such as settings records, account IDs, class IDs, file IDs, map IDs, or email IDs unless a selected tool can expose those IDs before they are used.
+- If a workflow updates settings or preferences, include a retrieval/list/read step that exposes the relevant settings record id before update, and a read/get/verify step after update.
+- For every initial_state object collection whose ids may be used as record_id, target_id, resource_id, account_id, class_id, file_id, email_id, map id, or settings id, include at least one retrieval/list/read/search branch that can return those ids before mutation.
+- A `get_record` rule that requires record_id is not enough by itself; some earlier list/read/search tool must expose the record_id unless the user explicitly provides it.
+- Preserve constraints, dependencies, limits, and conditional logic from the text.
+- Include a tool for retrieving environmental options when a later step needs them, such as list_available_printers before choosing a fallback printer.
+- Retrieval/list tools should return complete option objects with the fields an assistant may mention later, such as id, name, status, availability, or title. Do not return only IDs if display names or statuses are useful for user-facing recovery.
+- Prefer deriving retrieval/list responses from initial_state with filter_values instead of hard-coding a stale copy of the same options.
+- Use JSON Schema primitive types only: string, integer, number, boolean, array, object.
+- For arrays, include an items schema.
+- Prefer the canonical snake_case function names from the tool bank.
+- Avoid optional parameters when the workflow requires explicit user confirmation or a prior lookup.
+- Do not use reserved or overly generic names such as print, search, update, run, call, execute.
+
+Executable environment DSL:
+- environment.version must be exactly "text-exec-dsl-v0".
+- environment.initial_state is a JSON object containing concrete synthetic entities that later trajectories may use.
+- environment.tool_rules must contain exactly one rule for every tool name.
+- Each tool rule has a non-empty branches list.
+- Each tool rule should end with a catch-all branch such as {"if": true, "response": {"status": "failed", "error": "..."}} unless every possible valid call is intentionally covered by an earlier unconditional branch. Do not leave ordinary wrong arguments as interpreter-level "no branch matched" errors.
+- Each branch has:
+  - "if": a condition object, or true.
+  - "response": the JSON response returned when the branch matches.
+  - optional "effects": state updates after response creation.
+- Tool responses in later trajectories must be derivable from this environment. Do not rely on invented tool outputs.
+- Values required before the first retrieval/list/read response must be user-visible. For example, if open_resource.target, locate_file.file_name, authenticate.account_id, or authenticate.credential_value is required before any tool has exposed it, use a value that appears in the source text or workflow, or explicitly include it as a user-provided value in the workflow steps. Do not require hidden literals such as internal aliases, arbitrary file names, or synthetic account IDs that the Stage 3 model cannot know.
+- Internal IDs may appear in initial_state, but a trajectory must be able to discover them through list_records, search_records, get_record, read_state, locate_file, create_upload_session, upload_resource, start_job, or another prior tool response before using them in later arguments.
+- For user-facing resources, prefer branch conditions that accept the same visible names a user or workflow would say, such as "Ricoh MP C5503" rather than only "ricoh_scanner_interface". If an internal alias is useful, add a separate visible-name branch or expose the alias through a prior tool response.
+
+Allowed condition operators:
+- {"exists": "$state.collection[$args.arg_name]"}
+- {"not_exists": "$state.collection[$args.arg_name]"}
+- {"eq": ["$state.path", "literal_or_other_path"]}
+- {"ne": ["$args.field", "literal_or_other_path"]}
+- {"range": {"value": "$args.number_arg", "min": 1, "max": 10}}
+- {"all": [condition, condition]}
+- {"any": [condition, condition]}
+- {"not": condition}
+
+Allowed response/effect expressions:
+- String paths: "$args.arg_name", "$state.collection[$args.id].field", "$response.output_id".
+- Literal JSON values: strings, numbers, booleans, arrays, objects.
+- Template strings: {"template": "job_${args.order_id}"}.
+- Filter values: {"filter_values": {"from": "$state.collection", "where": condition_using_$item_and_$key, "select": "$key"}}.
+
+Allowed effects:
+- {"set": "$state.collection[$response.id]", "value": {...}}
+- {"append": "$state.collection", "value": {...}}
+- {"delete": "$state.collection[$args.id]"}
+
+Effect constraints:
+- Every effect target must be a path starting with "$state".
+- Use "append" only when the target in initial_state is an array.
+- If a collection is represented as an object keyed by id, use "set" with a dynamic key, e.g. {"set": "$state.photos[$response.copied_photo_id]", "value": {...}}.
+- A "set" on an existing object with an object value shallow-merges those fields into the existing object. A "set" on a new key creates the object, and a "set" on a scalar field replaces that field.
+- You may update individual fields with paths such as "$state.photos[$args.photo_id].edited", or merge several fields with "$state.photos[$args.photo_id]".
+- Do not write bare paths such as "photos" or "orders"; always write "$state.photos" or "$state.orders[$args.order_id]".
+- Include at least one initial_state case for each important branch in the text. If the text says a printer may fail and then another printer is tried, include one failing printer and one available fallback printer.
+
+Return JSON with this schema when the task is representable with the canonical tool bank:
+
+{
+  "workflow": {
+    "description": "short task description",
+    "steps": ["step 1", "step 2"],
+    "execution_graph": "(tool_a)->(tool_b)"
+  },
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "tool_name",
+        "description": "what the tool does",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "arg_name": {"type": "string", "description": "argument meaning"}
+          },
+          "required": ["arg_name"]
+        }
+      }
+    }
+  ],
+  "environment": {
+    "version": "text-exec-dsl-v0",
+    "initial_state": {
+      "entity_collection": {
+        "entity_id": {"field": "value"}
+      }
+    },
+    "tool_rules": {
+      "tool_name": {
+        "branches": [
+          {
+            "if": true,
+            "response": {"status": "success"},
+            "effects": []
+          }
+        ]
+      }
+    }
+  }
+}
+
+If the current tool bank cannot represent the task without inventing a new high-level tool, return this alternate JSON schema instead:
+
+{
+  "missing_tool_requirements": [
+    {
+      "capability": "short reusable capability name",
+      "reason": "why existing canonical tools cannot express it",
+      "suggested_tool_name": "snake_case_atomic_name",
+      "suggested_parameters": {
+        "arg_name": {"type": "string", "description": "argument meaning"}
+      },
+      "reusability": "which other tasks or domains would reuse this capability"
+    }
+  ],
+  "rationale": "brief explanation of why the sample is blocked until the tool bank is extended"
+}
+
+Do not include markdown.
+
+Text:
+{{text}}

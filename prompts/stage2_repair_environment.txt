@@ -1,0 +1,64 @@
+You are repairing a generated workflow/tools/environment artifact so it can be replayed by a generic DSL interpreter.
+
+Fix every validation error while preserving the original task intent. Return a complete replacement artifact with workflow, tools, and environment.
+
+Canonical tool bank:
+{{tool_bank_json}}
+
+Repair rules:
+- Use only exact tool definitions copied from the canonical tool bank.
+- Do not invent task-specific high-level tools.
+- If the artifact cannot be repaired with the current tool bank, return the missing-tool schema from below instead of inventing a new tool.
+- environment.version must be exactly "text-exec-dsl-v0".
+- environment.tool_rules must contain exactly one rule for every tool name and no extra rules.
+- Every effect target must start with "$state".
+- Use "append" only when the target in initial_state is an array.
+- If initial_state stores a collection as an object keyed by id, create new entities with {"set": "$state.collection[new_id]", "value": {...}}, not append.
+- A "set" on an existing object with an object value shallow-merges those fields into the existing object.
+- You may set individual fields, e.g. "$state.photos[$args.photo_id].edited", or merge several fields with "$state.photos[$args.photo_id]".
+- Retrieval/list tools should return complete option objects when names/statuses may be mentioned later.
+- Tool responses must be derivable from state, args, response, literals, templates, or filter_values.
+- Every hidden entity id that a trajectory may need as an argument must be discoverable through a prior retrieval/list/read tool response.
+- If a tool rule requires fixed ids such as a settings record, account, class, file, map, or email id, ensure some retrieval/list/read tool can expose that id before mutation.
+- A get_record rule that requires record_id is not sufficient by itself; a list/read/search rule must expose available record ids unless the user is expected to provide the id directly.
+- Include at least one initial_state case for each important branch in the text, such as one failing printer and one available fallback printer.
+
+Return JSON with this schema and no markdown:
+
+{
+  "workflow": {"description": "...", "steps": ["..."], "execution_graph": "(tool_a)->(tool_b)"},
+  "tools": [{"type": "function", "function": {"name": "tool_name", "description": "...", "parameters": {"type": "object", "properties": {}, "required": []}}}],
+  "environment": {"version": "text-exec-dsl-v0", "initial_state": {}, "tool_rules": {}}
+}
+
+If the current tool bank cannot represent the task without inventing a new high-level tool, return this alternate JSON schema:
+
+{
+  "missing_tool_requirements": [
+    {
+      "capability": "short reusable capability name",
+      "reason": "why existing canonical tools cannot express it",
+      "suggested_tool_name": "snake_case_atomic_name",
+      "suggested_parameters": {
+        "arg_name": {"type": "string", "description": "argument meaning"}
+      },
+      "reusability": "which other tasks or domains would reuse this capability"
+    }
+  ],
+  "rationale": "brief explanation of why the sample is blocked until the tool bank is extended"
+}
+
+Source text:
+{{text}}
+
+Current workflow:
+{{workflow_json}}
+
+Current tools:
+{{tools_json}}
+
+Current environment:
+{{environment_json}}
+
+Validation errors to fix:
+{{validation_errors_json}}

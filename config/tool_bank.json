@@ -1,0 +1,430 @@
+{
+  "name": "canonical_atomic_tool_bank",
+  "description": "Reusable semantic atomic tools for GEM computer-use data generation. Stage2 should select from this bank instead of inventing task-specific high-level tools.",
+  "tools": [
+    {
+      "type": "function",
+      "function": {
+        "name": "open_resource",
+        "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_type": {"type": "string", "description": "Kind of resource, such as app, website, page, service, folder, or workspace."},
+            "target": {"type": "string", "description": "Name, URL, or identifier of the resource to open."}
+          },
+          "required": ["resource_type", "target"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "list_records",
+        "description": "List records from a named collection, optionally narrowed by a simple query string.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments."},
+            "query": {"type": "string", "description": "Simple query, filter, or empty string when listing the whole collection."}
+          },
+          "required": ["collection", "query"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "search_records",
+        "description": "Search a named collection for records matching a user-visible query.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection to search."},
+            "query": {"type": "string", "description": "Search query grounded in the user request or prior tool output."}
+          },
+          "required": ["collection", "query"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_record",
+        "description": "Retrieve one record from a named collection by id.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection containing the record."},
+            "record_id": {"type": "string", "description": "Identifier of the record to retrieve."}
+          },
+          "required": ["collection", "record_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "read_state",
+        "description": "Read a named state view or status summary exposed by the environment.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "view": {"type": "string", "description": "Name of the state view or status area to read."},
+            "target_id": {"type": "string", "description": "Optional target identifier or empty string for a global view."}
+          },
+          "required": ["view", "target_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "authenticate",
+        "description": "Authenticate to a service or account using a provided credential.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "service": {"type": "string", "description": "Service or application to authenticate against."},
+            "account_id": {"type": "string", "description": "Account, user, or profile identifier."},
+            "credential_type": {"type": "string", "description": "Credential type, such as password, picture_password, token, or sso."},
+            "credential_value": {"type": "string", "description": "Credential value supplied by the user or prior state."}
+          },
+          "required": ["service", "account_id", "credential_type", "credential_value"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "verify_session",
+        "description": "Verify that an authentication session is active and usable.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "session_id": {"type": "string", "description": "Session identifier returned by authentication."}
+          },
+          "required": ["session_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "locate_file",
+        "description": "Find a file by name or path before upload, export, attachment, or sharing.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "file_name": {"type": "string", "description": "File name or path to locate."}
+          },
+          "required": ["file_name"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_upload_session",
+        "description": "Create an upload session with a provider or destination.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "provider": {"type": "string", "description": "Storage or service provider."},
+            "destination": {"type": "string", "description": "Folder, workspace, or destination identifier."}
+          },
+          "required": ["provider", "destination"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "upload_resource",
+        "description": "Upload a located file or local resource through an existing upload session.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "session_id": {"type": "string", "description": "Upload session identifier."},
+            "resource_id": {"type": "string", "description": "File or local resource identifier to upload."}
+          },
+          "required": ["session_id", "resource_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "set_permission",
+        "description": "Set sharing or access permission for a resource.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource whose permission should be changed."},
+            "visibility": {"type": "string", "description": "Requested visibility, such as private, shared, public_link, or organization."}
+          },
+          "required": ["resource_id", "visibility"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "verify_permission",
+        "description": "Verify that a resource has the required sharing or access permission.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource to verify."},
+            "visibility": {"type": "string", "description": "Expected visibility or permission state."}
+          },
+          "required": ["resource_id", "visibility"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "get_share_link",
+        "description": "Get a shareable link for a resource whose permissions allow linking.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource to link."}
+          },
+          "required": ["resource_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "export_resource",
+        "description": "Export a resource to a requested format and name.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource to export."},
+            "format": {"type": "string", "description": "Export format, such as csv, gpx, pdf, or txt."},
+            "export_name": {"type": "string", "description": "Output name for the exported resource."}
+          },
+          "required": ["resource_id", "format", "export_name"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "download_resource",
+        "description": "Download a resource to a target destination.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource to download."},
+            "destination": {"type": "string", "description": "Destination folder, device, or storage area."}
+          },
+          "required": ["resource_id", "destination"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "verify_resource",
+        "description": "Verify that a resource exists and has the expected status.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "resource_id": {"type": "string", "description": "Resource to verify."},
+            "expected_status": {"type": "string", "description": "Expected status, such as uploaded, attached, downloaded, exported, or saved."}
+          },
+          "required": ["resource_id", "expected_status"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "create_record",
+        "description": "Create a record in a named collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection where the record should be created."},
+            "fields": {"type": "object", "description": "Fields for the new record."}
+          },
+          "required": ["collection", "fields"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "update_record",
+        "description": "Update fields on an existing record.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection containing the record."},
+            "record_id": {"type": "string", "description": "Record to update."},
+            "patch": {"type": "object", "description": "Fields to merge into the record."}
+          },
+          "required": ["collection", "record_id", "patch"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "attach_resource",
+        "description": "Attach a resource to another target record.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_collection": {"type": "string", "description": "Collection containing the target record."},
+            "target_id": {"type": "string", "description": "Target record identifier."},
+            "resource_id": {"type": "string", "description": "Resource to attach."},
+            "relationship": {"type": "string", "description": "Attachment relationship or display label."}
+          },
+          "required": ["target_collection", "target_id", "resource_id", "relationship"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "delete_record",
+        "description": "Delete a record from a named collection.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "collection": {"type": "string", "description": "Collection containing the record."},
+            "record_id": {"type": "string", "description": "Record to delete."}
+          },
+          "required": ["collection", "record_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "send_message",
+        "description": "Send or stage a message through a channel.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "channel": {"type": "string", "description": "Message channel, such as email, chat, notification, or scanner_email."},
+            "recipient": {"type": "string", "description": "Recipient address or identifier."},
+            "subject": {"type": "string", "description": "Message subject or empty string if not applicable."},
+            "body": {"type": "string", "description": "Message body or description."}
+          },
+          "required": ["channel", "recipient", "subject", "body"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "add_recipient",
+        "description": "Add a recipient to an existing message, job, or sharing target.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_id": {"type": "string", "description": "Message, job, or resource identifier."},
+            "recipient": {"type": "string", "description": "Recipient to add."}
+          },
+          "required": ["target_id", "recipient"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "verify_delivery",
+        "description": "Verify that a message or shared resource was delivered or made available.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "target_id": {"type": "string", "description": "Message, job, or resource identifier to verify."}
+          },
+          "required": ["target_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "check_constraint",
+        "description": "Check a task constraint such as storage, permission, availability, size, or policy before continuing.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "constraint_type": {"type": "string", "description": "Type of constraint to check."},
+            "target_id": {"type": "string", "description": "Target affected by the constraint."},
+            "required_value": {"type": "string", "description": "Required value or threshold expressed as a string."}
+          },
+          "required": ["constraint_type", "target_id", "required_value"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "start_job",
+        "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "job_type": {"type": "string", "description": "Type of job to start."},
+            "target_id": {"type": "string", "description": "Target resource or record for the job."},
+            "options": {"type": "object", "description": "Job options."}
+          },
+          "required": ["job_type", "target_id", "options"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "poll_job",
+        "description": "Poll a long-running job for its current status and outputs.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string", "description": "Job identifier returned by start_job."}
+          },
+          "required": ["job_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "cancel_job",
+        "description": "Cancel a running job when it should not continue.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string", "description": "Job identifier to cancel."}
+          },
+          "required": ["job_id"]
+        }
+      }
+    },
+    {
+      "type": "function",
+      "function": {
+        "name": "verify_job_result",
+        "description": "Verify that a completed job produced the expected result.",
+        "parameters": {
+          "type": "object",
+          "properties": {
+            "job_id": {"type": "string", "description": "Completed job identifier."},
+            "expected_status": {"type": "string", "description": "Expected final status or output condition."}
+          },
+          "required": ["job_id", "expected_status"]
+        }
+      }
+    }
+  ]
+}
