@@ -17,6 +17,9 @@ checks whether model-written tool responses are executable.
   dependencies, state inspection, clarification, recovery, and final checks.
 - **Replay validation**: `validate_execution.py` replays every tool call and
   rejects trajectories whose tool responses do not match the DSL.
+- **Tool-response canonicalization**: `canonicalize_tool_responses.py` can
+  replace model-written tool message contents with replayed DSL outputs while
+  preserving the model-generated dialogue and tool-call decisions.
 - **Optional rollout**: `rollout_stage3.py` can run step-by-step executable
   generation for ablations, but it is not the default data path.
 - **Repair hooks**: Stage 2 and Stage 3 repair prompts can regenerate artifacts
@@ -85,14 +88,23 @@ python3 scripts/run_pipeline.py \
   --candidate-limit 50 \
   --target 10 \
   --provider gemini \
+  --gemini-thinking-budget 0 \
   --workers 4 \
   --retries 1 \
   --stage2-repair-rounds 1 \
-  --trajectory-repair-rounds 1
+  --trajectory-repair-rounds 2
 ```
 
 `execute_llm_requests.py` also supports `--workers`, `--retries`, `--resume`,
-and `--checkpoint-every` for manual staged runs.
+`--checkpoint-every`, and `--gemini-thinking-budget` for manual staged runs.
+For Gemini 2.5 Flash style thinking models, `--gemini-thinking-budget 0`
+reduces latency and prevents thinking tokens from crowding out JSON output.
+
+`run_pipeline.py` canonicalizes tool responses before trajectory validation by
+default. Use `--no-canonicalize-tool-responses` when you need to inspect raw
+model-written tool outputs. If Stage 4 refinement makes a previously valid
+Stage 3 trajectory fail, the runner falls back to the valid Stage 3 version so
+yield is not reduced by refinement.
 
 ## Stage 2: Tool Bank and Environment
 
@@ -202,6 +214,16 @@ python3 scripts/validate_tool_bank.py \
   --input outputs/stage4/artifacts/stage4_refined.jsonl \
   --output outputs/stage4/validation/tool_bank.jsonl \
   --require-discoverable-record-ids
+```
+
+When running stages manually, canonicalize tool responses before strict
+execution validation to remove response-format drift while keeping the generated
+assistant tool calls intact:
+
+```bash
+python3 scripts/canonicalize_tool_responses.py \
+  --input outputs/stage4/artifacts/stage4_refined.jsonl \
+  --output outputs/stage4/artifacts/stage4_refined_canonical.jsonl
 ```
 
 Summarize batch quality and fail fast if yield is too low:

@@ -25,15 +25,22 @@ python3 scripts/build_llm_requests.py --stage stage1 --input data/sample_texts.j
 python3 scripts/validate_environment.py --input outputs/stage2/artifacts/stage2_artifacts.jsonl --output outputs/stage2/validation/environment.jsonl
 python3 scripts/validate_tool_bank.py --input outputs/stage2/artifacts/stage2_artifacts.jsonl --output outputs/stage2/validation/tool_bank.jsonl --require-discoverable-record-ids
 python3 scripts/validate_execution.py --input outputs/stage3/artifacts/stage3_trajectories.jsonl --output outputs/stage3/validation/execution.jsonl
+python3 scripts/canonicalize_tool_responses.py --input outputs/stage3/artifacts/stage3_trajectories.jsonl --output outputs/stage3/artifacts/stage3_trajectories_canonical.jsonl
 python3 scripts/build_llm_requests.py --stage stage4 --input outputs/stage3/artifacts/stage3_trajectories.jsonl --output outputs/stage4/requests/stage4_requests.jsonl
 python3 scripts/quality_gate.py --input outputs/stage3/artifacts/stage3_trajectories.jsonl --trajectory-validation outputs/stage3/validation/trajectory_strict.jsonl --execution-validation outputs/stage3/validation/execution.jsonl --tool-bank-validation outputs/stage3/validation/tool_bank.jsonl
-python3 scripts/run_pipeline.py --input data/wikihow_computer_100.jsonl --output-dir outputs/runs/wikihow_computer --candidate-limit 50 --target 10 --provider gemini --workers 4 --retries 1
+python3 scripts/run_pipeline.py --input data/wikihow_computer_100.jsonl --output-dir outputs/runs/wikihow_computer --candidate-limit 50 --target 10 --provider gemini --gemini-thinking-budget 0 --workers 4 --retries 1 --trajectory-repair-rounds 2
 ```
 
 Use `execute_llm_requests.py` only after setting provider credentials in
 environment variables such as `GEMINI_API_KEY` or
 `GEM_LLM_BASE_URL`/`GEM_LLM_API_KEY`/`GEM_LLM_MODEL`. `rollout_stage3.py` is an
 optional ablation path, not the default pipeline.
+`run_pipeline.py` canonicalizes tool responses before validation by default;
+pass `--no-canonicalize-tool-responses` only when inspecting raw model outputs.
+If Stage 4 refinement invalidates a row that already passed Stage 3 validation,
+the runner falls back to the Stage 3 row for final export.
+For Gemini 2.5 Flash style thinking models, pass `--gemini-thinking-budget 0`
+to keep JSON output complete and reduce latency.
 Stage 4 refines messages only; after materializing refined outputs, re-run
 strict trajectory, execution, and tool-bank validation.
 

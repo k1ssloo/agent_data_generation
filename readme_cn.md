@@ -9,6 +9,7 @@
 - **一次性轨迹生成**：Stage 3 让模型直接生成 OpenAI messages 风格的完整多轮 tool-use 轨迹。
 - **Stage 4 复杂化**：Stage 4 固定原来的 `workflow/tools/environment`，只重写 `messages`，增加长程依赖、状态检查、澄清、错误恢复、条件分支和最终验证。
 - **Replay 验证**：`validate_execution.py` 会重放每个 tool call，并拒绝与 DSL 执行结果不一致的轨迹。
+- **工具响应规范化**：`canonicalize_tool_responses.py` 可以用 DSL 重放结果替换模型写出的 tool message content，但不改变模型生成的对话和 tool-call 决策。
 
 ## 目录结构
 
@@ -72,14 +73,22 @@ python3 scripts/run_pipeline.py \
   --candidate-limit 50 \
   --target 10 \
   --provider gemini \
+  --gemini-thinking-budget 0 \
   --workers 4 \
   --retries 1 \
   --stage2-repair-rounds 1 \
-  --trajectory-repair-rounds 1
+  --trajectory-repair-rounds 2
 ```
 
 如果手动分阶段运行，`execute_llm_requests.py` 现在支持 `--workers`、
-`--retries`、`--resume` 和 `--checkpoint-every`，适合长批次断点续跑。
+`--retries`、`--resume`、`--checkpoint-every` 和
+`--gemini-thinking-budget`，适合长批次断点续跑。对于 Gemini 2.5 Flash
+这类 thinking 模型，`--gemini-thinking-budget 0` 可以降低延迟，并避免
+thinking tokens 挤占 JSON 输出空间。
+`run_pipeline.py` 默认会在轨迹验证前规范化 tool response；如果需要检查
+模型原始 tool output，可以加 `--no-canonicalize-tool-responses`。
+如果 Stage 4 refinement 把原本已经验证通过的 Stage 3 轨迹改坏，runner
+会自动回退到 Stage 3 的有效版本，避免 refinement 降低最终产出率。
 
 ## Stage 2：工具和环境
 
@@ -173,6 +182,13 @@ python3 scripts/quality_gate.py \
 ```
 
 质量门不会修复数据，只负责汇总 completion、strict、execution 和最终可用率。
+手动运行时，建议在 execution validation 前先规范化工具响应：
+
+```bash
+python3 scripts/canonicalize_tool_responses.py \
+  --input outputs/stage4/artifacts/stage4_refined.jsonl \
+  --output outputs/stage4/artifacts/stage4_refined_canonical.jsonl
+```
 
 ## 导出 SFT
 

@@ -11,10 +11,13 @@ Repair rules:
 - URLs, credentials, tokens, emails, record ids, file ids, calendar names, message subjects, and message bodies are high-risk arguments. They must be quoted or clearly stated by the user, returned by a prior tool, or explicitly composed from earlier visible text before use.
 - Do not make up placeholder secrets, expired tokens, private URLs, recipient addresses, or hidden resource names. If one is needed and not grounded, add a user clarification turn or a retrieval/list/search/read tool call before using it.
 - If a validation error says a composed argument is not grounded, repair it by inserting a visible user or assistant message that contains the exact final argument string as one contiguous span before the tool call. Do not rely on the validator inferring a URL, path, title, or message body from separate fragments.
+- If a validation error says account_id, record_id, file_id, target_id, session_id, job_id, or another hidden environment identifier is not grounded, do not ground it with an assistant-only claim. Add a retrieval/list/read/get tool call that returns the identifier, or add a user clarification answer that explicitly provides the exact identifier before the dependent tool call.
+- If a validation error says a simple target value such as an app or page target is not grounded, insert a short visible user or assistant turn with the exact target string before calling open_resource.
 - If a workflow tool is missing from the trajectory, add it naturally.
 - If error recovery is required, include a failed tool response followed by a grounded recovery and later success.
 - Do not invent hidden retrieval results. Call a list/retrieve tool first when an option must be known.
 - When repairing execution mismatches, recompute later tool responses from the updated state after each prior tool call; do not copy stale responses from the original trajectory.
+- If execution errors are caused by the environment/tool_rules instead of the message sequence, return minimally repaired workflow/tools/environment along with messages. For example, add missing effects that make later preconditions true, or repair a filter/list rule so it can expose the records the trajectory uses.
 - Keep the repaired artifact compact.
 
 Return JSON with this schema and no markdown:

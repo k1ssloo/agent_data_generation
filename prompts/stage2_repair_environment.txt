@@ -18,6 +18,8 @@ Repair rules:
 - You may set individual fields, e.g. "$state.photos[$args.photo_id].edited", or merge several fields with "$state.photos[$args.photo_id]".
 - Retrieval/list tools should return complete option objects when names/statuses may be mentioned later.
 - Tool responses must be derivable from state, args, response, literals, templates, or filter_values.
+- filter_values.from must resolve to a collection object or array in initial_state after prior effects. Prefer object collections keyed by stable id when later get/update/delete calls need record ids.
+- If a successful open_resource/authenticate/start_job call is a prerequisite for a later get/update/export/list call, include an effect that records the opened/authenticated/running state needed by later rules.
 - Every hidden entity id that a trajectory may need as an argument must be discoverable through a prior retrieval/list/read tool response.
 - If a tool rule requires fixed ids such as a settings record, account, class, file, map, or email id, ensure some retrieval/list/read tool can expose that id before mutation.
 - A get_record rule that requires record_id is not sufficient by itself; a list/read/search rule must expose available record ids unless the user is expected to provide the id directly.

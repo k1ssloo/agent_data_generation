@@ -109,16 +109,20 @@ def call_gemini(messages: list[dict[str, str]], max_tokens: int, temperature: fl
     api_key = os.environ.get("GEMINI_API_KEY", "")
     model = os.environ.get("GEMINI_MODEL") or os.environ.get("GEM_LLM_MODEL") or "gemini-3.5-flash"
     base_url = os.environ.get("GEMINI_BASE_URL", "https://generativelanguage.googleapis.com/v1beta").rstrip("/")
+    thinking_budget = os.environ.get("GEMINI_THINKING_BUDGET")
     if not api_key:
         raise RuntimeError("Set GEMINI_API_KEY before using --provider gemini.")
     model_path = model if model.startswith("models/") else f"models/{model}"
+    generation_config: dict[str, Any] = {
+        "temperature": temperature,
+        "maxOutputTokens": max_tokens,
+        "responseMimeType": "application/json",
+    }
+    if thinking_budget not in (None, ""):
+        generation_config["thinkingConfig"] = {"thinkingBudget": int(thinking_budget)}
     payload = {
         "contents": gemini_contents(messages),
-        "generationConfig": {
-            "temperature": temperature,
-            "maxOutputTokens": max_tokens,
-            "responseMimeType": "application/json",
-        },
+        "generationConfig": generation_config,
     }
     request = urllib.request.Request(
         f"{base_url}/{model_path}:generateContent",
@@ -134,7 +138,11 @@ def call_gemini(messages: list[dict[str, str]], max_tokens: int, temperature: fl
         raise RuntimeError(f"Gemini request failed with HTTP {exc.code}: {detail[:800]}") from exc
     except urllib.error.URLError as exc:
         raise RuntimeError(f"Gemini request failed: {exc}") from exc
-    return extract_gemini_text(body), body.get("usageMetadata", {})
+    usage = body.get("usageMetadata", {})
+    candidates = body.get("candidates") or []
+    if candidates and candidates[0].get("finishReason"):
+        usage = {**usage, "finishReason": candidates[0]["finishReason"]}
+    return extract_gemini_text(body), usage
 
 
 def call_chat(messages: list[dict[str, str]], max_tokens: int, temperature: float, provider: str) -> tuple[str, dict[str, Any]]:

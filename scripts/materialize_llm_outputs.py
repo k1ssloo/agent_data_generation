@@ -88,7 +88,12 @@ def main() -> None:
             row["stage2_status"] = "ready"
             rows.append(row)
         elif args.stage == "stage3":
+            for key in ("workflow", "tools", "environment"):
+                if key in parsed:
+                    row[key] = parsed[key]
             row["messages"] = parsed["messages"]
+            if "refinement_patterns" in parsed:
+                row["refinement_patterns"] = parsed["refinement_patterns"]
             rows.append(row)
         else:
             if not isinstance(parsed.get("messages"), list):

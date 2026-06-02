@@ -104,8 +104,11 @@ def main() -> None:
     parser.add_argument("--retry-backoff", type=float, default=2.0, help="Seconds multiplied by attempt index between retries.")
     parser.add_argument("--resume", action="store_true", help="Reuse successful rows already present in --output.")
     parser.add_argument("--checkpoint-every", type=int, default=0, help="Write partial results every N completed requests. 0 disables.")
+    parser.add_argument("--gemini-thinking-budget", type=int, help="Set GEMINI_THINKING_BUDGET for Gemini 2.5 Flash style thinking models. Use a negative value to leave it unset.")
     parser.add_argument("--provider", choices=["openai", "gemini"], default=os.environ.get("GEM_LLM_PROVIDER", "openai"))
     args = parser.parse_args()
+    if args.gemini_thinking_budget is not None and args.gemini_thinking_budget >= 0:
+        os.environ["GEMINI_THINKING_BUDGET"] = str(args.gemini_thinking_budget)
 
     requests = load_jsonl(args.input)
     if args.limit:

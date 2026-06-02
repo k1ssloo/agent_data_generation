@@ -94,6 +94,25 @@ def passed_rows(input_path: Path, output_path: Path, validation_paths: list[Path
     return ids
 
 
+def fallback_invalid_rows(primary_path: Path, fallback_path: Path, validation_paths: list[Path], output_path: Path) -> bool:
+    valid = set.intersection(*(valid_ids(path) for path in validation_paths)) if validation_paths else set()
+    fallback_by_id = {row["id"]: row for row in load_jsonl(fallback_path)}
+    changed = False
+    rows = []
+    for row in load_jsonl(primary_path):
+        row_id = row["id"]
+        if row_id not in valid and row_id in fallback_by_id:
+            replacement = dict(fallback_by_id[row_id])
+            replacement["fallback_source"] = "stage3_valid_before_refinement"
+            rows.append(replacement)
+            changed = True
+        else:
+            rows.append(row)
+    if changed:
+        write_jsonl(output_path, rows)
+    return changed
+
+
 def execute_requests(args: argparse.Namespace, request_path: Path, output_path: Path, *, max_tokens: int) -> None:
     command = [
         sys.executable,
@@ -118,6 +137,8 @@ def execute_requests(args: argparse.Namespace, request_path: Path, output_path: 
         "--checkpoint-every",
         str(args.checkpoint_every),
     ]
+    if args.provider == "gemini" and args.gemini_thinking_budget is not None and args.gemini_thinking_budget >= 0:
+        command.extend(["--gemini-thinking-budget", str(args.gemini_thinking_budget)])
     run_command(command)
 
 
@@ -154,6 +175,22 @@ def materialize(stage: str, base_path: Path, llm_output_path: Path, output_path:
             str(output_path),
         ]
     )
+
+
+def canonicalize_tool_responses(input_path: Path, output_path: Path, args: argparse.Namespace) -> Path:
+    if not args.canonicalize_tool_responses:
+        return input_path
+    run_command(
+        [
+            sys.executable,
+            script("canonicalize_tool_responses.py"),
+            "--input",
+            str(input_path),
+            "--output",
+            str(output_path),
+        ]
+    )
+    return output_path
 
 
 def validate_stage2(artifact_path: Path, validation_dir: Path) -> list[Path]:
@@ -240,7 +277,7 @@ def repair_stage2(current_path: Path, output_dir: Path, args: argparse.Namespace
 
 
 def repair_trajectories(current_path: Path, output_dir: Path, args: argparse.Namespace) -> tuple[Path, list[Path]]:
-    current = current_path
+    current = canonicalize_tool_responses(current_path, output_dir / "canonicalized.jsonl", args)
     validations = validate_trajectories(current, output_dir / "validation", args)
     for round_index in range(1, args.trajectory_repair_rounds + 1):
         trajectory_path, execution_path, tool_bank_path = validations
@@ -259,7 +296,7 @@ def repair_trajectories(current_path: Path, output_dir: Path, args: argparse.Nam
         execute_requests(args, repair_requests, repair_responses, max_tokens=args.max_tokens)
         materialize("stage3", repair_input, repair_responses, repair_artifacts)
         merge_by_id(current, repair_artifacts, merged)
-        current = merged
+        current = canonicalize_tool_responses(merged, round_dir / "canonicalized.jsonl", args)
         validations = validate_trajectories(current, round_dir / "validation", args)
     return current, validations
 
@@ -295,13 +332,26 @@ def main() -> None:
     parser.add_argument("--retry-backoff", type=float, default=2.0)
     parser.add_argument("--checkpoint-every", type=int, default=5)
     parser.add_argument("--temperature", type=float, default=0.1)
+    parser.add_argument(
+        "--gemini-thinking-budget",
+        type=int,
+        default=0,
+        help="Gemini thinking budget passed to execute_llm_requests.py. 0 favors complete JSON and lower latency; negative leaves it unset.",
+    )
     parser.add_argument("--stage1-max-tokens", type=int, default=1024)
     parser.add_argument("--max-tokens", type=int, default=8192)
     parser.add_argument("--stage2-repair-rounds", type=int, default=1)
-    parser.add_argument("--trajectory-repair-rounds", type=int, default=1)
+    parser.add_argument("--trajectory-repair-rounds", type=int, default=2)
     parser.add_argument("--min-tool-calls", type=int, default=0)
     parser.add_argument("--max-user-turns", type=int, default=0)
     parser.add_argument("--require-final-verification", action="store_true")
+    parser.add_argument(
+        "--no-canonicalize-tool-responses",
+        dest="canonicalize_tool_responses",
+        action="store_false",
+        help="Keep raw model-written tool message contents instead of replaying executable responses before validation.",
+    )
+    parser.set_defaults(canonicalize_tool_responses=True)
     parser.add_argument("--skip-stage4", action="store_true")
     args = parser.parse_args()
 
@@ -355,6 +405,10 @@ def main() -> None:
         execute_requests(args, stage4_requests, stage4_responses, max_tokens=args.max_tokens)
         materialize("stage4", stage3_passed, stage4_responses, stage4_artifacts)
         final_artifacts, final_validations = repair_trajectories(stage4_artifacts, stage4_dir, args)
+        fallback_artifacts = stage4_dir / "fallback_stage3.jsonl"
+        if fallback_invalid_rows(final_artifacts, stage3_passed, final_validations, fallback_artifacts):
+            final_artifacts = fallback_artifacts
+            final_validations = validate_trajectories(final_artifacts, stage4_dir / "fallback_validation", args)
 
     quality_report = output_dir / "quality_report.json"
     run_command(

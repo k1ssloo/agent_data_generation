@@ -227,7 +227,10 @@ def execute_tool(name: str, args: dict[str, Any], state: dict[str, Any], environ
             return {"status": "failed", "error": str(exc)}, [f"{name}: {exc}"]
         if not matches:
             continue
-        response = eval_value(branch.get("response", {}), context)
+        try:
+            response = eval_value(branch.get("response", {}), context)
+        except ExecutionError as exc:
+            return {"status": "failed", "error": str(exc)}, [f"{name}: {exc}"]
         context["response"] = response
         for effect in branch.get("effects", []):
             try:
@@ -305,12 +308,13 @@ def render_template(template: str, context: dict[str, Any]) -> str:
 
 def filter_values(spec: dict[str, Any], context: dict[str, Any]) -> list[Any]:
     source = eval_value(spec["from"], context)
-    if not isinstance(source, dict):
-        raise ExecutionError("filter_values.from must resolve to an object")
+    if not isinstance(source, (dict, list)):
+        raise ExecutionError("filter_values.from must resolve to an object or array")
     where = spec.get("where", True)
     select = spec.get("select", "$item")
     results = []
-    for key, item in source.items():
+    iterator = source.items() if isinstance(source, dict) else enumerate(source)
+    for key, item in iterator:
         child_context = {**context, "item": item, "key": key}
         if eval_condition(where, child_context):
             results.append(eval_value(select, child_context))
