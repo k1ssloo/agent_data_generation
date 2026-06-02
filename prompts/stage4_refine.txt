@@ -17,9 +17,13 @@ Hard constraints:
 - Use at most one tool_call in each assistant message.
 - Do not invent parameter values. Every non-control argument value must come from the user, an assistant statement, or a prior tool response.
 - Control arguments are enum-like selectors such as collection, view, provider, format, expected_status, resource_type, or service.
+- Treat URLs, credentials, tokens, emails, record ids, file ids, calendar names, message subjects, and message bodies as high-risk arguments. They must be grounded by an explicit user statement, a prior assistant-visible composition step, or a prior tool response.
+- Do not invent synthetic URLs, expired credentials, private tokens, recipient addresses, or hidden destination names for extra complexity. If a needed high-risk value is missing, ask the user for it or retrieve it with an available list/search/read/get tool before use.
+- For composed values, the exact final argument string must appear as one contiguous prior text span before the tool call. If you build a URL from a base URL plus a code, or build a message body from multiple constraints, first state the exact final URL/body in assistant-visible text.
 - Do not let the assistant mention hidden environment identifiers before they are surfaced by a user message or a tool response.
 - A tool response must be derivable from the executable environment, tool_rules DSL, initial_state, and prior tool calls.
 - If a needed value is not grounded, add a retrieval/list/search/read tool call first, or ask the user for clarification.
+- After any write/update/send action, recompute downstream tool responses from the new state instead of copying stale response objects from the original trajectory.
 - If a request exceeds available tool capabilities or violates a stated rule, add a concise refusal or limitation explanation instead of fabricating execution.
 - End with a verification/read/get/list/search/poll-style tool call when such a tool is available and executable.
 

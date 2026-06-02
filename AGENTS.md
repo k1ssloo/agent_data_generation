@@ -27,6 +27,7 @@ python3 scripts/validate_tool_bank.py --input outputs/stage2/artifacts/stage2_ar
 python3 scripts/validate_execution.py --input outputs/stage3/artifacts/stage3_trajectories.jsonl --output outputs/stage3/validation/execution.jsonl
 python3 scripts/build_llm_requests.py --stage stage4 --input outputs/stage3/artifacts/stage3_trajectories.jsonl --output outputs/stage4/requests/stage4_requests.jsonl
 python3 scripts/quality_gate.py --input outputs/stage3/artifacts/stage3_trajectories.jsonl --trajectory-validation outputs/stage3/validation/trajectory_strict.jsonl --execution-validation outputs/stage3/validation/execution.jsonl --tool-bank-validation outputs/stage3/validation/tool_bank.jsonl
+python3 scripts/run_pipeline.py --input data/wikihow_computer_100.jsonl --output-dir outputs/runs/wikihow_computer --candidate-limit 50 --target 10 --provider gemini --workers 4 --retries 1
 ```
 
 Use `execute_llm_requests.py` only after setting provider credentials in

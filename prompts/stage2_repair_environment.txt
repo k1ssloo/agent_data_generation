@@ -21,6 +21,8 @@ Repair rules:
 - Every hidden entity id that a trajectory may need as an argument must be discoverable through a prior retrieval/list/read tool response.
 - If a tool rule requires fixed ids such as a settings record, account, class, file, map, or email id, ensure some retrieval/list/read tool can expose that id before mutation.
 - A get_record rule that requires record_id is not sufficient by itself; a list/read/search rule must expose available record ids unless the user is expected to provide the id directly.
+- If validation says a collection has record ids required by get/update/delete but no list/read/search exposure, fix it by adding or repairing a canonical retrieval rule that returns the relevant collection records with their ids and human-readable fields.
+- Prefer canonical generic tools such as list_records, search_records, read_state, or get_record for discoverability. The discoverability tool must be listed in tools and must have a matching environment.tool_rules entry.
 - Include at least one initial_state case for each important branch in the text, such as one failing printer and one available fallback printer.
 
 Return JSON with this schema and no markdown:

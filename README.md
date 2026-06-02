@@ -74,6 +74,26 @@ python3 scripts/materialize_llm_outputs.py \
   --output outputs/stage1/artifacts/stage1_filtered.jsonl
 ```
 
+For larger batches, use the orchestrated pipeline. It runs Stage 1 through
+Stage 4, validates each gate, retries failed LLM calls, repairs failed Stage 2
+and trajectory artifacts, and exports SFT records that pass all validators:
+
+```bash
+python3 scripts/run_pipeline.py \
+  --input data/wikihow_computer_100.jsonl \
+  --output-dir outputs/runs/wikihow_computer \
+  --candidate-limit 50 \
+  --target 10 \
+  --provider gemini \
+  --workers 4 \
+  --retries 1 \
+  --stage2-repair-rounds 1 \
+  --trajectory-repair-rounds 1
+```
+
+`execute_llm_requests.py` also supports `--workers`, `--retries`, `--resume`,
+and `--checkpoint-every` for manual staged runs.
+
 ## Stage 2: Tool Bank and Environment
 
 Build Stage 2 requests. The canonical tool bank is injected by default:

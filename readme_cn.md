@@ -61,6 +61,26 @@ python3 scripts/materialize_llm_outputs.py \
   --output outputs/stage1/artifacts/stage1_filtered.jsonl
 ```
 
+大规模生成时推荐直接使用编排脚本。它会串起 Stage 1 到 Stage 4，并在
+Stage 2 和轨迹阶段自动运行验证、重试和 repair，最后只导出全部验证通过
+的 SFT 数据：
+
+```bash
+python3 scripts/run_pipeline.py \
+  --input data/wikihow_computer_100.jsonl \
+  --output-dir outputs/runs/wikihow_computer \
+  --candidate-limit 50 \
+  --target 10 \
+  --provider gemini \
+  --workers 4 \
+  --retries 1 \
+  --stage2-repair-rounds 1 \
+  --trajectory-repair-rounds 1
+```
+
+如果手动分阶段运行，`execute_llm_requests.py` 现在支持 `--workers`、
+`--retries`、`--resume` 和 `--checkpoint-every`，适合长批次断点续跑。
+
 ## Stage 2：工具和环境
 
 ```bash
