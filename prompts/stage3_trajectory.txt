@@ -33,6 +33,7 @@ Requirements:
 - Tool-call argument values must be grounded in earlier user messages, assistant messages, or prior tool responses.
 - For composed argument values, the exact final string must appear as one contiguous prior text span before the tool call. Examples include a URL made from a base URL plus a school code, a file path made from a folder plus filename, or a message body assembled from several user constraints.
 - If you need to compose such a value, add a short assistant message that states the exact final value, then make the dependent tool call in the next assistant tool-call message.
+- For query arguments, avoid adding field prefixes such as "school_code:" unless the exact full query string was stated earlier; prefer the raw grounded value when the retrieval rule supports it.
 - Do not use a value from a future tool response as a tool-call argument.
 - Canonical control arguments such as collection, resource_type, destination, expected_status, channel, service, visibility, format, and job_type may be stable tool-control literals when they are implied by the task and tool schema.
 - Entity identifiers such as record_id, resource_id, session_id, job_id, target_id, account_id, and email/file/class/map ids must be grounded by the user or by a prior tool response. Do not copy hidden ids from the executable environment into a tool call before they appear in the conversation.

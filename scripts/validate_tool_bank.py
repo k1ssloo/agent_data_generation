@@ -207,6 +207,43 @@ def rule_text(rule: Any) -> str:
     return json.dumps(rule, ensure_ascii=False, separators=(",", ":"))
 
 
+def collect_strings(value: Any) -> set[str]:
+    strings: set[str] = set()
+    if isinstance(value, str):
+        strings.add(value)
+    elif isinstance(value, list):
+        for item in value:
+            strings.update(collect_strings(item))
+    elif isinstance(value, dict):
+        for item in value.values():
+            strings.update(collect_strings(item))
+    return strings
+
+
+def exposes_collection(collection: str, records: dict[str, Any], rules: dict[str, Any]) -> bool:
+    """Return whether a retrieval rule can expose ids for this collection."""
+    retrieval_rules = [rules.get("list_records", {}), rules.get("read_state", {}), rules.get("search_records", {})]
+    retrieval_text = "".join(rule_text(rule) for rule in retrieval_rules)
+    if f"$state.{collection}" in retrieval_text:
+        return True
+
+    record_ids = {str(record_id) for record_id in records}
+    if not record_ids:
+        return False
+    for rule in retrieval_rules:
+        branches = rule.get("branches", []) if isinstance(rule, dict) else []
+        for branch in branches:
+            if not isinstance(branch, dict):
+                continue
+            branch_text = rule_text(branch)
+            if collection not in branch_text:
+                continue
+            response_strings = collect_strings(branch.get("response", {}))
+            if record_ids & response_strings:
+                return True
+    return False
+
+
 def validate_discoverable_record_ids(row: dict[str, Any]) -> list[str]:
     """Heuristically catch hidden record_id requirements in canonical get/update rules."""
     errors: list[str] = []
@@ -216,18 +253,18 @@ def validate_discoverable_record_ids(row: dict[str, Any]) -> list[str]:
     if not isinstance(initial_state, dict) or not isinstance(rules, dict):
         return errors
 
-    list_rule_text = rule_text(rules.get("list_records", {})) + rule_text(rules.get("read_state", {})) + rule_text(rules.get("search_records", {}))
     mutation_rule_text = rule_text(rules.get("get_record", {})) + rule_text(rules.get("update_record", {})) + rule_text(rules.get("delete_record", {}))
+    authenticate_rule_text = rule_text(rules.get("authenticate", {}))
     for collection, value in initial_state.items():
         if not isinstance(value, dict) or not value:
             continue
         dynamic_record_path = f"$state.{collection}[$args.record_id]"
         dynamic_target_path = f"$state.{collection}[$args.target_id]"
-        if dynamic_record_path not in mutation_rule_text and dynamic_target_path not in mutation_rule_text:
-            continue
-        if f"$state.{collection}" not in list_rule_text:
+        needs_record_id = dynamic_record_path in mutation_rule_text or dynamic_target_path in mutation_rule_text
+        needs_account_id = "$args.account_id" in authenticate_rule_text and f"$state.{collection}" in authenticate_rule_text
+        if (needs_record_id or needs_account_id) and not exposes_collection(collection, value, rules):
             errors.append(
-                f"{collection}: record ids are required by get/update/delete rules but no list/read/search rule exposes this collection"
+                f"{collection}: ids are required by get/update/delete/authenticate rules but no list/read/search rule exposes this collection"
             )
     return errors
 

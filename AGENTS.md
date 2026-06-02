@@ -35,6 +35,8 @@ Use `execute_llm_requests.py` only after setting provider credentials in
 environment variables such as `GEMINI_API_KEY` or
 `GEM_LLM_BASE_URL`/`GEM_LLM_API_KEY`/`GEM_LLM_MODEL`. `rollout_stage3.py` is an
 optional ablation path, not the default pipeline.
+`execute_llm_requests.py --resume` reuses only rows whose request hash still
+matches the current prompt/messages.
 `run_pipeline.py` canonicalizes tool responses before validation by default;
 pass `--no-canonicalize-tool-responses` only when inspecting raw model outputs.
 If Stage 4 refinement invalidates a row that already passed Stage 3 validation,

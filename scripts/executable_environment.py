@@ -296,7 +296,19 @@ def eval_value(value: Any, context: dict[str, Any]) -> Any:
     return value
 
 
-def render_template(template: str, context: dict[str, Any]) -> str:
+def render_template(template: str, context: dict[str, Any]) -> Any:
+    concat_match = re.fullmatch(r"\$\{([^}]+)\}\.concat\(\[([^]]+)\]\)", template)
+    if concat_match:
+        base_path = concat_match.group(1)
+        item_expr = concat_match.group(2).strip()
+        if not base_path.startswith("$"):
+            base_path = f"${base_path}"
+        base = resolve_path(base_path, context, missing_ok=False)
+        if not isinstance(base, list):
+            raise ExecutionError(f"template concat base {base_path!r} is not a list")
+        item = eval_value(item_expr, context) if item_expr.startswith("$") else item_expr
+        return base + [item]
+
     def replace(match: re.Match[str]) -> str:
         path = match.group(1)
         if not path.startswith("$"):
@@ -443,6 +455,8 @@ def eval_path_token(token: Any, context: dict[str, Any]) -> Any:
         expr = token["expr"]
         if expr.startswith("$"):
             return resolve_path(expr, context, missing_ok=False)
+        if expr.split(".", 1)[0] in context:
+            return resolve_path(f"${expr}", context, missing_ok=False)
         if expr.isdigit():
             return int(expr)
         return expr.strip("\"'")

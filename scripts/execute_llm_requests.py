@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import hashlib
 import json
 import os
 import time
@@ -32,10 +33,16 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def request_hash(request: dict[str, Any]) -> str:
+    payload = json.dumps(request.get("messages", []), ensure_ascii=False, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(payload.encode("utf-8")).hexdigest()
+
+
 def empty_result(request: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": request["id"],
         "stage": request.get("stage"),
+        "request_hash": request_hash(request),
         "ok": False,
         "raw_response": None,
         "json_response": None,
@@ -123,7 +130,7 @@ def main() -> None:
     pending: list[tuple[int, dict[str, Any]]] = []
     for index, request in enumerate(requests):
         previous = completed_by_id.get(request["id"])
-        if previous:
+        if previous and previous.get("request_hash") == request_hash(request):
             outputs[index] = previous
         else:
             pending.append((index, request))

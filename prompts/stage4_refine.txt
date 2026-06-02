@@ -20,6 +20,7 @@ Hard constraints:
 - Treat URLs, credentials, tokens, emails, record ids, file ids, calendar names, message subjects, and message bodies as high-risk arguments. They must be grounded by an explicit user statement, a prior assistant-visible composition step, or a prior tool response.
 - Do not invent synthetic URLs, expired credentials, private tokens, recipient addresses, or hidden destination names for extra complexity. If a needed high-risk value is missing, ask the user for it or retrieve it with an available list/search/read/get tool before use.
 - For composed values, the exact final argument string must appear as one contiguous prior text span before the tool call. If you build a URL from a base URL plus a code, or build a message body from multiple constraints, first state the exact final URL/body in assistant-visible text.
+- For query arguments, do not add field prefixes such as "school_code:" unless the exact full query string already appears in prior visible text; prefer the raw grounded value when the environment supports it.
 - Do not let the assistant mention hidden environment identifiers before they are surfaced by a user message or a tool response.
 - A tool response must be derivable from the executable environment, tool_rules DSL, initial_state, and prior tool calls.
 - If a needed value is not grounded, add a retrieval/list/search/read tool call first, or ask the user for clarification.

@@ -97,6 +97,8 @@ python3 scripts/run_pipeline.py \
 
 `execute_llm_requests.py` also supports `--workers`, `--retries`, `--resume`,
 `--checkpoint-every`, and `--gemini-thinking-budget` for manual staged runs.
+Resume is request-hash aware, so stale outputs are not reused after prompt or
+upstream artifact changes.
 For Gemini 2.5 Flash style thinking models, `--gemini-thinking-budget 0`
 reduces latency and prevents thinking tokens from crowding out JSON output.
 

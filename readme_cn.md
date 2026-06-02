@@ -85,6 +85,7 @@ python3 scripts/run_pipeline.py \
 `--gemini-thinking-budget`，适合长批次断点续跑。对于 Gemini 2.5 Flash
 这类 thinking 模型，`--gemini-thinking-budget 0` 可以降低延迟，并避免
 thinking tokens 挤占 JSON 输出空间。
+断点续跑会校验 request hash，prompt 或上游 artifact 变化后不会误用旧输出。
 `run_pipeline.py` 默认会在轨迹验证前规范化 tool response；如果需要检查
 模型原始 tool output，可以加 `--no-canonicalize-tool-responses`。
 如果 Stage 4 refinement 把原本已经验证通过的 Stage 3 轨迹改坏，runner
