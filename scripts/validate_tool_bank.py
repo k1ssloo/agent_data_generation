@@ -61,13 +61,29 @@ def load_tool_bank(path: Path) -> dict[str, dict[str, Any]]:
 
 
 def canonical_parameters(tool: dict[str, Any]) -> dict[str, Any]:
-    return tool.get("function", {}).get("parameters", {})
+    function = tool.get("function")
+    if not isinstance(function, dict):
+        return {}
+    parameters = function.get("parameters", {})
+    return schema_signature(parameters) if isinstance(parameters, dict) else {}
+
+
+def schema_signature(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: schema_signature(item) for key, item in value.items() if key != "description"}
+    if isinstance(value, list):
+        return [schema_signature(item) for item in value]
+    return value
 
 
 def lint_tool(tool: dict[str, Any]) -> list[str]:
     errors = []
-    function = tool.get("function", {})
+    function = tool.get("function")
+    if not isinstance(function, dict):
+        return [f"tool.function must be an object, got {type(function).__name__}"]
     name = function.get("name", "")
+    if not isinstance(name, str):
+        return [f"function.name must be a string, got {type(name).__name__}"]
     tokens = [token for token in name.split("_") if token]
     if not re.fullmatch(r"[a-z][a-z0-9_]*", name):
         errors.append(f"{name}: function name must be snake_case")
@@ -175,8 +191,19 @@ def validate_row(
         return ["row has no tools and no missing_tool_requirements"]
 
     seen: set[str] = set()
-    for tool in tools:
-        name = tool.get("function", {}).get("name", "")
+    for index, tool in enumerate(tools):
+        if not isinstance(tool, dict):
+            errors.append(f"tools[{index}]: tool must be an object, got {type(tool).__name__}")
+            continue
+        function = tool.get("function")
+        if not isinstance(function, dict):
+            errors.append(f"tools[{index}].function must be an object, got {type(function).__name__}")
+            errors.extend(lint_tool(tool))
+            continue
+        name = function.get("name", "")
+        if not isinstance(name, str):
+            errors.append(f"tools[{index}].function.name must be a string, got {type(name).__name__}")
+            continue
         if not name:
             errors.append("tool without function.name")
             continue

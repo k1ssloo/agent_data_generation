@@ -92,13 +92,16 @@ python3 scripts/run_pipeline.py \
   --workers 4 \
   --retries 1 \
   --stage2-repair-rounds 1 \
-  --trajectory-repair-rounds 2
+  --trajectory-repair-rounds 2 \
+  --repair-max-tokens 12288
 ```
 
 `execute_llm_requests.py` also supports `--workers`, `--retries`, `--resume`,
 `--checkpoint-every`, and `--gemini-thinking-budget` for manual staged runs.
 Resume is request-hash aware, so stale outputs are not reused after prompt or
 upstream artifact changes.
+`run_pipeline.py --repair-max-tokens` gives Stage 2/trajectory repair calls a
+larger JSON budget without slowing the first-pass generations.
 For Gemini 2.5 Flash style thinking models, `--gemini-thinking-budget 0`
 reduces latency and prevents thinking tokens from crowding out JSON output.
 

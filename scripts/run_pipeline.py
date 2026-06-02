@@ -268,7 +268,7 @@ def repair_stage2(current_path: Path, output_dir: Path, args: argparse.Namespace
         filter_by_ids(current, repair_input, failed_ids)
         combine_validation(validations, repair_validation)
         build_requests("stage2_repair", repair_input, repair_requests, validation=repair_validation)
-        execute_requests(args, repair_requests, repair_responses, max_tokens=args.max_tokens)
+        execute_requests(args, repair_requests, repair_responses, max_tokens=args.repair_max_tokens)
         materialize("stage2", repair_input, repair_responses, repair_artifacts)
         merge_by_id(current, repair_artifacts, merged)
         current = merged
@@ -293,7 +293,7 @@ def repair_trajectories(current_path: Path, output_dir: Path, args: argparse.Nam
         merged = round_dir / "merged.jsonl"
         filter_by_ids(current, repair_input, failed_ids)
         build_requests("stage3_repair", repair_input, repair_requests, validation=trajectory_path, execution_validation=execution_path)
-        execute_requests(args, repair_requests, repair_responses, max_tokens=args.max_tokens)
+        execute_requests(args, repair_requests, repair_responses, max_tokens=args.repair_max_tokens)
         materialize("stage3", repair_input, repair_responses, repair_artifacts)
         merge_by_id(current, repair_artifacts, merged)
         current = canonicalize_tool_responses(merged, round_dir / "canonicalized.jsonl", args)
@@ -340,6 +340,7 @@ def main() -> None:
     )
     parser.add_argument("--stage1-max-tokens", type=int, default=1024)
     parser.add_argument("--max-tokens", type=int, default=8192)
+    parser.add_argument("--repair-max-tokens", type=int, default=12288)
     parser.add_argument("--stage2-repair-rounds", type=int, default=1)
     parser.add_argument("--trajectory-repair-rounds", type=int, default=2)
     parser.add_argument("--min-tool-calls", type=int, default=0)

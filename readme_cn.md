@@ -77,7 +77,8 @@ python3 scripts/run_pipeline.py \
   --workers 4 \
   --retries 1 \
   --stage2-repair-rounds 1 \
-  --trajectory-repair-rounds 2
+  --trajectory-repair-rounds 2 \
+  --repair-max-tokens 12288
 ```
 
 如果手动分阶段运行，`execute_llm_requests.py` 现在支持 `--workers`、
@@ -86,6 +87,8 @@ python3 scripts/run_pipeline.py \
 这类 thinking 模型，`--gemini-thinking-budget 0` 可以降低延迟，并避免
 thinking tokens 挤占 JSON 输出空间。
 断点续跑会校验 request hash，prompt 或上游 artifact 变化后不会误用旧输出。
+`run_pipeline.py --repair-max-tokens` 只提高 Stage 2/轨迹 repair 的 JSON
+输出预算，不会放慢首轮生成。
 `run_pipeline.py` 默认会在轨迹验证前规范化 tool response；如果需要检查
 模型原始 tool output，可以加 `--no-canonicalize-tool-responses`。
 如果 Stage 4 refinement 把原本已经验证通过的 Stage 3 轨迹改坏，runner

@@ -10,6 +10,7 @@ LLM-generated environment.
 from __future__ import annotations
 
 import copy
+import json
 import re
 from typing import Any
 
@@ -258,14 +259,25 @@ def eval_condition(condition: Any, context: dict[str, Any]) -> bool:
         return resolve_path(condition["not_exists"], context, missing_ok=True) is MISSING
     if "eq" in condition:
         left, right = condition["eq"]
-        return eval_value(left, context) == eval_value(right, context)
+        left_value = eval_condition_value(left, context)
+        right_value = eval_condition_value(right, context)
+        if left_value is MISSING or right_value is MISSING:
+            return False
+        return left_value == right_value
     if "ne" in condition:
         left, right = condition["ne"]
-        return eval_value(left, context) != eval_value(right, context)
+        left_value = eval_condition_value(left, context)
+        right_value = eval_condition_value(right, context)
+        if left_value is MISSING or right_value is MISSING:
+            return False
+        return left_value != right_value
     if "in" in condition:
         value, container = condition["in"]
-        resolved_container = eval_value(container, context)
-        return eval_value(value, context) in resolved_container
+        resolved_container = eval_condition_value(container, context)
+        resolved_value = eval_condition_value(value, context)
+        if resolved_container is MISSING or resolved_value is MISSING:
+            return False
+        return resolved_value in resolved_container
     if "range" in condition:
         spec = condition["range"]
         value = eval_value(spec["value"], context)
@@ -273,6 +285,15 @@ def eval_condition(condition: Any, context: dict[str, Any]) -> bool:
             return False
         return spec.get("min", value) <= value <= spec.get("max", value)
     raise ExecutionError(f"unsupported condition op {condition!r}")
+
+
+def eval_condition_value(value: Any, context: dict[str, Any]) -> Any:
+    if isinstance(value, str) and value.startswith("$"):
+        return resolve_path(value, context, missing_ok=True)
+    try:
+        return eval_value(value, context)
+    except ExecutionError:
+        return MISSING
 
 
 def eval_value(value: Any, context: dict[str, Any]) -> Any:
@@ -310,12 +331,57 @@ def render_template(template: str, context: dict[str, Any]) -> Any:
         return base + [item]
 
     def replace(match: re.Match[str]) -> str:
-        path = match.group(1)
-        if not path.startswith("$"):
-            path = f"${path}"
-        return str(resolve_path(path, context, missing_ok=False))
+        return stringify_template_value(eval_template_expr(match.group(1), context))
 
-    return re.sub(r"\$\{([^}]+)\}", replace, template)
+    rendered = re.sub(r"\$\{([^}]+)\}", replace, template)
+    stripped = rendered.strip()
+    if stripped.startswith(("{", "[")):
+        try:
+            return json.loads(stripped)
+        except json.JSONDecodeError:
+            return rendered
+    return rendered
+
+
+def eval_template_expr(expr: str, context: dict[str, Any], *, missing_ok: bool = False) -> Any:
+    expr = expr.strip()
+    if expr.startswith("json_encode(") and expr.endswith(")"):
+        inner = expr[len("json_encode(") : -1]
+        return json_dumps_compact(eval_template_expr(inner, context, missing_ok=missing_ok))
+
+    ternary = re.fullmatch(r"(.+?)\s*!=\s*null\s*\?\s*(.+?)\s*:\s*(.+)", expr)
+    if ternary:
+        condition_path, true_expr, false_expr = (part.strip() for part in ternary.groups())
+        condition_value = eval_template_expr(condition_path, context, missing_ok=True)
+        return eval_template_expr(true_expr if condition_value is not MISSING and condition_value is not None else false_expr, context, missing_ok=missing_ok)
+
+    if expr in {"true", "false", "null"}:
+        return {"true": True, "false": False, "null": None}[expr]
+    if re.fullmatch(r"-?\d+", expr):
+        return int(expr)
+    if re.fullmatch(r"-?\d+\.\d+", expr):
+        return float(expr)
+    if (expr.startswith('"') and expr.endswith('"')) or (expr.startswith("'") and expr.endswith("'")):
+        return expr[1:-1]
+
+    path = expr if expr.startswith("$") else f"${expr}"
+    return resolve_path(path, context, missing_ok=missing_ok)
+
+
+def stringify_template_value(value: Any) -> str:
+    if value is MISSING:
+        raise ExecutionError("template expression resolved to missing value")
+    if isinstance(value, (dict, list)):
+        return json_dumps_compact(value)
+    if isinstance(value, bool):
+        return "true" if value else "false"
+    if value is None:
+        return "null"
+    return str(value)
+
+
+def json_dumps_compact(value: Any) -> str:
+    return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
 
 
 def filter_values(spec: dict[str, Any], context: dict[str, Any]) -> list[Any]:
@@ -352,7 +418,7 @@ def resolve_path(path: str, context: dict[str, Any], missing_ok: bool) -> Any:
     current = context[root]
     for token in tokens[1:]:
         key = eval_path_token(token, context)
-        if isinstance(current, dict) and key in current:
+        if isinstance(current, dict) and is_hashable_key(key) and key in current:
             current = current[key]
         elif isinstance(current, list) and isinstance(key, int) and 0 <= key < len(current):
             current = current[key]
@@ -372,10 +438,14 @@ def set_path(path: str, context: dict[str, Any], value: Any) -> None:
     current = context["state"]
     for token in tokens[1:-1]:
         key = eval_path_token(token, context)
+        if not is_hashable_key(key):
+            raise ExecutionError(f"unhashable path key {key!r} in {path!r}")
         if key not in current or not isinstance(current[key], dict):
             current[key] = {}
         current = current[key]
     final_key = eval_path_token(tokens[-1], context)
+    if not is_hashable_key(final_key):
+        raise ExecutionError(f"unhashable final path key {final_key!r} in {path!r}")
     if isinstance(current, dict):
         if isinstance(current.get(final_key), dict) and isinstance(value, dict):
             current[final_key].update(value)
@@ -415,10 +485,20 @@ def delete_path(path: str, context: dict[str, Any]) -> None:
     current = context["state"]
     for token in tokens[1:-1]:
         key = eval_path_token(token, context)
+        if not is_hashable_key(key):
+            raise ExecutionError(f"unhashable path key {key!r} in {path!r}")
         current = current[key]
     final_key = eval_path_token(tokens[-1], context)
-    if isinstance(current, dict):
+    if isinstance(current, dict) and is_hashable_key(final_key):
         current.pop(final_key, None)
+
+
+def is_hashable_key(value: Any) -> bool:
+    try:
+        hash(value)
+    except TypeError:
+        return False
+    return True
 
 
 def parse_path(path: str) -> list[Any]:
@@ -455,6 +535,8 @@ def eval_path_token(token: Any, context: dict[str, Any]) -> Any:
         expr = token["expr"]
         if expr.startswith("$"):
             return resolve_path(expr, context, missing_ok=False)
+        if "${" in expr:
+            return render_template(expr, context)
         if expr.split(".", 1)[0] in context:
             return resolve_path(f"${expr}", context, missing_ok=False)
         if expr.isdigit():
