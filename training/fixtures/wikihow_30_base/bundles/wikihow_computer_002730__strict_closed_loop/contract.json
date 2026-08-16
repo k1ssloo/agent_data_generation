@@ -1,0 +1,358 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "How to stress test a computer and monitor its performance using Task Manager.",
+  "goal_predicates": [
+    {
+      "id": "complete_stress_test",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.stress_control.baseline_observed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.peak_observed",
+              true
+            ]
+          },
+          {
+            "gte": [
+              "$state.stress_control.peak_cpu_percent",
+              95
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.peak_ram_usage_mb",
+              4096
+            ]
+          },
+          {
+            "eq": [
+              "$state.jobs.stress_test_01.status",
+              "cancelled"
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.settled",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.overrun",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.cpu_usage_percent",
+              5
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.ram_usage_mb",
+              1200
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.status",
+              "normal"
+            ]
+          },
+          {
+            "eq": [
+              "$state.ui.task_manager_was_opened",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.ui.task_manager_open",
+              false
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "system_metrics_remain_bounded",
+      "predicate": {
+        "all": [
+          {
+            "gte": [
+              "$state.system_metrics.performance_tab.cpu_usage_percent",
+              0
+            ]
+          },
+          {
+            "lte": [
+              "$state.system_metrics.performance_tab.cpu_usage_percent",
+              100
+            ]
+          },
+          {
+            "gte": [
+              "$state.system_metrics.performance_tab.ram_usage_mb",
+              0
+            ]
+          },
+          {
+            "lte": [
+              "$state.system_metrics.performance_tab.ram_usage_mb",
+              "$state.system_metrics.performance_tab.ram_total_mb"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "stop_evidence_matches_observed_peak",
+      "predicate": {
+        "any": [
+          {
+            "eq": [
+              "$state.stress_control.stop_evidence",
+              ""
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.stress_control.peak_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.stop_evidence",
+                  "measurement_peak_98_4096"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": true,
+    "goal_grounded_verification": true,
+    "closed_loop_control": {
+      "measurement_tool": "read_state",
+      "control_tool": "cancel_job",
+      "evidence_argument": "measurement_ref",
+      "final_observation_tool": "observe_workflow_outcome",
+      "measurement_paths": [
+        "$state.system_metrics.performance_tab"
+      ],
+      "controlled_paths": [
+        "$state.jobs.stress_test_01.status",
+        "$state.system_metrics.performance_tab"
+      ],
+      "settled_paths": [
+        "$state.jobs.stress_test_01",
+        "$state.system_metrics.performance_tab",
+        "$state.stress_control",
+        "$state.ui"
+      ]
+    }
+  },
+  "forbidden_shortcuts": [
+    "stop the stress job before observing target load",
+    "continue the stress job after observing target load",
+    "claim recovery without observing settled metrics"
+  ],
+  "expected_reasoning_features": [
+    "delayed_handle_use",
+    "observation_dependent_decision",
+    "async_decision",
+    "goal_grounded_verification",
+    "alternative_plan",
+    "closed_loop_control"
+  ],
+  "counterfactual_axes": [
+    {
+      "state_path": "$state.stress_control.ramp_profile",
+      "variants": [
+        "gradual",
+        "immediate"
+      ]
+    }
+  ],
+  "instruction_claims": [
+    {
+      "evidence_span": "I want to stress test my computer to see if my CPU and RAM max out under heavy load.",
+      "kind": "goal",
+      "clause_ids": [
+        "heavy_load_observed"
+      ]
+    },
+    {
+      "evidence_span": "Please open the Task Manager, check my initial performance metrics, run a stress test on target_id 'system_metrics', check the metrics during the test, and then close everything to let the system settle.",
+      "kind": "goal",
+      "clause_ids": [
+        "task_manager_opened_and_closed",
+        "baseline_checked",
+        "stress_stopped_and_settled"
+      ]
+    }
+  ],
+  "goal_clauses": [
+    {
+      "id": "task_manager_opened_and_closed",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.ui.task_manager_was_opened",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.ui.task_manager_open",
+              false
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.ui.task_manager_was_opened",
+        "$state.ui.task_manager_open"
+      ],
+      "evidence_paths": [
+        "$state.ui.task_manager_was_opened",
+        "$state.ui.task_manager_open"
+      ],
+      "witness_tools": [
+        "open_resource",
+        "close_resource"
+      ]
+    },
+    {
+      "id": "baseline_checked",
+      "predicate": {
+        "eq": [
+          "$state.stress_control.baseline_observed",
+          true
+        ]
+      },
+      "transition_paths": [
+        "$state.stress_control.baseline_observed"
+      ],
+      "evidence_paths": [
+        "$state.stress_control.baseline_observed"
+      ],
+      "witness_tools": [
+        "read_state"
+      ]
+    },
+    {
+      "id": "heavy_load_observed",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.stress_control.peak_observed",
+              true
+            ]
+          },
+          {
+            "gte": [
+              "$state.stress_control.peak_cpu_percent",
+              95
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.peak_ram_usage_mb",
+              4096
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.overrun",
+              false
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.stress_control.peak_observed",
+        "$state.stress_control.peak_cpu_percent",
+        "$state.stress_control.peak_ram_usage_mb"
+      ],
+      "evidence_paths": [
+        "$state.stress_control.peak_observed",
+        "$state.stress_control.peak_cpu_percent",
+        "$state.stress_control.peak_ram_usage_mb",
+        "$state.stress_control.overrun"
+      ],
+      "witness_tools": [
+        "read_state"
+      ]
+    },
+    {
+      "id": "stress_stopped_and_settled",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.jobs.stress_test_01.status",
+              "cancelled"
+            ]
+          },
+          {
+            "eq": [
+              "$state.stress_control.settled",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.cpu_usage_percent",
+              5
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.ram_usage_mb",
+              1200
+            ]
+          },
+          {
+            "eq": [
+              "$state.system_metrics.performance_tab.status",
+              "normal"
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.jobs.stress_test_01.status",
+        "$state.stress_control.settled",
+        "$state.system_metrics.performance_tab"
+      ],
+      "evidence_paths": [
+        "$state.jobs.stress_test_01.status",
+        "$state.stress_control.settled",
+        "$state.system_metrics.performance_tab"
+      ],
+      "witness_tools": [
+        "cancel_job",
+        "read_state"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,59 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Book Retriever"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "books",
+        "query": "9780439023528"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "9780439023528"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "books",
+        "record_id": "9780439023528",
+        "patch": {
+          "reading_level": "Z",
+          "shelf_location": "Shelf A-1"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "verify_resource",
+      "arguments": {
+        "resource_id": "9780439023528",
+        "expected_status": "saved"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_001895"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

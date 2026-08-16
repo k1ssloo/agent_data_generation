@@ -1,0 +1,67 @@
+{
+  "bundle_version": "task-bundle-v1",
+  "task_id": "wikihow_computer_000001",
+  "instruction_file": "instruction.md",
+  "contract_file": "contract.json",
+  "environment_file": "environment/environment.json",
+  "bindings_file": "capabilities/bindings.json",
+  "reference_plan_file": "solution/reference_plan.json",
+  "lineage": {
+    "generation": 0,
+    "operators": []
+  },
+  "domain": "wikihow_generated",
+  "seed_family": "wikihow_text_compiled_v1",
+  "source_id": "wikihow_computer_000001",
+  "assigned_operator": "failure_diagnosis_recovery",
+  "operator_family": "lifecycle_and_timing",
+  "evolution_hooks": {
+    "audit_checkpoint": {
+      "scope": "recover_keyboard_lock_support",
+      "commit_tool": "recover_keyboard_lock_support",
+      "commit_capability": "recover_keyboard_lock_support",
+      "commit_branch": "clear_unsupported_after_diagnosis",
+      "commit_last": false,
+      "target_value": "keyboard-settings:primary",
+      "verify_capability": "deterministic_final_domain_observation",
+      "verify_branch": "current_domain_state_visible"
+    }
+  },
+  "recursive_preparation": {
+    "counterfactual_admission": {
+      "input_count": 0,
+      "accepted_count": 0,
+      "rejected_count": 0,
+      "variants": []
+    },
+    "evolution_hooks": {
+      "audit_checkpoint": {
+        "scope": "recover_keyboard_lock_support",
+        "commit_tool": "recover_keyboard_lock_support",
+        "commit_capability": "recover_keyboard_lock_support",
+        "commit_branch": "clear_unsupported_after_diagnosis",
+        "commit_last": false,
+        "target_value": "keyboard-settings:primary",
+        "verify_capability": "deterministic_final_domain_observation",
+        "verify_branch": "current_domain_state_visible"
+      }
+    },
+    "reused_execution_evidence": true
+  },
+  "source_grounding": {
+    "source_id": "wikihow_computer_000001",
+    "source_sha256": "bf16124aa0378489a6bccb0db3c14b533b6fa02b02ea10a5289f6ae313243589",
+    "seed_file": "outputs/task_first/wikihow_20_optimized_v1/tasks/wikihow_computer_000001/seed.json",
+    "synthetic_extension": {
+      "operator": "failure_diagnosis_recovery",
+      "requirement": "During an attempted keyboard-lock prevention action, the environment must expose a specific error_code such as KEYBOARD_LOCK_UNSUPPORTED together with evidence that key pressure still types into a program; the agent must diagnose that same code and perform a relevant repair action that resolves it before continuing with keyboard protection.",
+      "discoverable_evidence": [
+        "keyboard settings reports error_code KEYBOARD_LOCK_UNSUPPORTED",
+        "a test key press still inserts text into the active program",
+        "after the repair, the same error_code is cleared and key pressure no longer inserts text"
+      ],
+      "grounding": "This fits the source because keyboard locking is an optional prevention method, and the stated purpose is that \"any pressure placed on the keys does not result in text being typed into any program\".",
+      "claimed_as_source": false
+    }
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Remove location tags from photos on the Instagram mobile app.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.app_state",
+              {
+                "current_app": "Instagram"
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.posts",
+              {
+                "post_982": {
+                  "id": "post_982",
+                  "type": "photo",
+                  "caption": "Sunset at the beach!",
+                  "location": null,
+                  "timestamp": "2023-10-01T18:30:00Z"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.app_state"
+          },
+          {
+            "exists": "$state.posts"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

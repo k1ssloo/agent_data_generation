@@ -1,0 +1,1 @@
+I need to recover a deleted file named 'tax_return_2023.pdf' from my Bitcasa account. I know it was available on October 15, 2023. Please log in using my account ID 'user_99' and password 'secure_pass_123', find the file from that date, download it, and then restore it to my current active files.

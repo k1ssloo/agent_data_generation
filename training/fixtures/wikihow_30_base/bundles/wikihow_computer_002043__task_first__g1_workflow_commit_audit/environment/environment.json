@@ -1,0 +1,431 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "library_catalog": {
+      "book_1": {
+        "id": "book_1",
+        "title": "Modern Art and Pablo Picasso",
+        "type": "Art History Textbook",
+        "status": "Available"
+      },
+      "archive_1": {
+        "id": "archive_1",
+        "title": "Thomas Jefferson: Authoritative Papers",
+        "type": "Archival Periodical",
+        "status": "Reference Only"
+      }
+    },
+    "faculty_directory": {
+      "prof_miller": {
+        "id": "prof_miller",
+        "name": "Dr. Arthur Miller",
+        "specialization": "Pablo Picasso & 20th Century Art",
+        "email": "a.miller@university.edu"
+      },
+      "prof_adams": {
+        "id": "prof_adams",
+        "name": "Dr. Sarah Adams",
+        "specialization": "Early American History & Thomas Jefferson",
+        "email": "s.adams@university.edu"
+      }
+    },
+    "classes": {
+      "class_101": {
+        "id": "class_101",
+        "title": "Early Twentieth-Century Art",
+        "professor": "Dr. Arthur Miller",
+        "status": "Open for Auditing"
+      },
+      "class_202": {
+        "id": "class_202",
+        "title": "The American Revolution Era",
+        "professor": "Dr. Sarah Adams",
+        "status": "Full"
+      }
+    },
+    "sent_emails": [],
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002043",
+      "source_task_id": "wikihow_computer_002043"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.search_records.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "library_catalog"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "Modern Art and Pablo Picasso"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "results": [
+              {
+                "id": "book_1",
+                "title": "Modern Art and Pablo Picasso",
+                "type": "Art History Textbook",
+                "status": "Available"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SEARCH_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "faculty_directory"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "prof_miller",
+                "name": "Dr. Arthur Miller",
+                "specialization": "Pablo Picasso & 20th Century Art",
+                "email": "a.miller@university.edu"
+              },
+              {
+                "id": "prof_adams",
+                "name": "Dr. Sarah Adams",
+                "specialization": "Early American History & Thomas Jefferson",
+                "email": "s.adams@university.edu"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "classes"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "class_101",
+                "title": "Early Twentieth-Century Art",
+                "professor": "Dr. Arthur Miller",
+                "status": "Open for Auditing"
+              },
+              {
+                "id": "class_202",
+                "title": "The American Revolution Era",
+                "professor": "Dr. Sarah Adams",
+                "status": "Full"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.send_message.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.body",
+                      "Dear Dr. Miller, I am conducting research on Pablo Picasso and saw that you specialize in his work. I would appreciate the opportunity to sit in on one of your lectures regarding Picasso if possible. Please let me know if this would be alright. Thank you!"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.channel",
+                      "email"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.recipient",
+                      "a.miller@university.edu"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.subject",
+                      "Inquiry about sitting in on your Picasso lecture"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.recipient",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Email sent successfully to $args.recipient"
+          },
+          "effects": [
+            {
+              "set": "$state.sent_emails",
+              "value": [
+                {
+                  "recipient": "a.miller@university.edu",
+                  "subject": "Inquiry about sitting in on your Picasso lecture",
+                  "body": "Dear Dr. Miller, I am conducting research on Pablo Picasso and saw that you specialize in his work. I would appreciate the opportunity to sit in on one of your lectures regarding Picasso if possible. Please let me know if this would be alright. Thank you!",
+                  "timestamp": "now"
+                }
+              ]
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.sent_emails",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SEND_MESSAGE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "sent_emails": "$state.sent_emails",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.sent_emails",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

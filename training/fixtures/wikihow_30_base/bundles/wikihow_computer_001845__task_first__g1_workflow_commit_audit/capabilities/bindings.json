@@ -1,0 +1,216 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "website"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open."
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "create_record",
+      "description": "Create a record in a named collection.",
+      "capability_id": "wikihow.create_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection where the record should be created.",
+            "enum": [
+              "translations"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "description": "Fields for the new record."
+          }
+        },
+        "required": [
+          "collection",
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "get_record",
+      "description": "Retrieve one record from a named collection by id.",
+      "capability_id": "wikihow.get_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "translations"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Identifier of the record to retrieve."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id"
+        ]
+      },
+      "provenance_required": [
+        "record_id"
+      ]
+    },
+    {
+      "name": "start_job",
+      "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+      "capability_id": "wikihow.start_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_type": {
+            "type": "string",
+            "description": "Type of job to start.",
+            "enum": [
+              "text-to-speech"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target resource or record for the job."
+          },
+          "options": {
+            "type": "object",
+            "description": "Job options.",
+            "default": {}
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "job_type",
+          "target_id",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "target_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "poll_job",
+      "description": "Poll a long-running job for its current status and outputs.",
+      "capability_id": "wikihow.poll_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier returned by start_job."
+          }
+        },
+        "required": [
+          "job_id"
+        ]
+      },
+      "provenance_required": [
+        "job_id"
+      ]
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

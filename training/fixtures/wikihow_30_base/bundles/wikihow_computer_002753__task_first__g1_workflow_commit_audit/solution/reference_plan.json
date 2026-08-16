@@ -1,0 +1,95 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "freevirtualwifirouter.com"
+      }
+    },
+    {
+      "tool": "locate_file",
+      "arguments": {
+        "file_name": "free_wifi_installer.exe"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "install",
+        "target_id": "free_wifi_installer.exe",
+        "options": {}
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "install_job_1"
+      }
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Free Virtual WiFi Router"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "settings",
+        "query": ""
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "hotspot_config"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "hotspot_config",
+        "patch": {
+          "ssid": "MyHomeWiFi",
+          "password": "SecurePass123",
+          "shared_connection": "ethernet",
+          "max_clients": 8
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "hotspot",
+        "target_id": "hotspot_config",
+        "options": {}
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "hotspot_job_1"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002753"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

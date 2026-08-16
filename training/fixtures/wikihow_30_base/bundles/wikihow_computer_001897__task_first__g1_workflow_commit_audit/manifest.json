@@ -1,0 +1,35 @@
+{
+  "bundle_version": "task-bundle-v1",
+  "task_id": "wikihow_computer_001897__task_first__g1_workflow_commit_audit",
+  "instruction_file": "instruction.md",
+  "contract_file": "contract.json",
+  "environment_file": "environment/environment.json",
+  "bindings_file": "capabilities/bindings.json",
+  "reference_plan_file": "solution/reference_plan.json",
+  "lineage": {
+    "parent_task_id": "wikihow_computer_001897__task_first",
+    "root_task_id": "wikihow_computer_001897__task_first",
+    "generation": 1,
+    "operators": [
+      "audit_checkpoint_v1"
+    ]
+  },
+  "domain": "wikihow_education",
+  "seed_family": "wikihow_compiled_v1",
+  "evolution_hooks": {
+    "audit_checkpoint": {
+      "scope": "workflow_commit",
+      "commit_tool": "start_job",
+      "commit_capability": "wikihow.start_job.v1",
+      "commit_branch": "observed_04",
+      "target_value": "duolingo",
+      "verify_capability": "wikihow.workflow_outcome.observe.v1",
+      "verify_branch": "current_workflow_outcome_visible"
+    }
+  },
+  "provenance_class": "wikihow_plus_synthetic_extension",
+  "synthetic_extension": {
+    "operator": "audit_checkpoint_v1",
+    "source_claim": "not asserted by the WikiHow article"
+  }
+}

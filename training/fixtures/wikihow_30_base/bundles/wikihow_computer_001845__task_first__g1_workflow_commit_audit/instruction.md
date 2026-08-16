@@ -1,0 +1,1 @@
+I want to learn how to say 'thank you' in Turkish. Can you open Google Translate, translate 'thank you' from English to Turkish, get the translation details, and then generate the audio pronunciation so I can listen to it? The consequential workflow_commit action must satisfy the current target-specific authorization policy.

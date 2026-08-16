@@ -1,0 +1,184 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "https://my.bitcasa.com"
+      }
+    },
+    {
+      "tool": "authenticate",
+      "arguments": {
+        "service": "bitcasa",
+        "account_id": "user_99",
+        "credential_type": "password",
+        "credential_value": "secure_pass_123"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "versions"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "session",
+        "record_id": "current",
+        "patch": {
+          "target_date": "2023-10-15"
+        },
+        "navigation_ref": "versions_view_user_99"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "files",
+        "query": "tax_return_2023.pdf",
+        "snapshot_ref": "snapshot_2023_10_15_user_99_r7"
+      }
+    },
+    {
+      "tool": "download_resource",
+      "arguments": {
+        "resource_id": "rev_tax_2023_evening",
+        "destination": "local_downloads",
+        "snapshot_ref": "snapshot_2023_10_15_user_99_r7"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "session",
+        "record_id": "current",
+        "patch": {
+          "target_date": "today"
+        },
+        "navigation_ref": "artifact_tax_return_evening"
+      }
+    },
+    {
+      "tool": "create_upload_session",
+      "arguments": {
+        "provider": "bitcasa",
+        "destination": "root",
+        "workspace_ref": "workspace_today_user_99_r2"
+      }
+    },
+    {
+      "tool": "upload_resource",
+      "arguments": {
+        "session_id": "upload_session_user_99_r2",
+        "resource_id": "artifact_tax_return_evening"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002787"
+      }
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "earliest_complete_policy_changes_revision_choice",
+      "state_overrides": {
+        "$state.workflow_context.recovery_policy": "earliest_complete_on_date"
+      },
+      "actions": [
+        {
+          "tool": "observe_workflow_context",
+          "arguments": {}
+        },
+        {
+          "tool": "open_resource",
+          "arguments": {
+            "resource_type": "website",
+            "target": "https://my.bitcasa.com"
+          }
+        },
+        {
+          "tool": "authenticate",
+          "arguments": {
+            "service": "bitcasa",
+            "account_id": "user_99",
+            "credential_type": "password",
+            "credential_value": "secure_pass_123"
+          }
+        },
+        {
+          "tool": "read_state",
+          "arguments": {
+            "view": "versions"
+          }
+        },
+        {
+          "tool": "update_record",
+          "arguments": {
+            "collection": "session",
+            "record_id": "current",
+            "patch": {
+              "target_date": "2023-10-15"
+            },
+            "navigation_ref": "versions_view_user_99"
+          }
+        },
+        {
+          "tool": "list_records",
+          "arguments": {
+            "collection": "files",
+            "query": "tax_return_2023.pdf",
+            "snapshot_ref": "snapshot_2023_10_15_user_99_r7"
+          }
+        },
+        {
+          "tool": "download_resource",
+          "arguments": {
+            "resource_id": "rev_tax_2023_morning",
+            "destination": "local_downloads",
+            "snapshot_ref": "snapshot_2023_10_15_user_99_r7"
+          }
+        },
+        {
+          "tool": "update_record",
+          "arguments": {
+            "collection": "session",
+            "record_id": "current",
+            "patch": {
+              "target_date": "today"
+            },
+            "navigation_ref": "artifact_tax_return_morning"
+          }
+        },
+        {
+          "tool": "create_upload_session",
+          "arguments": {
+            "provider": "bitcasa",
+            "destination": "root",
+            "workspace_ref": "workspace_today_user_99_r2"
+          }
+        },
+        {
+          "tool": "upload_resource",
+          "arguments": {
+            "session_id": "upload_session_user_99_r2",
+            "resource_id": "artifact_tax_return_morning"
+          }
+        },
+        {
+          "tool": "observe_workflow_outcome",
+          "arguments": {
+            "workflow_context_handle": "workflow_context_wikihow_computer_002787"
+          }
+        }
+      ]
+    }
+  ]
+}

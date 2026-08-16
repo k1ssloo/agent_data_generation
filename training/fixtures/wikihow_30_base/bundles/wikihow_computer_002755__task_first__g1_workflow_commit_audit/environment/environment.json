@@ -1,0 +1,507 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "active_session": {
+      "authenticated": false,
+      "user": null
+    },
+    "files": {
+      "folder_photos_2023": {
+        "id": "folder_photos_2023",
+        "name": "Photos 2023",
+        "type": "folder",
+        "visibility": "private",
+        "recipients": []
+      }
+    },
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002755",
+      "source_task_id": "wikihow_computer_002755"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "website"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "http://www.4shared.com"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "4shared landing page loaded. Please log in."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.authenticate.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.account_id",
+                  "user@example.com"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_type",
+                  "password"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_value",
+                  "securepass123"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.service",
+                  "4shared"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Successfully logged in to 4shared."
+          },
+          "effects": [
+            {
+              "set": "$state.active_session",
+              "value": {
+                "authenticated": true,
+                "user": "user@example.com"
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.active_session"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_AUTHENTICATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "files"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "folder_photos_2023",
+                "name": "Photos 2023",
+                "type": "folder",
+                "visibility": "private",
+                "recipients": []
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [
+            "$state.active_session.authenticated"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.set_permission.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "folder_photos_2023"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.visibility",
+                  "private"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "resource_id": "folder_photos_2023",
+            "visibility": "private"
+          },
+          "effects": [],
+          "reads": [
+            "$state.files[$args.resource_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SET_PERMISSION_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.add_recipient.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.recipient",
+                      "friend@example.com"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.target_id",
+                      "folder_photos_2023"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Added recipient friend@example.com to resource folder_photos_2023"
+          },
+          "effects": [
+            {
+              "set": "$state.files",
+              "value": {
+                "folder_photos_2023": {
+                  "id": "folder_photos_2023",
+                  "name": "Photos 2023",
+                  "type": "folder",
+                  "visibility": "private",
+                  "recipients": [
+                    "friend@example.com"
+                  ]
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.files[$args.target_id]",
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.files",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_ADD_RECIPIENT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.verify_permission.v1": {
+      "branches": [
+        {
+          "id": "observed_06",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "folder_photos_2023"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.visibility",
+                  "private"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "verified": true,
+            "visibility": "private"
+          },
+          "effects": [],
+          "reads": [
+            "$state.files[$args.resource_id]",
+            "$state.files[$args.resource_id].visibility"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_VERIFY_PERMISSION_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "active_session": "$state.active_session",
+              "files": "$state.files",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.active_session",
+            "$state.files",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

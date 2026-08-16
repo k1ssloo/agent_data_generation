@@ -1,0 +1,700 @@
+{
+  "actions": [
+    {
+      "tool": "inspect_usb_slots",
+      "arguments": {}
+    },
+    {
+      "tool": "insert_pen_drive_into_slot",
+      "arguments": {
+        "slot_handle": "usb_slot_primary"
+      }
+    },
+    {
+      "tool": "open_windows_explorer",
+      "arguments": {}
+    },
+    {
+      "tool": "inspect_explorer_removable_drives",
+      "arguments": {
+        "explorer_handle": "explorer_window_01",
+        "device_session_handle": "pen_drive_session_01"
+      }
+    },
+    {
+      "tool": "open_drive_context_menu",
+      "arguments": {
+        "explorer_handle": "explorer_window_01",
+        "drive_handle": "visible_target_a"
+      }
+    },
+    {
+      "tool": "choose_format_menu_item",
+      "arguments": {
+        "context_menu_handle": "context_menu_pen_drive"
+      }
+    },
+    {
+      "tool": "inspect_format_profile_options",
+      "arguments": {
+        "format_dialog_handle": "format_dialog_pen_drive"
+      }
+    },
+    {
+      "tool": "set_format_dialog_options",
+      "arguments": {
+        "format_dialog_handle": "format_dialog_pen_drive",
+        "allocation_size": "default_allocation_size",
+        "format_type": "quick_format",
+        "profile_evidence_ref": "visible_defaults_supported"
+      }
+    },
+    {
+      "tool": "start_format_from_dialog",
+      "arguments": {
+        "format_dialog_handle": "format_dialog_pen_drive"
+      }
+    },
+    {
+      "tool": "open_start_search",
+      "arguments": {}
+    },
+    {
+      "tool": "search_start_for_registry_editor",
+      "arguments": {
+        "search_surface_handle": "start_search_surface",
+        "query": "regedit.exe"
+      }
+    },
+    {
+      "tool": "launch_registry_editor_from_result",
+      "arguments": {
+        "program_result_handle": "program_result_regedit"
+      }
+    },
+    {
+      "tool": "open_storage_device_policy_view",
+      "arguments": {
+        "registry_window_handle": "registry_editor_main",
+        "location_choice": "StorageDevicePolicies"
+      }
+    },
+    {
+      "tool": "inspect_storage_policy_values",
+      "arguments": {
+        "registry_path_handle": "storage_policy_view"
+      }
+    },
+    {
+      "tool": "set_write_protect_policy_inactive",
+      "arguments": {
+        "registry_path_handle": "storage_policy_view",
+        "new_value_data": 0,
+        "format_error_code": "WRITE_PROTECT_ACTIVE"
+      }
+    },
+    {
+      "tool": "inspect_policy_activation_options",
+      "arguments": {}
+    },
+    {
+      "tool": "restart_computer_to_apply_policy",
+      "arguments": {
+        "activation_evidence_ref": "restart_required"
+      }
+    },
+    {
+      "tool": "open_windows_explorer",
+      "arguments": {}
+    },
+    {
+      "tool": "open_drive_context_menu",
+      "arguments": {
+        "explorer_handle": "explorer_window_01",
+        "drive_handle": "visible_target_a"
+      }
+    },
+    {
+      "tool": "choose_format_menu_item",
+      "arguments": {
+        "context_menu_handle": "context_menu_pen_drive"
+      }
+    },
+    {
+      "tool": "set_format_dialog_options",
+      "arguments": {
+        "format_dialog_handle": "format_dialog_pen_drive",
+        "allocation_size": "default_allocation_size",
+        "format_type": "quick_format",
+        "profile_evidence_ref": "visible_defaults_supported"
+      }
+    },
+    {
+      "tool": "start_format_from_dialog",
+      "arguments": {
+        "format_dialog_handle": "format_dialog_pen_drive"
+      }
+    },
+    {
+      "tool": "observe_format_status_and_drive",
+      "arguments": {}
+    }
+  ],
+  "counterfactuals": [
+    {
+      "name": "missing_policy_structure_uses_creation_affordance",
+      "state_overrides": {
+        "$state.registry.policy_status.storage_device_policies_exists": false,
+        "$state.registry.policy_status.write_protect_effective": "missing",
+        "$state.registry.policy_status.write_protect_value_state": "missing",
+        "$state.registry.policy_status.write_protect_data": -1
+      },
+      "actions": [
+        {
+          "tool": "inspect_usb_slots",
+          "arguments": {}
+        },
+        {
+          "tool": "insert_pen_drive_into_slot",
+          "arguments": {
+            "slot_handle": "usb_slot_primary"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "inspect_explorer_removable_drives",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "device_session_handle": "pen_drive_session_01"
+          }
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_a"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "inspect_format_profile_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "set_format_dialog_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format",
+            "profile_evidence_ref": "visible_defaults_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "open_start_search",
+          "arguments": {}
+        },
+        {
+          "tool": "search_start_for_registry_editor",
+          "arguments": {
+            "search_surface_handle": "start_search_surface",
+            "query": "regedit.exe"
+          }
+        },
+        {
+          "tool": "launch_registry_editor_from_result",
+          "arguments": {
+            "program_result_handle": "program_result_regedit"
+          }
+        },
+        {
+          "tool": "open_storage_device_policy_view",
+          "arguments": {
+            "registry_window_handle": "registry_editor_main",
+            "location_choice": "StorageDevicePolicies"
+          }
+        },
+        {
+          "tool": "create_storage_policy_value",
+          "arguments": {
+            "registry_window_handle": "registry_editor_main",
+            "policy_lookup_error_code": "RECOVERABLE_STORAGE_DEVICE_POLICIES_MISSING",
+            "format_error_code": "WRITE_PROTECT_ACTIVE"
+          }
+        },
+        {
+          "tool": "inspect_policy_activation_options",
+          "arguments": {}
+        },
+        {
+          "tool": "restart_computer_to_apply_policy",
+          "arguments": {
+            "activation_evidence_ref": "restart_required"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_a"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "set_format_dialog_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format",
+            "profile_evidence_ref": "visible_defaults_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "observe_format_status_and_drive",
+          "arguments": {}
+        }
+      ]
+    },
+    {
+      "name": "alternate_visible_target_is_selected_from_listing",
+      "state_overrides": {
+        "$state.usb.actual_target_drive_handle": "visible_target_b"
+      },
+      "actions": [
+        {
+          "tool": "inspect_usb_slots",
+          "arguments": {}
+        },
+        {
+          "tool": "insert_pen_drive_into_slot",
+          "arguments": {
+            "slot_handle": "usb_slot_primary"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "inspect_explorer_removable_drives",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "device_session_handle": "pen_drive_session_01"
+          }
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_b"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "inspect_format_profile_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "set_format_dialog_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format",
+            "profile_evidence_ref": "visible_defaults_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "open_start_search",
+          "arguments": {}
+        },
+        {
+          "tool": "search_start_for_registry_editor",
+          "arguments": {
+            "search_surface_handle": "start_search_surface",
+            "query": "regedit.exe"
+          }
+        },
+        {
+          "tool": "launch_registry_editor_from_result",
+          "arguments": {
+            "program_result_handle": "program_result_regedit"
+          }
+        },
+        {
+          "tool": "open_storage_device_policy_view",
+          "arguments": {
+            "registry_window_handle": "registry_editor_main",
+            "location_choice": "StorageDevicePolicies"
+          }
+        },
+        {
+          "tool": "inspect_storage_policy_values",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view"
+          }
+        },
+        {
+          "tool": "set_write_protect_policy_inactive",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view",
+            "new_value_data": 0,
+            "format_error_code": "WRITE_PROTECT_ACTIVE"
+          }
+        },
+        {
+          "tool": "inspect_policy_activation_options",
+          "arguments": {}
+        },
+        {
+          "tool": "restart_computer_to_apply_policy",
+          "arguments": {
+            "activation_evidence_ref": "restart_required"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_b"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "set_format_dialog_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format",
+            "profile_evidence_ref": "visible_defaults_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "observe_format_status_and_drive",
+          "arguments": {}
+        }
+      ]
+    },
+    {
+      "name": "visible_supported_format_profile_changes_configuration",
+      "state_overrides": {
+        "$state.format_dialog.supported_profile": "visible_defaults_rejected_with_supported_alternative"
+      },
+      "actions": [
+        {
+          "tool": "inspect_usb_slots",
+          "arguments": {}
+        },
+        {
+          "tool": "insert_pen_drive_into_slot",
+          "arguments": {
+            "slot_handle": "usb_slot_primary"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "inspect_explorer_removable_drives",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "device_session_handle": "pen_drive_session_01"
+          }
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_a"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "inspect_format_profile_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "load_format_profile",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "profile_evidence_ref": "visible_defaults_rejected_with_supported_alternative"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "open_start_search",
+          "arguments": {}
+        },
+        {
+          "tool": "search_start_for_registry_editor",
+          "arguments": {
+            "search_surface_handle": "start_search_surface",
+            "query": "regedit.exe"
+          }
+        },
+        {
+          "tool": "launch_registry_editor_from_result",
+          "arguments": {
+            "program_result_handle": "program_result_regedit"
+          }
+        },
+        {
+          "tool": "open_storage_device_policy_view",
+          "arguments": {
+            "registry_window_handle": "registry_editor_main",
+            "location_choice": "StorageDevicePolicies"
+          }
+        },
+        {
+          "tool": "inspect_storage_policy_values",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view"
+          }
+        },
+        {
+          "tool": "set_write_protect_policy_inactive",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view",
+            "new_value_data": 0,
+            "format_error_code": "WRITE_PROTECT_ACTIVE"
+          }
+        },
+        {
+          "tool": "inspect_policy_activation_options",
+          "arguments": {}
+        },
+        {
+          "tool": "restart_computer_to_apply_policy",
+          "arguments": {
+            "activation_evidence_ref": "restart_required"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_a"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "load_format_profile",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "profile_evidence_ref": "visible_defaults_rejected_with_supported_alternative"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "observe_format_status_and_drive",
+          "arguments": {}
+        }
+      ]
+    },
+    {
+      "name": "visible_activation_mode_uses_session_refresh",
+      "state_overrides": {
+        "$state.system.policy_activation_mode": "session_refresh_supported"
+      },
+      "actions": [
+        {
+          "tool": "inspect_usb_slots",
+          "arguments": {}
+        },
+        {
+          "tool": "insert_pen_drive_into_slot",
+          "arguments": {
+            "slot_handle": "usb_slot_primary"
+          }
+        },
+        {
+          "tool": "open_windows_explorer",
+          "arguments": {}
+        },
+        {
+          "tool": "inspect_explorer_removable_drives",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "device_session_handle": "pen_drive_session_01"
+          }
+        },
+        {
+          "tool": "open_drive_context_menu",
+          "arguments": {
+            "explorer_handle": "explorer_window_01",
+            "drive_handle": "visible_target_a"
+          }
+        },
+        {
+          "tool": "choose_format_menu_item",
+          "arguments": {
+            "context_menu_handle": "context_menu_pen_drive"
+          }
+        },
+        {
+          "tool": "inspect_format_profile_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "set_format_dialog_options",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format",
+            "profile_evidence_ref": "visible_defaults_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "open_start_search",
+          "arguments": {}
+        },
+        {
+          "tool": "search_start_for_registry_editor",
+          "arguments": {
+            "search_surface_handle": "start_search_surface",
+            "query": "regedit.exe"
+          }
+        },
+        {
+          "tool": "launch_registry_editor_from_result",
+          "arguments": {
+            "program_result_handle": "program_result_regedit"
+          }
+        },
+        {
+          "tool": "open_storage_device_policy_view",
+          "arguments": {
+            "registry_window_handle": "registry_editor_main",
+            "location_choice": "StorageDevicePolicies"
+          }
+        },
+        {
+          "tool": "inspect_storage_policy_values",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view"
+          }
+        },
+        {
+          "tool": "set_write_protect_policy_inactive",
+          "arguments": {
+            "registry_path_handle": "storage_policy_view",
+            "new_value_data": 0,
+            "format_error_code": "WRITE_PROTECT_ACTIVE"
+          }
+        },
+        {
+          "tool": "inspect_policy_activation_options",
+          "arguments": {}
+        },
+        {
+          "tool": "refresh_removable_storage_session",
+          "arguments": {
+            "activation_evidence_ref": "session_refresh_supported"
+          }
+        },
+        {
+          "tool": "start_format_from_dialog",
+          "arguments": {
+            "format_dialog_handle": "format_dialog_pen_drive"
+          }
+        },
+        {
+          "tool": "observe_format_status_and_drive",
+          "arguments": {}
+        }
+      ]
+    }
+  ]
+}

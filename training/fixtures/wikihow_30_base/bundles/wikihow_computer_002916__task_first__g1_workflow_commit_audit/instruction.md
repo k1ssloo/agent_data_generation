@@ -1,0 +1,1 @@
+I am installing new speakers in my car. I need to check if my stereo can handle the power draw, find the installation manual, and run a diagnostic test on the speaker wiring to make sure there is no distortion before I mount them. The consequential workflow_commit action must satisfy the current target-specific authorization policy.

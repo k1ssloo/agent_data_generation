@@ -1,0 +1,77 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Plex Media Manager"
+      }
+    },
+    {
+      "tool": "authenticate",
+      "arguments": {
+        "service": "Plex",
+        "account_id": "plex_user_99",
+        "credential_type": "password",
+        "credential_value": "PlexPass2026!"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "settings",
+        "query": ""
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "plex_server_config"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "plex_server_config"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "plex_server_config",
+        "patch": {
+          "update_automatically": true,
+          "update_periodically": true,
+          "include_music_libraries": true,
+          "empty_trash_after_scan": false
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "server_settings_summary",
+        "target_id": "plex_server_config"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002762"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

@@ -1,0 +1,61 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "Horizon Download Page"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "horizon_installer_url"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "download",
+        "target_id": "horizon_installer_url",
+        "options": {},
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_horizon_download_01"
+      }
+    },
+    {
+      "tool": "locate_file",
+      "arguments": {
+        "file_name": "HorizonSetup.exe"
+      }
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Horizon Xbox Modding Tool"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002794"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

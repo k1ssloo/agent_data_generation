@@ -1,0 +1,393 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "downloads": {
+      "horizon_installer_url": {
+        "id": "horizon_installer_url",
+        "name": "Horizon Xbox Modding Tool Installer",
+        "status": "available"
+      }
+    },
+    "jobs": {},
+    "files": {
+      "HorizonSetup.exe": {
+        "name": "HorizonSetup.exe",
+        "status": "downloaded",
+        "path": "C:\\Users\\User\\Downloads\\HorizonSetup.exe"
+      }
+    },
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002794",
+      "source_task_id": "wikihow_computer_002794"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "website"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Horizon Download Page"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Opened Horizon download page.",
+            "download_target": "horizon_installer_url"
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Horizon Xbox Modding Tool"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Horizon Xbox Modding Tool opened successfully. Ready to browse software."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.job_type",
+                      "download"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.options",
+                      {}
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.target_id",
+                      "horizon_installer_url"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "started",
+            "job_id": "job_horizon_download_01"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs",
+              "value": {
+                "job_horizon_download_01": {
+                  "status": "completed",
+                  "output_file": "HorizonSetup.exe"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.jobs",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "job_horizon_download_01"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed",
+            "output_file": "HorizonSetup.exe"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.locate_file.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "eq": [
+              "$args.file_name",
+              "HorizonSetup.exe"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "file_path": "C:\\Users\\User\\Downloads\\HorizonSetup.exe",
+            "file_status": "downloaded"
+          },
+          "effects": [],
+          "reads": [
+            "$state.files[$args.file_name]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LOCATE_FILE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "jobs": "$state.jobs",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.jobs",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "library_catalog",
+        "query": "Modern Art and Pablo Picasso"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "faculty_directory",
+        "query": ""
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "a.miller@university.edu"
+      }
+    },
+    {
+      "tool": "send_message",
+      "arguments": {
+        "channel": "email",
+        "recipient": "a.miller@university.edu",
+        "subject": "Inquiry about sitting in on your Picasso lecture",
+        "body": "Dear Dr. Miller, I am conducting research on Pablo Picasso and saw that you specialize in his work. I would appreciate the opportunity to sit in on one of your lectures regarding Picasso if possible. Please let me know if this would be alright. Thank you!",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "classes",
+        "query": ""
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002043"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

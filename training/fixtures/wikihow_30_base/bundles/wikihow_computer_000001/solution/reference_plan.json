@@ -1,0 +1,68 @@
+{
+  "actions": [
+    {
+      "tool": "observe_cat_workspace",
+      "arguments": {}
+    },
+    {
+      "tool": "open_keyboard_settings",
+      "arguments": {}
+    },
+    {
+      "tool": "inspect_active_program",
+      "arguments": {}
+    },
+    {
+      "tool": "enable_keyboard_lock",
+      "arguments": {
+        "settings_handle": "keyboard-settings:primary"
+      }
+    },
+    {
+      "tool": "test_key_pressure",
+      "arguments": {
+        "program_handle": "program:notes"
+      }
+    },
+    {
+      "tool": "diagnose_keyboard_error",
+      "arguments": {
+        "settings_handle": "keyboard-settings:primary",
+        "error_code": "KEYBOARD_LOCK_UNSUPPORTED"
+      }
+    },
+    {
+      "tool": "recover_keyboard_lock_support",
+      "arguments": {
+        "settings_handle": "keyboard-settings:primary"
+      }
+    },
+    {
+      "tool": "enable_keyboard_lock",
+      "arguments": {
+        "settings_handle": "keyboard-settings:primary"
+      }
+    },
+    {
+      "tool": "test_key_pressure",
+      "arguments": {
+        "program_handle": "program:notes"
+      }
+    },
+    {
+      "tool": "deploy_workspace_barrier",
+      "arguments": {
+        "barrier_handle": "barrier:desk-books"
+      }
+    },
+    {
+      "tool": "final_workspace_observation",
+      "arguments": {}
+    },
+    {
+      "tool": "observe_final_domain_state",
+      "arguments": {}
+    }
+  ],
+  "counterfactuals": []
+}

@@ -1,0 +1,61 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "System Preferences"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "preferences",
+        "query": "Energy Saver"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "energy_saver_settings"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "preferences",
+        "record_id": "energy_saver_settings",
+        "patch": {
+          "computer_sleep_minutes": 180,
+          "display_sleep_minutes": 15,
+          "prevent_sleep_when_display_off": true,
+          "put_hard_disks_to_sleep": false
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "energy_saver_status",
+        "target_id": "energy_saver_settings"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002727"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

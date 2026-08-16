@@ -175,13 +175,19 @@ GPU 机器上的安装与训练命令见 `training/README.md`。当前 adapter �
 
 本地已完成的验证包括：
 
-- dependency-free test suite：112 passed，2 skipped；
+- dependency-free test suite：115 passed，2 skipped；
 - rLLM exporter/adapter 的本地 contract tests；
 - 一个 strict vNext USB semantic episode 的完整导出；
 - 该 episode 包含 23 个 tool calls、3 个 grounded observation-dependent decisions、1 次 semantic recovery、严格 provenance 和 final-state verification；
 - 导出 manifest 确认 SFT 中没有 private fields，RL policy visibility 仅包含 instruction、public messages 与 public tools。
+- 从既有审计记录精确解析并打包 30 个 WikiHow semantic episodes 与对应 hidden environments；
+- 30/30 bundle 通过 reference execution、causal validation、tool identifiability、public executability、environment reset、reward 和 package hash 检查，reference reward 均为 1.0；
+- 这 30 条被明确标记为 `base` tier，不能被当作 30 条 strict adaptive/vNext 样本报告。
 
-示例导出位于本地忽略目录 `outputs/training/rllm_vnext_usb_smoke/`，不会默认提交到 Git。可通过相同脚本重新生成。
+可直接迁移的 30 条 smoke package 位于
+`training/fixtures/wikihow_30_base/`。在当前 CPU 机器上，已有语义 episode
+的精确审计解析、便携导出和 30 bundle 完整 preflight 分别耗时 0.10、0.12
+和 0.12 秒；这些数字不包含冷启动 LLM 生成，因此不能作为新数据合成时延。
 
 ## 7. 已知限制
 
@@ -198,7 +204,11 @@ GPU 机器上的安装与训练命令见 `training/README.md`。当前 adapter �
 # 1. 回归测试
 python3 -m unittest discover -s tests -p 'test_*.py' -v
 
-# 2. 小批量生成并验证
+# 2. 先验证仓库内置的 30 条便携训练包
+python3 scripts/preflight_rllm_package.py \
+  --package-dir training/fixtures/wikihow_30_base
+
+# 3. 小批量生成并验证
 python3 scripts/run_task_factory_batch.py \
   --input data/wikihow_computer_10000.jsonl \
   --output-dir outputs/task_first/batch_adaptive_v1 \
@@ -212,15 +222,15 @@ python3 scripts/run_task_factory_batch.py \
   --resume \
   --continue-on-error
 
-# 3. 导出 SFT 与在线 RL task
+# 4. 导出 SFT 与在线 RL task
 python3 scripts/export_rllm_dataset.py \
   --validation outputs/task_first/batch_adaptive_v1/validation.jsonl \
   --output-dir outputs/task_first/batch_adaptive_v1/training
 
-# 4. 安装训练框架；固定 revision 见 training/README.md
+# 5. 安装训练框架；固定 revision 见 training/README.md
 uv pip install "rllm[verl] @ git+https://github.com/rllm-org/rllm.git@9beb6e0f676a46d38858991fd79ac5f8e0b16d4c"
 
-# 5. 先做小规模 SFT smoke，再扩大数据/卡数
+# 6. 先做小规模 SFT smoke，再扩大数据/卡数
 rllm sft \
   --train-file outputs/task_first/batch_adaptive_v1/training/sft.jsonl \
   --model Qwen/Qwen3.5-4B \

@@ -1,0 +1,531 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "drives": {
+      "disk_1": {
+        "id": "disk_1",
+        "name": "Crucial MX500 SSD",
+        "type": "SSD",
+        "connection": "USB",
+        "file_system": "NTFS",
+        "status": "active"
+      },
+      "disk_2": {
+        "id": "disk_2",
+        "name": "Samsung 970 EVO SSD",
+        "type": "SSD",
+        "connection": "Internal",
+        "file_system": "RAW",
+        "status": "unformatted"
+      }
+    },
+    "jobs": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002919",
+      "source_task_id": "wikihow_computer_002919"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Computer Management"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Computer Management application opened. Disk Management extension loaded."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "drives"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "disk_1",
+                "name": "Crucial MX500 SSD",
+                "type": "SSD",
+                "connection": "USB",
+                "file_system": "NTFS",
+                "status": "active"
+              },
+              {
+                "id": "disk_2",
+                "name": "Samsung 970 EVO SSD",
+                "type": "SSD",
+                "connection": "Internal",
+                "file_system": "RAW",
+                "status": "unformatted"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.get_record.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "drives"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "disk_2"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record": {
+              "id": "disk_2",
+              "name": "Samsung 970 EVO SSD",
+              "type": "SSD",
+              "connection": "Internal",
+              "file_system": "RAW",
+              "status": "unformatted"
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.drives[$args.record_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_GET_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.job_type",
+                      "format"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.options",
+                      {
+                        "file_system": "NTFS",
+                        "quick_format": true
+                      }
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.target_id",
+                      "disk_2"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "job_format_01",
+            "message": "Format job started successfully."
+          },
+          "effects": [
+            {
+              "set": "$state.drives",
+              "value": {
+                "disk_1": {
+                  "id": "disk_1",
+                  "name": "Crucial MX500 SSD",
+                  "type": "SSD",
+                  "connection": "USB",
+                  "file_system": "NTFS",
+                  "status": "active"
+                },
+                "disk_2": {
+                  "id": "disk_2",
+                  "name": "Samsung 970 EVO SSD",
+                  "type": "SSD",
+                  "connection": "Internal",
+                  "file_system": "NTFS",
+                  "status": "active"
+                }
+              }
+            },
+            {
+              "set": "$state.jobs",
+              "value": {
+                "job_format_01": {
+                  "id": "job_format_01",
+                  "type": "format",
+                  "target_id": "disk_2",
+                  "options": {
+                    "file_system": "NTFS",
+                    "quick_format": true
+                  },
+                  "status": "completed"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.drives[$args.target_id]",
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.drives",
+            "$state.jobs",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "job_format_01"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "job_format_01",
+            "job_status": "completed",
+            "progress": "100%"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.verify_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_06",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.expected_status",
+                  "active"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "disk_2"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "verified": true,
+            "message": "Drive status verified successfully."
+          },
+          "effects": [],
+          "reads": [
+            "$state.drives[$args.resource_id]",
+            "$state.drives[$args.resource_id].status"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_VERIFY_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "drives": "$state.drives",
+              "jobs": "$state.jobs",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.drives",
+            "$state.jobs",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

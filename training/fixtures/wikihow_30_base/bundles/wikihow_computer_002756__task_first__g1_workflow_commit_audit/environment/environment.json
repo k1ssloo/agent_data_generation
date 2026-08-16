@@ -1,0 +1,392 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "applications": {
+      "GarageBand": {
+        "status": "closed",
+        "midi_enabled": true
+      }
+    },
+    "midi_devices": {
+      "midi_keyboard_0": {
+        "name": "USB MIDI Keyboard",
+        "connected": true,
+        "port": "USB-1"
+      }
+    },
+    "jobs": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002756",
+      "source_task_id": "wikihow_computer_002756"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "GarageBand"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "GarageBand opened successfully."
+          },
+          "effects": [
+            {
+              "set": "$state.applications",
+              "value": {
+                "GarageBand": {
+                  "status": "open",
+                  "midi_enabled": true
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.applications"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.read_state.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.target_id",
+                  ""
+                ]
+              },
+              {
+                "eq": [
+                  "$args.view",
+                  "midi_status"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "devices": [
+              "midi_keyboard_0"
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_READ_STATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.job_type",
+                      "midi_test"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.options",
+                      {}
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.target_id",
+                      "midi_keyboard_0"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "job_midi_test_01"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs",
+              "value": {
+                "job_midi_test_01": {
+                  "status": "completed",
+                  "notes_received": 5,
+                  "device_id": "midi_keyboard_0"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.midi_devices[$args.target_id]",
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.jobs",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "job_midi_test_01"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed",
+            "details": {
+              "notes_received": 5
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "applications": "$state.applications",
+              "jobs": "$state.jobs",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.applications",
+            "$state.jobs",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

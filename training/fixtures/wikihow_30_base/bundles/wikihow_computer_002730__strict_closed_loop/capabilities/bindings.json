@@ -1,0 +1,217 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "app"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open."
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "read_state",
+      "description": "Read a named state view or status summary exposed by the environment.",
+      "capability_id": "wikihow.read_state.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "description": "Name of the state view or status area to read.",
+            "enum": [
+              "performance_metrics"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Optional target identifier or empty string for a global view.",
+            "default": "system_metrics"
+          }
+        },
+        "required": [
+          "view"
+        ]
+      }
+    },
+    {
+      "name": "start_job",
+      "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+      "capability_id": "wikihow.start_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_type": {
+            "type": "string",
+            "description": "Type of job to start.",
+            "enum": [
+              "stress_test"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target resource or record for the job."
+          },
+          "options": {
+            "type": "object",
+            "description": "Job options.",
+            "default": {}
+          },
+          "baseline_ref": {
+            "type": "string",
+            "description": "Baseline measurement returned by read_state before starting load."
+          }
+        },
+        "required": [
+          "job_type",
+          "target_id",
+          "baseline_ref"
+        ]
+      },
+      "input_map": {
+        "baseline_ref": "baseline_handle"
+      },
+      "provenance_required": [
+        "baseline_ref"
+      ]
+    },
+    {
+      "name": "poll_job",
+      "description": "Poll a long-running job for its current status and outputs.",
+      "capability_id": "wikihow.poll_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier returned by start_job."
+          },
+          "observation_ref": {
+            "type": "string",
+            "description": "Latest measurement or cancellation acknowledgement that justifies advancing this job."
+          }
+        },
+        "required": [
+          "job_id",
+          "observation_ref"
+        ]
+      },
+      "provenance_required": [
+        "job_id",
+        "observation_ref"
+      ],
+      "input_map": {
+        "observation_ref": "observation_handle"
+      }
+    },
+    {
+      "name": "cancel_job",
+      "description": "Cancel a running job when it should not continue.",
+      "capability_id": "wikihow.cancel_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier to cancel."
+          },
+          "measurement_ref": {
+            "type": "string",
+            "description": "Observed performance measurement justifying the stop decision."
+          }
+        },
+        "required": [
+          "job_id",
+          "measurement_ref"
+        ]
+      },
+      "provenance_required": [
+        "job_id",
+        "measurement_ref"
+      ],
+      "input_map": {
+        "measurement_ref": "measurement_handle"
+      }
+    },
+    {
+      "name": "close_resource",
+      "description": "Close an open application only after the workflow state permits it to be closed safely.",
+      "capability_id": "wikihow.close_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource to close.",
+            "enum": [
+              "app"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Visible name of the open resource.",
+            "enum": [
+              "Task Manager"
+            ]
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    }
+  ]
+}

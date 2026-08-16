@@ -1,0 +1,63 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Download, install, and configure Free Virtual WiFi Router to share an Ethernet connection as a Wi-Fi hotspot.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.settings",
+              {
+                "hotspot_config": {
+                  "id": "hotspot_config",
+                  "ssid": "MyHomeWiFi",
+                  "password": "SecurePass123",
+                  "shared_connection": "ethernet",
+                  "max_clients": 8
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.settings"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

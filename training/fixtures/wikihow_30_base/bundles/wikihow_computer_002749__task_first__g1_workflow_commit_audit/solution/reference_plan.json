@@ -1,0 +1,75 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Server App"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "service_status",
+        "target_id": "open_directory"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "services",
+        "record_id": "open_directory",
+        "patch": {
+          "role": "master",
+          "admin_password": "SecurePass123!",
+          "organization_name": "Acme Corp",
+          "admin_email": "admin@acme.com"
+        }
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "create_database",
+        "target_id": "open_directory",
+        "options": {}
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "job_od_setup_992"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_od_setup_992",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "verify_resource",
+      "arguments": {
+        "resource_id": "open_directory",
+        "expected_status": "active"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002749"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

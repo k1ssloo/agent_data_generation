@@ -148,6 +148,7 @@ def main() -> None:
             *[str(path) for path in validations],
             "--output-dir", str(args.output_dir / "training"),
             "--project-root", str(PROJECT_ROOT),
+            "--dataset-tier", "vnext" if args.strict_vnext else "adaptive",
         ]
         export_code = run(export_command, dry_run=args.dry_run)
     summary = {

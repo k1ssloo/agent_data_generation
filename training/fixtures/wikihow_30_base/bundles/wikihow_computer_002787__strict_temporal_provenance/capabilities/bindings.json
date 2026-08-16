@@ -1,0 +1,314 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "website"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open.",
+            "enum": [
+              "https://my.bitcasa.com"
+            ]
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "authenticate",
+      "description": "Authenticate to a service or account using a provided credential.",
+      "capability_id": "wikihow.authenticate.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Service or application to authenticate against.",
+            "enum": [
+              "bitcasa"
+            ]
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Account, user, or profile identifier."
+          },
+          "credential_type": {
+            "type": "string",
+            "description": "Credential type, such as password, picture_password, token, or sso.",
+            "enum": [
+              "password"
+            ]
+          },
+          "credential_value": {
+            "type": "string",
+            "description": "Credential value supplied by the user or prior state."
+          }
+        },
+        "required": [
+          "service",
+          "account_id",
+          "credential_type",
+          "credential_value"
+        ]
+      }
+    },
+    {
+      "name": "read_state",
+      "description": "Read a named state view or status summary exposed by the environment.",
+      "capability_id": "wikihow.read_state.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "description": "Name of the state view or status area to read.",
+            "enum": [
+              "versions"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "This versions view is global; omit this argument. The only accepted value is the empty global target.",
+            "enum": [
+              ""
+            ],
+            "default": ""
+          }
+        },
+        "required": [
+          "view"
+        ]
+      }
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "files"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection."
+          },
+          "snapshot_ref": {
+            "type": "string",
+            "description": "Historical snapshot whose file revisions should be listed."
+          }
+        },
+        "required": [
+          "collection",
+          "query",
+          "snapshot_ref"
+        ]
+      },
+      "input_map": {
+        "snapshot_ref": "snapshot_handle"
+      },
+      "provenance_required": [
+        "snapshot_ref"
+      ]
+    },
+    {
+      "name": "update_record",
+      "description": "Update fields on an existing record.",
+      "capability_id": "wikihow.update_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "session"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Record to update.",
+            "enum": [
+              "current"
+            ]
+          },
+          "patch": {
+            "type": "object",
+            "description": "Fields to merge into the record."
+          },
+          "navigation_ref": {
+            "type": "string",
+            "description": "Visible view, snapshot, or downloaded artifact that grounds the requested navigation change."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id",
+          "patch",
+          "navigation_ref"
+        ]
+      },
+      "input_map": {
+        "navigation_ref": "navigation_handle"
+      },
+      "provenance_required": [
+        "navigation_ref"
+      ]
+    },
+    {
+      "name": "download_resource",
+      "description": "Download a resource to a target destination.",
+      "capability_id": "wikihow.download_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "description": "Resource to download."
+          },
+          "destination": {
+            "type": "string",
+            "description": "Destination folder, device, or storage area.",
+            "enum": [
+              "local_downloads"
+            ]
+          },
+          "snapshot_ref": {
+            "type": "string",
+            "description": "Snapshot that proves the selected revision's historical context."
+          }
+        },
+        "required": [
+          "resource_id",
+          "destination",
+          "snapshot_ref"
+        ]
+      },
+      "provenance_required": [
+        "resource_id",
+        "snapshot_ref"
+      ],
+      "input_map": {
+        "snapshot_ref": "snapshot_handle"
+      }
+    },
+    {
+      "name": "create_upload_session",
+      "description": "Create an upload session with a provider or destination.",
+      "capability_id": "wikihow.create_upload_session.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "description": "Storage or service provider.",
+            "enum": [
+              "bitcasa"
+            ]
+          },
+          "destination": {
+            "type": "string",
+            "description": "Folder, workspace, or destination identifier.",
+            "enum": [
+              "root"
+            ]
+          },
+          "workspace_ref": {
+            "type": "string",
+            "description": "Current workspace identity returned after leaving history view."
+          }
+        },
+        "required": [
+          "provider",
+          "destination",
+          "workspace_ref"
+        ]
+      },
+      "input_map": {
+        "workspace_ref": "workspace_handle"
+      },
+      "provenance_required": [
+        "workspace_ref"
+      ]
+    },
+    {
+      "name": "upload_resource",
+      "description": "Upload a located file or local resource through an existing upload session.",
+      "capability_id": "wikihow.upload_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "session_id": {
+            "type": "string",
+            "description": "Upload session identifier."
+          },
+          "resource_id": {
+            "type": "string",
+            "description": "File or local resource identifier to upload."
+          }
+        },
+        "required": [
+          "session_id",
+          "resource_id"
+        ]
+      },
+      "provenance_required": [
+        "resource_id",
+        "session_id"
+      ]
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    }
+  ]
+}

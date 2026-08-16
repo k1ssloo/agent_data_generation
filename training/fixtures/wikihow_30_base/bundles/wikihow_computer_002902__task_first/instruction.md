@@ -1,0 +1,1 @@
+I have a backup.nbf file on my computer. I need to extract my contacts from it, merge them into a single file, and then email that merged file to me at user@example.com. Please export the file as backup.zip, use the subject Your Merged Contacts File, and write the body Please find attached your merged contacts file: allcontacts.vcf

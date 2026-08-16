@@ -1,0 +1,249 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "search_records",
+      "description": "Search a named collection for records matching a user-visible query.",
+      "capability_id": "wikihow.search_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to search.",
+            "enum": [
+              "agencies"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query grounded in the user request or prior tool output."
+          }
+        },
+        "required": [
+          "collection",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "create_record",
+      "description": "Create a record in a named collection.",
+      "capability_id": "wikihow.create_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection where the record should be created.",
+            "enum": [
+              "bookings"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "description": "Fields for the new record."
+          }
+        },
+        "required": [
+          "collection",
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "locate_file",
+      "description": "Find a file by name or path before upload, export, attachment, or sharing.",
+      "capability_id": "wikihow.locate_file.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "description": "File name or path to locate."
+          }
+        },
+        "required": [
+          "file_name"
+        ]
+      }
+    },
+    {
+      "name": "send_message",
+      "description": "Send or stage a message through a channel.",
+      "capability_id": "wikihow.send_message.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Message channel, such as email, chat, notification, or scanner_email.",
+            "enum": [
+              "email"
+            ]
+          },
+          "recipient": {
+            "type": "string",
+            "description": "Recipient address or identifier."
+          },
+          "subject": {
+            "type": "string",
+            "description": "Message subject or empty string if not applicable."
+          },
+          "body": {
+            "type": "string",
+            "description": "Message body or description."
+          }
+        },
+        "required": [
+          "channel",
+          "recipient",
+          "subject",
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "attach_resource",
+      "description": "Attach a resource to another target record.",
+      "capability_id": "wikihow.attach_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_collection": {
+            "type": "string",
+            "description": "Collection containing the target record.",
+            "enum": [
+              "emails"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target record identifier."
+          },
+          "resource_id": {
+            "type": "string",
+            "description": "Resource to attach."
+          },
+          "relationship": {
+            "type": "string",
+            "description": "Attachment relationship or display label.",
+            "enum": [
+              "photo_backup"
+            ]
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "target_collection",
+          "target_id",
+          "resource_id",
+          "relationship",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "resource_id",
+        "target_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "verify_delivery",
+      "description": "Verify that a message or shared resource was delivered or made available.",
+      "capability_id": "wikihow.verify_delivery.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "description": "Message, job, or resource identifier to verify."
+          }
+        },
+        "required": [
+          "target_id"
+        ]
+      },
+      "provenance_required": [
+        "target_id"
+      ]
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Convert and extract data from .nbf backup files to retrieve phone contacts on a computer.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.files",
+              {
+                "backup_nbf": {
+                  "id": "backup_nbf",
+                  "name": "backup.nbf",
+                  "path": "/downloads/backup.nbf",
+                  "type": "nbf"
+                },
+                "backup_zip": {
+                  "id": "backup_zip",
+                  "name": "backup.zip",
+                  "path": "/downloads/backup.zip",
+                  "type": "zip"
+                },
+                "contact_1": {
+                  "id": "contact_1",
+                  "name": "contact1.vcf",
+                  "path": "/downloads/backup/contacts/contact1.vcf",
+                  "type": "vcf"
+                },
+                "contact_2": {
+                  "id": "contact_2",
+                  "name": "contact2.vcf",
+                  "path": "/downloads/backup/contacts/contact2.vcf",
+                  "type": "vcf"
+                },
+                "allcontacts_vcf": {
+                  "id": "allcontacts_vcf",
+                  "name": "allcontacts.vcf",
+                  "path": "/downloads/backup/contacts/allcontacts.vcf",
+                  "type": "vcf"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.jobs",
+              {
+                "extract_job_01": {
+                  "status": "completed",
+                  "output": "contacts_folder"
+                },
+                "merge_job_01": {
+                  "status": "completed",
+                  "output": "allcontacts_vcf"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.files"
+          },
+          {
+            "exists": "$state.jobs"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

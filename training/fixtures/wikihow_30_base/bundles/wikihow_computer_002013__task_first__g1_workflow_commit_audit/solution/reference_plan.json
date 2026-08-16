@@ -1,0 +1,67 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "settings",
+        "query": ""
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "browser_settings"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "browser_settings",
+        "patch": {
+          "cookies_cleared": true
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "flights",
+        "query": "NYC to LON"
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "flights",
+        "record_id": "flight_nyc_lon_blooper"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "bookings",
+        "fields": {
+          "flight_id": "flight_nyc_lon_blooper"
+        }
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002013"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

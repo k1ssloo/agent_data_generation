@@ -1,0 +1,510 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "files": {
+      "backup_nbf": {
+        "id": "backup_nbf",
+        "name": "backup.nbf",
+        "path": "/downloads/backup.nbf",
+        "type": "nbf"
+      },
+      "backup_zip": {
+        "id": "backup_zip",
+        "name": "backup.zip",
+        "path": "/downloads/backup.zip",
+        "type": "zip"
+      },
+      "contact_1": {
+        "id": "contact_1",
+        "name": "contact1.vcf",
+        "path": "/downloads/backup/contacts/contact1.vcf",
+        "type": "vcf"
+      },
+      "contact_2": {
+        "id": "contact_2",
+        "name": "contact2.vcf",
+        "path": "/downloads/backup/contacts/contact2.vcf",
+        "type": "vcf"
+      }
+    },
+    "jobs": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002902",
+      "source_task_id": "wikihow_computer_002902"
+    }
+  },
+  "capabilities": {
+    "wikihow.locate_file.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "eq": [
+              "$args.file_name",
+              "backup.nbf"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "file_id": "backup_nbf",
+            "file_name": "backup.nbf"
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LOCATE_FILE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.export_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.export_name",
+                  "backup.zip"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format",
+                  "zip"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "backup_nbf"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "exported_resource_id": "backup_zip"
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_EXPORT_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "files"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "contacts"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "backup_nbf",
+                "name": "backup.nbf",
+                "path": "/downloads/backup.nbf",
+                "type": "nbf"
+              },
+              {
+                "id": "backup_zip",
+                "name": "backup.zip",
+                "path": "/downloads/backup.zip",
+                "type": "zip"
+              },
+              {
+                "id": "contact_1",
+                "name": "contact1.vcf",
+                "path": "/downloads/backup/contacts/contact1.vcf",
+                "type": "vcf"
+              },
+              {
+                "id": "contact_2",
+                "name": "contact2.vcf",
+                "path": "/downloads/backup/contacts/contact2.vcf",
+                "type": "vcf"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_type",
+                  "extract"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.options",
+                  {}
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "backup_zip"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "extract_job_01"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs",
+              "value": {
+                "extract_job_01": {
+                  "status": "completed",
+                  "output": "contacts_folder"
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.jobs"
+          ]
+        },
+        {
+          "id": "observed_06",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_type",
+                  "merge_vcf"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.options",
+                  {}
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "contacts_folder"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "merge_job_01"
+          },
+          "effects": [
+            {
+              "set": "$state.files",
+              "value": {
+                "backup_nbf": {
+                  "id": "backup_nbf",
+                  "name": "backup.nbf",
+                  "path": "/downloads/backup.nbf",
+                  "type": "nbf"
+                },
+                "backup_zip": {
+                  "id": "backup_zip",
+                  "name": "backup.zip",
+                  "path": "/downloads/backup.zip",
+                  "type": "zip"
+                },
+                "contact_1": {
+                  "id": "contact_1",
+                  "name": "contact1.vcf",
+                  "path": "/downloads/backup/contacts/contact1.vcf",
+                  "type": "vcf"
+                },
+                "contact_2": {
+                  "id": "contact_2",
+                  "name": "contact2.vcf",
+                  "path": "/downloads/backup/contacts/contact2.vcf",
+                  "type": "vcf"
+                },
+                "allcontacts_vcf": {
+                  "id": "allcontacts_vcf",
+                  "name": "allcontacts.vcf",
+                  "path": "/downloads/backup/contacts/allcontacts.vcf",
+                  "type": "vcf"
+                }
+              }
+            },
+            {
+              "set": "$state.jobs",
+              "value": {
+                "extract_job_01": {
+                  "status": "completed",
+                  "output": "contacts_folder"
+                },
+                "merge_job_01": {
+                  "status": "completed",
+                  "output": "allcontacts_vcf"
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.files",
+            "$state.jobs"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "extract_job_01"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed",
+            "output": "contacts_folder"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "observed_07",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "merge_job_01"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed",
+            "output": "allcontacts_vcf"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.send_message.v1": {
+      "branches": [
+        {
+          "id": "observed_08",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.body",
+                  "Please find attached your merged contacts file: allcontacts.vcf"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.channel",
+                  "email"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.recipient",
+                  "user@example.com"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.subject",
+                  "Your Merged Contacts File"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Email sent successfully with attachment."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SEND_MESSAGE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "files": "$state.files",
+              "jobs": "$state.jobs",
+              "workflow_context": "$state.workflow_context"
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.files",
+            "$state.jobs",
+            "$state.workflow_context"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

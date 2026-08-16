@@ -1,0 +1,72 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Computer Management"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "drives",
+        "query": ""
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "drives",
+        "record_id": "disk_2"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "disk_2"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "format",
+        "target_id": "disk_2",
+        "options": {
+          "file_system": "NTFS",
+          "quick_format": true
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_format_01"
+      }
+    },
+    {
+      "tool": "verify_resource",
+      "arguments": {
+        "resource_id": "disk_2",
+        "expected_status": "active"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002919"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

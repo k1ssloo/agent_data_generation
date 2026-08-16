@@ -1,0 +1,222 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_cat_workspace",
+      "description": "Observe the cat, desk barrier materials, room door, and nearby comfort options visible in the workspace.",
+      "capability_id": "observe_cat_workspace",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_keyboard_settings",
+      "description": "Open the keyboard settings panel and report the keyboard-lock handle, status, and error code.",
+      "capability_id": "open_keyboard_settings",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "inspect_active_program",
+      "description": "Inspect the active text program and report its handle plus current input-test text state.",
+      "capability_id": "inspect_active_program",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "enable_keyboard_lock",
+      "description": "Attempt to enable keyboard protection using an observed keyboard settings handle.",
+      "capability_id": "enable_keyboard_lock",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "settings_handle": {
+            "type": "string",
+            "description": "Opaque keyboard settings handle previously reported by the settings panel."
+          }
+        },
+        "required": [
+          "settings_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "settings_handle"
+      ]
+    },
+    {
+      "name": "test_key_pressure",
+      "description": "Press a test key in the observed active program to check whether physical key pressure inserts text.",
+      "capability_id": "test_key_pressure",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "program_handle": {
+            "type": "string",
+            "description": "Opaque active program handle previously reported by the program inspection."
+          }
+        },
+        "required": [
+          "program_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "program_handle"
+      ]
+    },
+    {
+      "name": "diagnose_keyboard_error",
+      "description": "Diagnose an observed keyboard-lock error code against the current key-pressure evidence.",
+      "capability_id": "diagnose_keyboard_error",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "settings_handle": {
+            "type": "string",
+            "description": "Opaque keyboard settings handle previously reported by the settings panel."
+          },
+          "error_code": {
+            "type": "string",
+            "description": "Keyboard-lock error code already observed from settings or key-pressure testing.",
+            "enum": [
+              "KEYBOARD_LOCK_UNSUPPORTED",
+              "LOCK_BUSY"
+            ]
+          }
+        },
+        "required": [
+          "settings_handle",
+          "error_code"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "settings_handle",
+        "error_code"
+      ]
+    },
+    {
+      "name": "recover_keyboard_lock_support",
+      "description": "Run the recovery for a diagnosed unsupported keyboard lock so the lock code can clear.",
+      "capability_id": "recover_keyboard_lock_support",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "settings_handle": {
+            "type": "string",
+            "description": "Opaque keyboard settings handle previously reported by the settings panel."
+          }
+        },
+        "required": [
+          "settings_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "settings_handle"
+      ]
+    },
+    {
+      "name": "deploy_workspace_barrier",
+      "description": "Build a visible physical desk barrier from observed workspace materials.",
+      "capability_id": "deploy_workspace_barrier",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "barrier_handle": {
+            "type": "string",
+            "description": "Opaque barrier-material handle previously reported by workspace observation."
+          }
+        },
+        "required": [
+          "barrier_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "barrier_handle"
+      ]
+    },
+    {
+      "name": "close_room_door",
+      "description": "Close an observed room door to keep the cat away from the keyboard area.",
+      "capability_id": "close_room_door",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "door_handle": {
+            "type": "string",
+            "description": "Opaque room door handle previously reported by workspace observation."
+          }
+        },
+        "required": [
+          "door_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "door_handle"
+      ]
+    },
+    {
+      "name": "set_comfort_spot",
+      "description": "Set up an observed nearby cat comfort spot away from the keyboard.",
+      "capability_id": "set_comfort_spot",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "comfort_spot_handle": {
+            "type": "string",
+            "description": "Opaque comfort spot handle previously reported by cat-care observation."
+          }
+        },
+        "required": [
+          "comfort_spot_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "comfort_spot_handle"
+      ]
+    },
+    {
+      "name": "final_workspace_observation",
+      "description": "Observe a final ordinary workspace interval and report whether the cat stays off the keyboard.",
+      "capability_id": "final_workspace_observation",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "observe_final_domain_state",
+      "description": "Read the current domain state after the preceding operation.",
+      "capability_id": "deterministic_final_domain_observation",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    }
+  ]
+}

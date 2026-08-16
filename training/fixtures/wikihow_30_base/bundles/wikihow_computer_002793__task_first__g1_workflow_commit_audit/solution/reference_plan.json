@@ -1,0 +1,68 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "fax_providers",
+        "query": "free trial"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "accounts",
+        "fields": {
+          "provider": "eFax Free",
+          "email": "user@example.com"
+        }
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "accounts",
+        "record_id": "acc_efax_99"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "acc_efax_99"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "accounts",
+        "record_id": "acc_efax_99",
+        "patch": {
+          "format": "pdf"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "emails",
+        "query": ""
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002793"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

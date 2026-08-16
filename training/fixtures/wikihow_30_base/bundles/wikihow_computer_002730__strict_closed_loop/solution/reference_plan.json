@@ -1,0 +1,176 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Task Manager"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "performance_metrics",
+        "target_id": "system_metrics"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "stress_test",
+        "target_id": "system_metrics",
+        "baseline_ref": "measurement_baseline_12_1024"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "performance_metrics",
+        "target_id": "system_metrics"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "stress_test_01",
+        "observation_ref": "measurement_ramp_cpu_72_2400"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "performance_metrics",
+        "target_id": "system_metrics"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "stress_test_01",
+        "observation_ref": "measurement_ramp_memory_94_3200"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "performance_metrics",
+        "target_id": "system_metrics"
+      }
+    },
+    {
+      "tool": "cancel_job",
+      "arguments": {
+        "job_id": "stress_test_01",
+        "measurement_ref": "measurement_peak_98_4096"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "stress_test_01",
+        "observation_ref": "cancellation_stress_test_01"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "performance_metrics",
+        "target_id": "system_metrics"
+      }
+    },
+    {
+      "tool": "close_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Task Manager"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002730"
+      }
+    }
+  ],
+  "counterfactuals": [
+    {
+      "id": "immediate_ramp_requires_earlier_stop",
+      "state_overrides": {
+        "$state.stress_control.ramp_profile": "immediate"
+      },
+      "actions": [
+        {
+          "tool": "observe_workflow_context",
+          "arguments": {}
+        },
+        {
+          "tool": "open_resource",
+          "arguments": {
+            "resource_type": "app",
+            "target": "Task Manager"
+          }
+        },
+        {
+          "tool": "read_state",
+          "arguments": {
+            "view": "performance_metrics",
+            "target_id": "system_metrics"
+          }
+        },
+        {
+          "tool": "start_job",
+          "arguments": {
+            "job_type": "stress_test",
+            "target_id": "system_metrics",
+            "baseline_ref": "measurement_baseline_12_1024"
+          }
+        },
+        {
+          "tool": "read_state",
+          "arguments": {
+            "view": "performance_metrics",
+            "target_id": "system_metrics"
+          }
+        },
+        {
+          "tool": "cancel_job",
+          "arguments": {
+            "job_id": "stress_test_01",
+            "measurement_ref": "measurement_peak_98_4096"
+          }
+        },
+        {
+          "tool": "poll_job",
+          "arguments": {
+            "job_id": "stress_test_01",
+            "observation_ref": "cancellation_stress_test_01"
+          }
+        },
+        {
+          "tool": "read_state",
+          "arguments": {
+            "view": "performance_metrics",
+            "target_id": "system_metrics"
+          }
+        },
+        {
+          "tool": "close_resource",
+          "arguments": {
+            "resource_type": "app",
+            "target": "Task Manager"
+          }
+        },
+        {
+          "tool": "observe_workflow_outcome",
+          "arguments": {
+            "workflow_context_handle": "workflow_context_wikihow_computer_002730"
+          }
+        }
+      ]
+    }
+  ]
+}

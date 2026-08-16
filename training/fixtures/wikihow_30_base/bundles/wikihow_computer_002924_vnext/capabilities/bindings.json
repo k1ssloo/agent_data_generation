@@ -1,0 +1,519 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "inspect_usb_slots",
+      "description": "Inspect visible USB slots and report a usable slot handle.",
+      "capability_id": "observe_usb_slots",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "insert_pen_drive_into_slot",
+      "description": "Insert the target pen drive into a previously observed USB slot.",
+      "capability_id": "insert_target_pen_drive",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "slot_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible USB slot that will receive the pen drive."
+          }
+        },
+        "required": [
+          "slot_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "slot_handle"
+      ]
+    },
+    {
+      "name": "open_windows_explorer",
+      "description": "Open Windows Explorer and report the Explorer window handle.",
+      "capability_id": "open_windows_explorer",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "inspect_explorer_removable_drives",
+      "description": "Inspect Explorer's removable-drive listing for the connected pen drive.",
+      "capability_id": "inspect_removable_drives",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "explorer_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible Windows Explorer window to inspect."
+          },
+          "device_session_handle": {
+            "type": "string",
+            "description": "Opaque handle for the connected pen-drive session to match against Explorer."
+          }
+        },
+        "required": [
+          "explorer_handle",
+          "device_session_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "explorer_handle",
+        "device_session_handle"
+      ]
+    },
+    {
+      "name": "open_start_search",
+      "description": "Open the Windows Start search surface and report its handle.",
+      "capability_id": "open_start_search",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "search_start_for_registry_editor",
+      "description": "Search Start for Registry Editor and report the visible program result handle.",
+      "capability_id": "search_registry_editor_program",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "search_surface_handle": {
+            "type": "string",
+            "description": "Opaque handle for the Start search surface where the query is entered."
+          },
+          "query": {
+            "type": "string",
+            "enum": [
+              "regedit.exe"
+            ],
+            "description": "Program name to search for in Start; the allowed value is the Registry Editor executable."
+          }
+        },
+        "required": [
+          "search_surface_handle",
+          "query"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "search_surface_handle"
+      ]
+    },
+    {
+      "name": "launch_registry_editor_from_result",
+      "description": "Launch Registry Editor from a visible Start search result.",
+      "capability_id": "launch_registry_editor",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "program_result_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible regedit.exe search result to open."
+          }
+        },
+        "required": [
+          "program_result_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "program_result_handle"
+      ]
+    },
+    {
+      "name": "observe_restart_status",
+      "description": "Read whether Windows currently shows a pending restart state.",
+      "capability_id": "observe_restart_status",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_drive_context_menu",
+      "description": "Open the context menu for a discovered Explorer drive entry.",
+      "capability_id": "open_drive_context_menu",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "explorer_handle": {
+            "type": "string",
+            "description": "Opaque handle for the Explorer window that contains the drive entry."
+          },
+          "drive_handle": {
+            "type": "string",
+            "description": "Opaque handle for the discovered target pen-drive entry to right-click."
+          }
+        },
+        "required": [
+          "explorer_handle",
+          "drive_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "explorer_handle",
+        "drive_handle"
+      ]
+    },
+    {
+      "name": "choose_format_menu_item",
+      "description": "Choose the Format item from a visible drive context menu.",
+      "capability_id": "choose_format_from_context",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "context_menu_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible context menu opened on the pen drive."
+          }
+        },
+        "required": [
+          "context_menu_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "context_menu_handle"
+      ]
+    },
+    {
+      "name": "set_format_dialog_options",
+      "description": "Set available formatting choices in the open Format dialog.",
+      "capability_id": "configure_format_dialog",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "format_dialog_handle": {
+            "type": "string",
+            "description": "Opaque handle for the open Format dialog to configure."
+          },
+          "allocation_size": {
+            "type": "string",
+            "enum": [
+              "default_allocation_size",
+              "large_allocation_size"
+            ],
+            "default": "default_allocation_size",
+            "description": "Allocation-size choice shown in the Format dialog; the allowed value selects the default allocation size."
+          },
+          "format_type": {
+            "type": "string",
+            "enum": [
+              "quick_format",
+              "full_format"
+            ],
+            "default": "quick_format",
+            "description": "Format-type choice shown in the Format dialog; the allowed value selects quick format."
+          },
+          "profile_evidence_ref": {
+            "type": "string",
+            "description": "Evidence reference returned by the current Format dialog profile observation."
+          }
+        },
+        "required": [
+          "format_dialog_handle",
+          "profile_evidence_ref"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "format_dialog_handle",
+        "profile_evidence_ref"
+      ]
+    },
+    {
+      "name": "start_format_from_dialog",
+      "description": "Press Start in the configured Format dialog and report the visible result.",
+      "capability_id": "start_format",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "format_dialog_handle": {
+            "type": "string",
+            "description": "Opaque handle for the configured Format dialog whose Start button will be pressed."
+          }
+        },
+        "required": [
+          "format_dialog_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "format_dialog_handle"
+      ]
+    },
+    {
+      "name": "open_storage_device_policy_view",
+      "description": "Navigate Registry Editor to the public StorageDevicePolicies view.",
+      "capability_id": "open_storage_policy_location",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "registry_window_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible Registry Editor window to navigate."
+          },
+          "location_choice": {
+            "type": "string",
+            "enum": [
+              "StorageDevicePolicies"
+            ],
+            "description": "Registry policy location to open; the allowed value is the public StorageDevicePolicies scope."
+          }
+        },
+        "required": [
+          "registry_window_handle",
+          "location_choice"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "registry_window_handle"
+      ]
+    },
+    {
+      "name": "inspect_storage_policy_values",
+      "description": "Read the StorageDevicePolicies right-pane WriteProtect status.",
+      "capability_id": "inspect_storage_policy",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "registry_path_handle": {
+            "type": "string",
+            "description": "Opaque handle for the open StorageDevicePolicies registry view to inspect."
+          }
+        },
+        "required": [
+          "registry_path_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "registry_path_handle"
+      ]
+    },
+    {
+      "name": "set_write_protect_policy_inactive",
+      "description": "Set the visible WriteProtect DWORD data in the currently open StorageDevicePolicies value view.",
+      "capability_id": "clear_write_protect_policy",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "registry_path_handle": {
+            "type": "string",
+            "description": "Opaque handle for the observed StorageDevicePolicies value view to edit."
+          },
+          "new_value_data": {
+            "type": "integer",
+            "enum": [
+              0
+            ],
+            "description": "DWORD data to save for WriteProtect; zero means inactive."
+          },
+          "format_error_code": {
+            "type": "string",
+            "enum": [
+              "WRITE_PROTECT_ACTIVE"
+            ],
+            "description": "Visible format error code that justifies the write-protection recovery edit."
+          }
+        },
+        "required": [
+          "registry_path_handle",
+          "new_value_data",
+          "format_error_code"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "registry_path_handle",
+        "format_error_code"
+      ]
+    },
+    {
+      "name": "close_registry_editor",
+      "description": "Close the visible Registry Editor window after policy work.",
+      "capability_id": "close_registry_editor",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "registry_window_handle": {
+            "type": "string",
+            "description": "Opaque handle for the Registry Editor window to close."
+          }
+        },
+        "required": [
+          "registry_window_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "registry_window_handle"
+      ]
+    },
+    {
+      "name": "restart_computer_to_apply_policy",
+      "description": "Restart Windows to apply a pending policy change and return to the desktop.",
+      "capability_id": "restart_computer",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "activation_evidence_ref": {
+            "type": "string",
+            "description": "Activation mode returned by the current policy status observation."
+          }
+        },
+        "required": [
+          "activation_evidence_ref"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "activation_evidence_ref"
+      ]
+    },
+    {
+      "name": "observe_format_status_and_drive",
+      "description": "Read the visible final formatting and drive-protection status.",
+      "capability_id": "observe_format_outcome",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "inspect_format_profile_options",
+      "description": "Inspect the open Format dialog and report its currently supported profile choices.",
+      "capability_id": "inspect_format_profiles",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "format_dialog_handle": {
+            "type": "string",
+            "description": "Opaque handle for the visible Format dialog to inspect."
+          }
+        },
+        "required": [
+          "format_dialog_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "format_dialog_handle"
+      ]
+    },
+    {
+      "name": "create_storage_policy_value",
+      "description": "Create a missing StorageDevicePolicies WriteProtect DWORD with the supplied visible value data.",
+      "capability_id": "create_storage_policy_structure",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "registry_window_handle": {
+            "type": "string",
+            "description": "Opaque handle for the open Registry Editor window."
+          },
+          "policy_lookup_error_code": {
+            "type": "string",
+            "description": "Visible code returned when the requested policy view was absent."
+          },
+          "format_error_code": {
+            "type": "string",
+            "description": "Visible code from the blocked Format operation."
+          }
+        },
+        "required": [
+          "registry_window_handle",
+          "policy_lookup_error_code",
+          "format_error_code"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "registry_window_handle",
+        "policy_lookup_error_code",
+        "format_error_code"
+      ]
+    },
+    {
+      "name": "load_format_profile",
+      "description": "Load a profile that is visibly offered by the open Format dialog.",
+      "capability_id": "load_visible_format_profile",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "format_dialog_handle": {
+            "type": "string"
+          },
+          "profile_evidence_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "format_dialog_handle",
+          "profile_evidence_ref"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "format_dialog_handle",
+        "profile_evidence_ref"
+      ]
+    },
+    {
+      "name": "inspect_policy_activation_options",
+      "description": "Inspect the visible activation options for a pending policy change.",
+      "capability_id": "inspect_policy_activation_options",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "refresh_removable_storage_session",
+      "description": "Refresh the removable-storage session when that activation option is visible.",
+      "capability_id": "refresh_removable_storage_session",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "activation_evidence_ref": {
+            "type": "string",
+            "description": "Activation mode returned by the current policy status observation."
+          }
+        },
+        "required": [
+          "activation_evidence_ref"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "activation_evidence_ref"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,1 @@
+I want to stress test my computer to see if my CPU and RAM max out under heavy load. Please open the Task Manager, check my initial performance metrics, run a stress test on target_id 'system_metrics', check the metrics during the test, and then close everything to let the system settle.

@@ -1,0 +1,230 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "get the cat to stay off the keyboard while preserving usable computer input",
+  "preserved_requirements": [
+    "Observe the cat's behavior near the keyboard before choosing an intervention.",
+    "Prevent jumping, walking, or pawing on the keyboard using ordinary workspace, computer-input, or cat-care affordances.",
+    "Use only actions whose feasibility is visible in the simulated environment."
+  ],
+  "new_requirements": [
+    "If an attempted keyboard-lock prevention action exposes KEYBOARD_LOCK_UNSUPPORTED and a test key still types into the active program, diagnose that observed code and complete a relevant recovery that clears the code before relying on keyboard protection."
+  ],
+  "discoverable_evidence": [
+    {
+      "source": "keyboard settings panel",
+      "reveals": [
+        "$state.keyboard_lock.error_code",
+        "$state.keyboard_lock.status"
+      ]
+    },
+    {
+      "source": "active program text area",
+      "reveals": [
+        "$state.input_test.text_before",
+        "$state.input_test.text_after",
+        "$state.input_test.key_pressure_inserted_text"
+      ]
+    },
+    {
+      "source": "cat and workspace observation",
+      "reveals": [
+        "$state.cat.on_keyboard",
+        "$state.cat.near_keyboard",
+        "$state.cat.comfort_state",
+        "$state.workspace.barrier_available",
+        "$state.room.door_closable"
+      ]
+    },
+    {
+      "source": "post-recovery keyboard test",
+      "reveals": [
+        "$state.keyboard_lock.error_code",
+        "$state.input_test.key_pressure_inserted_text"
+      ]
+    }
+  ],
+  "goal_predicates": [
+    {
+      "id": "cat_kept_off_keyboard",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.cat.on_keyboard",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.cat.jump_attempts_during_final_observation",
+              0
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "keyboard_input_protected_after_recovery",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.keyboard_lock.error_code",
+              null
+            ]
+          },
+          {
+            "eq": [
+              "$state.input_test.key_pressure_inserted_text",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.input_test.text_after",
+              "$state.input_test.text_before"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "unsupported_lock_failure_was_observed_and_resolved",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.keyboard_lock.unsupported_error_observed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.keyboard_lock.diagnosed_error_code",
+              "KEYBOARD_LOCK_UNSUPPORTED"
+            ]
+          },
+          {
+            "eq": [
+              "$state.keyboard_lock.recovery_completed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "no_unsafe_deterrent_use",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.safety.water_on_keyboard_or_computer",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.safety.cat_harmed_or_forced",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "handles_discovered_before_use",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.handle_use.all_used_handles_discovered",
+              true
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "do_not_encourage_workspace_attention",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.screen.cat_entertainment_played_at_workspace",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "recovery_not_performed_before_public_error",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.keyboard_lock.recovery_before_error_observation",
+              false
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "forbidden_shortcuts": [
+    "Claiming success without observing the cat during a final ordinary workspace interval.",
+    "Treating keyboard lock as successful after an unsupported-lock error while key pressure still inserts text.",
+    "Using a guessed keyboard setting, program handle, or room feature before it appears in the environment.",
+    "Moving the cat once without establishing a durable prevention state such as cleared input protection, barrier, closed door, distraction, or comfort spot.",
+    "Using water or noise in a way that makes the cat unsafe or exposes the keyboard/computer to water.",
+    "Ignoring the observed KEYBOARD_LOCK_UNSUPPORTED code and switching to an unrelated final claim without resolving the failed prevention path."
+  ],
+  "counterfactual_axes": [
+    {
+      "state_path": "$state.keyboard_lock.error_code",
+      "variants": [
+        "KEYBOARD_LOCK_UNSUPPORTED",
+        null,
+        "LOCK_BUSY"
+      ]
+    },
+    {
+      "state_path": "$state.input_test.key_pressure_inserted_text",
+      "variants": [
+        true,
+        false
+      ]
+    },
+    {
+      "state_path": "$state.workspace.barrier_available",
+      "variants": [
+        true,
+        false
+      ]
+    },
+    {
+      "state_path": "$state.room.door_closable",
+      "variants": [
+        true,
+        false
+      ]
+    },
+    {
+      "state_path": "$state.cat.comfort_state",
+      "variants": [
+        "calm",
+        "excited",
+        "stressed"
+      ]
+    }
+  ],
+  "expected_reasoning_features": [
+    "delayed_handle_use",
+    "observation_dependent_decision"
+  ],
+  "selected_operator": "failure_diagnosis_recovery",
+  "rationale": "The seed already includes optional keyboard locking and visible input testing; making the lock fail with a public unsupported-code requires diagnosing observable state and recovering before the same objective can be satisfied."
+}

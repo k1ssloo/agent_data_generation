@@ -43,6 +43,45 @@ python3 scripts/export_rllm_dataset.py \
   --output-dir outputs/task_first/my_run/training
 ```
 
+The exporter copies every accepted executable bundle into `training/bundles/`
+and stores paths relative to the training package. Move the complete directory,
+not only the two JSONL files. Before reserving GPUs, verify hashes, privacy
+boundaries, reference execution, environment reset, and deterministic rewards:
+
+```bash
+python3 scripts/preflight_rllm_package.py \
+  --package-dir outputs/task_first/my_run/training
+```
+
+After installing the pinned rLLM revision, also verify its live adapter API:
+
+```bash
+python3 scripts/preflight_rllm_package.py \
+  --package-dir outputs/task_first/my_run/training \
+  --require-rllm
+```
+
+Every export is labeled `base`, `adaptive`, or `vnext`. Do not report a base
+workflow package as decision-dense merely because reference execution passes.
+
+## Included 30-Episode Smoke Package
+
+`training/fixtures/wikihow_30_base/` is a self-contained, 30-episode package
+resolved from the audited WikiHow corpus. It is intentionally labeled `base`:
+the package is useful for transfer, tokenization, SFT, environment, and online
+rollout smoke tests, but it is not evidence of 30 decision-dense vNext tasks.
+
+```bash
+python3 scripts/preflight_rllm_package.py \
+  --package-dir training/fixtures/wikihow_30_base
+```
+
+On the current CPU-only development machine, exact audit resolution took 0.10
+seconds, portable export took 0.12 seconds, and full deterministic preflight of
+all 30 bundles took 0.12 seconds. These figures measure reuse and packaging of
+already generated semantic episodes; cold LLM synthesis latency must be
+reported separately.
+
 ## Batch Generation
 
 The batch driver shards input processes, resumes completed model stages, validates

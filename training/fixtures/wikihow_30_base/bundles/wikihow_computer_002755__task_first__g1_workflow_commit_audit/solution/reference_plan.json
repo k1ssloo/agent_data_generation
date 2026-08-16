@@ -1,0 +1,71 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "http://www.4shared.com"
+      }
+    },
+    {
+      "tool": "authenticate",
+      "arguments": {
+        "service": "4shared",
+        "account_id": "user@example.com",
+        "credential_type": "password",
+        "credential_value": "securepass123"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "files",
+        "query": ""
+      }
+    },
+    {
+      "tool": "set_permission",
+      "arguments": {
+        "resource_id": "folder_photos_2023",
+        "visibility": "private"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "folder_photos_2023"
+      }
+    },
+    {
+      "tool": "add_recipient",
+      "arguments": {
+        "target_id": "folder_photos_2023",
+        "recipient": "friend@example.com",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "verify_permission",
+      "arguments": {
+        "resource_id": "folder_photos_2023",
+        "visibility": "private"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002755"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

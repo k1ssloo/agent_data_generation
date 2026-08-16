@@ -1,0 +1,74 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Change the default language settings to Spanish on your smart phone, computer, tablet, websites, and web browsers.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.current_view",
+              {
+                "active_app": "settings_app",
+                "system_language": "Spanish"
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.settings",
+              {
+                "system_locale": {
+                  "id": "system_locale",
+                  "default_language": "Spanish",
+                  "region": "United States",
+                  "last_modified": "2023-10-01"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.current_view"
+          },
+          {
+            "exists": "$state.settings"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

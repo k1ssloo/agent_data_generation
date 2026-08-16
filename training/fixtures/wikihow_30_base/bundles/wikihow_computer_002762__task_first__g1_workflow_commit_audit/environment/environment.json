@@ -1,0 +1,517 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "settings": {
+      "plex_server_config": {
+        "update_automatically": false,
+        "update_periodically": false,
+        "include_music_libraries": false,
+        "empty_trash_after_scan": true
+      }
+    },
+    "auth_status": {
+      "authenticated": false,
+      "user": null
+    },
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002762",
+      "source_task_id": "wikihow_computer_002762"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Plex Media Manager"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Plex Media Manager opened successfully. Please sign in."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.authenticate.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.account_id",
+                  "plex_user_99"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_type",
+                  "password"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_value",
+                  "PlexPass2026!"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.service",
+                  "Plex"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Authenticated successfully with Plex."
+          },
+          "effects": [
+            {
+              "set": "$state.auth_status",
+              "value": {
+                "authenticated": true,
+                "user": "plex_user_99"
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.auth_status"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_AUTHENTICATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "settings"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "plex_server_config",
+                "name": "Plex Server Configuration"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [
+            "$state.auth_status.authenticated"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.get_record.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "settings"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "plex_server_config"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record": {
+              "update_automatically": false,
+              "update_periodically": false,
+              "include_music_libraries": false,
+              "empty_trash_after_scan": true
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.auth_status.authenticated",
+            "$state.settings[$args.record_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_GET_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.update_record.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.collection",
+                      "settings"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.patch",
+                      {
+                        "update_automatically": true,
+                        "update_periodically": true,
+                        "include_music_libraries": true,
+                        "empty_trash_after_scan": false
+                      }
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.record_id",
+                      "plex_server_config"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Plex server configuration updated successfully."
+          },
+          "effects": [
+            {
+              "set": "$state.settings",
+              "value": {
+                "plex_server_config": {
+                  "update_automatically": true,
+                  "update_periodically": true,
+                  "include_music_libraries": true,
+                  "empty_trash_after_scan": false
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.auth_status.authenticated",
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.settings",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_UPDATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.read_state.v1": {
+      "branches": [
+        {
+          "id": "observed_06",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.target_id",
+                  "plex_server_config"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.view",
+                  "server_settings_summary"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "summary": {
+              "update_automatically": true,
+              "update_periodically": true,
+              "include_music_libraries": true,
+              "empty_trash_after_scan": false
+            }
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_READ_STATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "auth_status": "$state.auth_status",
+              "settings": "$state.settings",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.auth_status",
+            "$state.settings",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

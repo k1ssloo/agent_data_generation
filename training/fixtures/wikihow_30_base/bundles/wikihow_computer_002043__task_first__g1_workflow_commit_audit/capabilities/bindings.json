@@ -1,0 +1,174 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "search_records",
+      "description": "Search a named collection for records matching a user-visible query.",
+      "capability_id": "wikihow.search_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to search.",
+            "enum": [
+              "library_catalog"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query grounded in the user request or prior tool output."
+          }
+        },
+        "required": [
+          "collection",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "faculty_directory",
+              "classes"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection.",
+            "default": ""
+          }
+        },
+        "required": [
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "send_message",
+      "description": "Send or stage a message through a channel.",
+      "capability_id": "wikihow.send_message.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Message channel, such as email, chat, notification, or scanner_email.",
+            "enum": [
+              "email"
+            ]
+          },
+          "recipient": {
+            "type": "string",
+            "description": "Recipient address or identifier."
+          },
+          "subject": {
+            "type": "string",
+            "description": "Message subject or empty string if not applicable."
+          },
+          "body": {
+            "type": "string",
+            "description": "Message body or description."
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "channel",
+          "recipient",
+          "subject",
+          "body",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "recipient",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

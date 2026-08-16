@@ -1,0 +1,61 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Learn how to say and pronounce thank you in Turkish using Google Translate.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.jobs",
+              {
+                "job_tts_01": {
+                  "id": "job_tts_01",
+                  "status": "completed",
+                  "output": "Audio stream for 'teşekkür ederim' is ready."
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.jobs"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

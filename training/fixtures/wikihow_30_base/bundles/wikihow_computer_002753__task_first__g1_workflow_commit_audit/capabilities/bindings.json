@@ -1,0 +1,240 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "website",
+              "app"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open."
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "locate_file",
+      "description": "Find a file by name or path before upload, export, attachment, or sharing.",
+      "capability_id": "wikihow.locate_file.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "description": "File name or path to locate."
+          }
+        },
+        "required": [
+          "file_name"
+        ]
+      }
+    },
+    {
+      "name": "start_job",
+      "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+      "capability_id": "wikihow.start_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_type": {
+            "type": "string",
+            "description": "Type of job to start.",
+            "enum": [
+              "install",
+              "hotspot"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target resource or record for the job."
+          },
+          "options": {
+            "type": "object",
+            "description": "Job options.",
+            "default": {}
+          }
+        },
+        "required": [
+          "job_type",
+          "target_id"
+        ]
+      },
+      "provenance_required": [
+        "target_id"
+      ]
+    },
+    {
+      "name": "poll_job",
+      "description": "Poll a long-running job for its current status and outputs.",
+      "capability_id": "wikihow.poll_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier returned by start_job."
+          }
+        },
+        "required": [
+          "job_id"
+        ]
+      },
+      "provenance_required": [
+        "job_id"
+      ]
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "settings"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection.",
+            "default": ""
+          }
+        },
+        "required": [
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "update_record",
+      "description": "Update fields on an existing record.",
+      "capability_id": "wikihow.update_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "settings"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Record to update."
+          },
+          "patch": {
+            "type": "object",
+            "description": "Fields to merge into the record."
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id",
+          "patch",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "record_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

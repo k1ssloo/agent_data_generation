@@ -17,6 +17,15 @@ from rllm.data import Dataset
 from rllm.trainer import AgentTrainer
 
 from .rllm_adapter import gem_causal_evaluator, gem_tool_rollout, require_rllm
+from .package import anchor_portable_rows
+
+
+def load_rl_dataset(path: str) -> Dataset:
+    """Load RL rows and anchor portable bundle paths to the dataset directory."""
+
+    dataset = Dataset.load_data(path)
+    anchor_portable_rows(dataset.data, path)
+    return dataset
 
 
 @hydra.main(
@@ -30,8 +39,8 @@ def main(config: DictConfig) -> None:
     val_file = OmegaConf.select(config, "gem.val_file")
     if not isinstance(train_file, str) or not train_file:
         raise ValueError("set +gem.train_file=/path/to/rl_tasks.jsonl")
-    train_dataset = Dataset.load_data(train_file)
-    val_dataset = Dataset.load_data(val_file) if val_file else None
+    train_dataset = load_rl_dataset(train_file)
+    val_dataset = load_rl_dataset(val_file) if val_file else None
     if not train_dataset.data:
         raise ValueError("training dataset is empty")
     trainer = AgentTrainer(

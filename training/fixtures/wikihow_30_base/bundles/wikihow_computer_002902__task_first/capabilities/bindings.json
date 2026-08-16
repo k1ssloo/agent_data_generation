@@ -1,0 +1,202 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "locate_file",
+      "description": "Find a file by name or path before upload, export, attachment, or sharing.",
+      "capability_id": "wikihow.locate_file.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file_name": {
+            "type": "string",
+            "description": "File name or path to locate."
+          }
+        },
+        "required": [
+          "file_name"
+        ]
+      }
+    },
+    {
+      "name": "export_resource",
+      "description": "Export a resource to a requested format and name.",
+      "capability_id": "wikihow.export_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "description": "Resource to export."
+          },
+          "format": {
+            "type": "string",
+            "description": "Export format, such as csv, gpx, pdf, or txt.",
+            "enum": [
+              "zip"
+            ]
+          },
+          "export_name": {
+            "type": "string",
+            "description": "Output name for the exported resource."
+          }
+        },
+        "required": [
+          "resource_id",
+          "format",
+          "export_name"
+        ]
+      },
+      "provenance_required": [
+        "resource_id"
+      ]
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "files"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection."
+          }
+        },
+        "required": [
+          "collection",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "start_job",
+      "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+      "capability_id": "wikihow.start_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_type": {
+            "type": "string",
+            "description": "Type of job to start.",
+            "enum": [
+              "extract",
+              "merge_vcf"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target resource or record for the job."
+          },
+          "options": {
+            "type": "object",
+            "description": "Job options.",
+            "default": {}
+          }
+        },
+        "required": [
+          "job_type",
+          "target_id"
+        ]
+      },
+      "provenance_required": [
+        "target_id"
+      ]
+    },
+    {
+      "name": "poll_job",
+      "description": "Poll a long-running job for its current status and outputs.",
+      "capability_id": "wikihow.poll_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier returned by start_job."
+          }
+        },
+        "required": [
+          "job_id"
+        ]
+      },
+      "provenance_required": [
+        "job_id"
+      ]
+    },
+    {
+      "name": "send_message",
+      "description": "Send or stage a message through a channel.",
+      "capability_id": "wikihow.send_message.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "description": "Message channel, such as email, chat, notification, or scanner_email.",
+            "enum": [
+              "email"
+            ]
+          },
+          "recipient": {
+            "type": "string",
+            "description": "Recipient address or identifier."
+          },
+          "subject": {
+            "type": "string",
+            "description": "Message subject or empty string if not applicable."
+          },
+          "body": {
+            "type": "string",
+            "description": "Message body or description."
+          }
+        },
+        "required": [
+          "channel",
+          "recipient",
+          "subject",
+          "body"
+        ]
+      }
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    }
+  ]
+}

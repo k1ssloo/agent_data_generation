@@ -1,0 +1,611 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Recover deleted files or previous versions from a Bitcasa account using a web browser.",
+  "goal_predicates": [
+    {
+      "id": "recover_exact_revision",
+      "predicate": {
+        "all": [
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.bitcasa_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.authenticated",
+                  true
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.local_downloads.selected.downloaded",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.name",
+                  "tax_return_2023.pdf"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.source_date",
+                  "2023-10-15"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.selection_violation",
+                  false
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "latest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.local_downloads.selected.source_revision_id",
+                          "rev_tax_2023_evening"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.source_revision_id",
+                          "rev_tax_2023_evening"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                          "artifact_tax_return_evening"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "earliest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.local_downloads.selected.source_revision_id",
+                          "rev_tax_2023_morning"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.source_revision_id",
+                          "rev_tax_2023_morning"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                          "artifact_tax_return_morning"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "today"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.workspace_revision",
+                  2
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.current_view",
+                  "current_files"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.files.restored_tax_return_2023.name",
+                  "tax_return_2023.pdf"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.files.restored_tax_return_2023.status",
+                  "active"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.files.restored_tax_return_2023.source_date",
+                  "2023-10-15"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.files.restored_tax_return_2023.version_date",
+                  "today"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "latest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.local_downloads.selected.source_revision_id",
+                          "rev_tax_2023_evening"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.source_revision_id",
+                          "rev_tax_2023_evening"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                          "artifact_tax_return_evening"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "earliest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.local_downloads.selected.source_revision_id",
+                          "rev_tax_2023_morning"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.source_revision_id",
+                          "rev_tax_2023_morning"
+                        ]
+                      },
+                      {
+                        "eq": [
+                          "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                          "artifact_tax_return_morning"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "revision_selection_policy_is_respected",
+      "predicate": {
+        "eq": [
+          "$state.selection_violation",
+          false
+        ]
+      }
+    },
+    {
+      "id": "session_remains_authenticated_after_login",
+      "predicate": {
+        "any": [
+          {
+            "eq": [
+              "$state.session.current_view",
+              "login"
+            ]
+          },
+          {
+            "eq": [
+              "$state.session.authenticated",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true,
+    "temporal_provenance": {
+      "links": [
+        {
+          "consumer_tool": "list_records",
+          "argument": "snapshot_ref",
+          "producer_tool": "update_record"
+        },
+        {
+          "consumer_tool": "download_resource",
+          "argument": "resource_id",
+          "producer_tool": "list_records"
+        },
+        {
+          "consumer_tool": "download_resource",
+          "argument": "snapshot_ref",
+          "producer_tool": "list_records"
+        },
+        {
+          "consumer_tool": "update_record",
+          "argument": "navigation_ref",
+          "producer_tool": "download_resource"
+        },
+        {
+          "consumer_tool": "create_upload_session",
+          "argument": "workspace_ref",
+          "producer_tool": "update_record"
+        },
+        {
+          "consumer_tool": "upload_resource",
+          "argument": "session_id",
+          "producer_tool": "create_upload_session"
+        },
+        {
+          "consumer_tool": "upload_resource",
+          "argument": "resource_id",
+          "producer_tool": "download_resource"
+        }
+      ],
+      "final_observation_tool": "observe_workflow_outcome",
+      "final_paths": [
+        "$state.session",
+        "$state.local_downloads.selected",
+        "$state.files.restored_tax_return_2023",
+        "$state.workflow_context",
+        "$state.selection_violation"
+      ]
+    }
+  },
+  "forbidden_shortcuts": [
+    "select a same-name revision without applying the visible recovery policy",
+    "download a revision without its historical snapshot identity",
+    "reuse a historical workspace as the current upload destination",
+    "claim restoration without observing source date and revision provenance"
+  ],
+  "expected_reasoning_features": [
+    "delayed_handle_use",
+    "observation_dependent_decision",
+    "derived_object_dependency",
+    "goal_grounded_verification",
+    "alternative_plan",
+    "temporal_provenance"
+  ],
+  "counterfactual_axes": [
+    {
+      "state_path": "$state.workflow_context.recovery_policy",
+      "variants": [
+        "latest_complete_on_date",
+        "earliest_complete_on_date"
+      ]
+    }
+  ],
+  "instruction_claims": [
+    {
+      "evidence_span": "I need to recover a deleted file named 'tax_return_2023.pdf' from my Bitcasa account.",
+      "kind": "goal",
+      "clause_ids": [
+        "restored_to_current_files"
+      ]
+    },
+    {
+      "evidence_span": "I know it was available on October 15, 2023.",
+      "kind": "goal",
+      "clause_ids": [
+        "historical_revision_downloaded"
+      ]
+    },
+    {
+      "evidence_span": "Please log in using my account ID 'user_99' and password 'secure_pass_123', find the file from that date, download it, and then restore it to my current active files.",
+      "kind": "goal",
+      "clause_ids": [
+        "authenticated_to_bitcasa",
+        "historical_revision_downloaded",
+        "restored_to_current_files"
+      ]
+    }
+  ],
+  "goal_clauses": [
+    {
+      "id": "authenticated_to_bitcasa",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.ui.bitcasa_open",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.session.authenticated",
+              true
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.ui.bitcasa_open",
+        "$state.session.authenticated"
+      ],
+      "evidence_paths": [
+        "$state.ui.bitcasa_open",
+        "$state.session.authenticated"
+      ],
+      "witness_tools": [
+        "open_resource",
+        "authenticate"
+      ]
+    },
+    {
+      "id": "historical_revision_downloaded",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.local_downloads.selected.downloaded",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.local_downloads.selected.name",
+              "tax_return_2023.pdf"
+            ]
+          },
+          {
+            "eq": [
+              "$state.local_downloads.selected.source_date",
+              "2023-10-15"
+            ]
+          },
+          {
+            "eq": [
+              "$state.selection_violation",
+              false
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$state.workflow_context.recovery_policy",
+                      "latest_complete_on_date"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.local_downloads.selected.source_revision_id",
+                      "rev_tax_2023_evening"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.source_revision_id",
+                      "rev_tax_2023_evening"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                      "artifact_tax_return_evening"
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$state.workflow_context.recovery_policy",
+                      "earliest_complete_on_date"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.local_downloads.selected.source_revision_id",
+                      "rev_tax_2023_morning"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.source_revision_id",
+                      "rev_tax_2023_morning"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                      "artifact_tax_return_morning"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.local_downloads.selected"
+      ],
+      "evidence_paths": [
+        "$state.local_downloads.selected",
+        "$state.selection_violation",
+        "$state.workflow_context"
+      ],
+      "witness_tools": [
+        "download_resource"
+      ]
+    },
+    {
+      "id": "restored_to_current_files",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.session.target_date",
+              "today"
+            ]
+          },
+          {
+            "eq": [
+              "$state.session.workspace_revision",
+              2
+            ]
+          },
+          {
+            "eq": [
+              "$state.session.current_view",
+              "current_files"
+            ]
+          },
+          {
+            "eq": [
+              "$state.files.restored_tax_return_2023.name",
+              "tax_return_2023.pdf"
+            ]
+          },
+          {
+            "eq": [
+              "$state.files.restored_tax_return_2023.status",
+              "active"
+            ]
+          },
+          {
+            "eq": [
+              "$state.files.restored_tax_return_2023.source_date",
+              "2023-10-15"
+            ]
+          },
+          {
+            "eq": [
+              "$state.files.restored_tax_return_2023.version_date",
+              "today"
+            ]
+          },
+          {
+            "any": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$state.workflow_context.recovery_policy",
+                      "latest_complete_on_date"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.local_downloads.selected.source_revision_id",
+                      "rev_tax_2023_evening"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.source_revision_id",
+                      "rev_tax_2023_evening"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                      "artifact_tax_return_evening"
+                    ]
+                  }
+                ]
+              },
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$state.workflow_context.recovery_policy",
+                      "earliest_complete_on_date"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.local_downloads.selected.source_revision_id",
+                      "rev_tax_2023_morning"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.source_revision_id",
+                      "rev_tax_2023_morning"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.files.restored_tax_return_2023.restored_from_artifact_id",
+                      "artifact_tax_return_morning"
+                    ]
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.files.restored_tax_return_2023",
+        "$state.session"
+      ],
+      "evidence_paths": [
+        "$state.files.restored_tax_return_2023",
+        "$state.session",
+        "$state.local_downloads.selected",
+        "$state.workflow_context"
+      ],
+      "witness_tools": [
+        "update_record",
+        "upload_resource"
+      ]
+    }
+  ]
+}

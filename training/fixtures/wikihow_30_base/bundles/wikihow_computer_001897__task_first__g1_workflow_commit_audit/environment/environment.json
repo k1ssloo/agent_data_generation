@@ -1,0 +1,456 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "resources": {
+      "duolingo": {
+        "id": "duolingo",
+        "name": "Duolingo",
+        "url": "https://www.duolingo.com",
+        "type": "gamified_learning",
+        "status": "active"
+      },
+      "spaleon": {
+        "id": "spaleon",
+        "name": "Spaleon",
+        "url": "http://spaleon.com",
+        "type": "verb_conjugation_quiz",
+        "status": "active"
+      },
+      "fluencia": {
+        "id": "fluencia",
+        "name": "Fluencia",
+        "url": "https://www.fluencia.com",
+        "type": "structured_lessons",
+        "status": "active"
+      }
+    },
+    "jobs": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_001897",
+      "source_task_id": "wikihow_computer_001897"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "website"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Duolingo"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Opened Duolingo website successfully."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.search_records.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "resources"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "free Spanish language"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "results": [
+              {
+                "id": "duolingo",
+                "name": "Duolingo",
+                "description": "Gamified language learning platform"
+              },
+              {
+                "id": "spaleon",
+                "name": "Spaleon",
+                "description": "Spanish verb conjugation quiz tool"
+              },
+              {
+                "id": "fluencia",
+                "name": "Fluencia",
+                "description": "Customized Spanish lessons from SpanishDict"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SEARCH_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.authenticate.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.account_id",
+                  "user_span_99"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_type",
+                  "password"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_value",
+                  "duoPass123"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.service",
+                  "Duolingo"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "session_id": "duo_session_9982"
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_AUTHENTICATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.job_type",
+                      "spanish_placement_test"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.options",
+                      {
+                        "session_id": "duo_session_9982"
+                      }
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.target_id",
+                      "duolingo"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "job_placement_001"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs",
+              "value": {
+                "job_placement_001": {
+                  "status": "completed",
+                  "result": "Placement level: Intermediate Spanish"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.jobs",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "job_placement_001"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed",
+            "result": "Placement level: Intermediate Spanish"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "jobs": "$state.jobs",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.jobs",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

@@ -10,6 +10,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from training.package import resolve_bundle_path
+
 
 def _task_value(task: Any, name: str, default: Any = None) -> Any:
     if isinstance(task, dict):
@@ -22,12 +24,7 @@ def _bundle_path(task: Any) -> Path:
     nested = metadata.get("metadata")
     if isinstance(nested, dict):
         metadata = {**metadata, **nested}
-    path = metadata.get("bundle_path")
-    if not isinstance(path, str) or not path:
-        raise ValueError("rLLM task metadata must contain bundle_path")
-    project_root = Path(metadata.get("project_root", Path.cwd()))
-    candidate = Path(path)
-    return candidate if candidate.is_absolute() else project_root / candidate
+    return resolve_bundle_path(metadata, fallback_root=Path.cwd())
 
 
 try:

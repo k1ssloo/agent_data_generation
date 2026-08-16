@@ -1,0 +1,81 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Plan and execute a trip to Iran by researching costs, booking travel services, and utilizing local resources.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.bookings",
+              {
+                "booking_99": {
+                  "agency_name": "Persian Voyages",
+                  "type": "guided_tour",
+                  "cost_usd": 1200,
+                  "destination": "Isfahan, Fars, Gilan"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.emails",
+              {
+                "msg_email_101": {
+                  "recipient": "traveler@example.com",
+                  "subject": "Iran Trip Photo Backup",
+                  "body": "Attached is the backup of my Iran trip photo.",
+                  "attachments": [
+                    "file_photo_01"
+                  ],
+                  "status": "sent"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.bookings"
+          },
+          {
+            "exists": "$state.emails"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

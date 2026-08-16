@@ -1,0 +1,62 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Task Manager"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "applications",
+        "query": ""
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "processes",
+        "query": ""
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "proc_render_engine"
+      }
+    },
+    {
+      "tool": "delete_record",
+      "arguments": {
+        "collection": "processes",
+        "record_id": "proc_render_engine",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "processes",
+        "query": ""
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002784"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

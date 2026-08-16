@@ -1,0 +1,221 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "settings"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection.",
+            "default": ""
+          }
+        },
+        "required": [
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "update_record",
+      "description": "Update fields on an existing record.",
+      "capability_id": "wikihow.update_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "settings"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Record to update."
+          },
+          "patch": {
+            "type": "object",
+            "description": "Fields to merge into the record."
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id",
+          "patch",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "record_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "search_records",
+      "description": "Search a named collection for records matching a user-visible query.",
+      "capability_id": "wikihow.search_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to search.",
+            "enum": [
+              "flights"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Search query grounded in the user request or prior tool output."
+          }
+        },
+        "required": [
+          "collection",
+          "query"
+        ]
+      }
+    },
+    {
+      "name": "get_record",
+      "description": "Retrieve one record from a named collection by id.",
+      "capability_id": "wikihow.get_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "flights"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Identifier of the record to retrieve."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id"
+        ]
+      },
+      "provenance_required": [
+        "record_id"
+      ]
+    },
+    {
+      "name": "create_record",
+      "description": "Create a record in a named collection.",
+      "capability_id": "wikihow.create_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection where the record should be created.",
+            "enum": [
+              "bookings"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "description": "Fields for the new record."
+          }
+        },
+        "required": [
+          "collection",
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

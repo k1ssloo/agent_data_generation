@@ -1,0 +1,77 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Skype"
+      }
+    },
+    {
+      "tool": "authenticate",
+      "arguments": {
+        "service": "Skype",
+        "account_id": "us_caller_1",
+        "credential_type": "password",
+        "credential_value": "password123"
+      }
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "skype_directory",
+        "query": "Sean Murphy"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "contacts",
+        "fields": {
+          "id": "sean_ireland_99",
+          "name": "Sean Murphy"
+        }
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "sean_ireland_99"
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "contacts",
+        "record_id": "sean_ireland_99",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "voice_call",
+        "target_id": "sean_ireland_99",
+        "options": {
+          "call_type": "voice"
+        }
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002098"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

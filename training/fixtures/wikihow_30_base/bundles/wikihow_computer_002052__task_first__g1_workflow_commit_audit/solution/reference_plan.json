@@ -1,0 +1,76 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "agencies",
+        "query": "guided tour"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "bookings",
+        "fields": {
+          "agency_name": "Persian Voyages",
+          "type": "guided_tour",
+          "cost_usd": 1200,
+          "destination": "Isfahan, Fars, Gilan"
+        }
+      }
+    },
+    {
+      "tool": "locate_file",
+      "arguments": {
+        "file_name": "iran_trip_photo_1.jpg"
+      }
+    },
+    {
+      "tool": "send_message",
+      "arguments": {
+        "channel": "email",
+        "recipient": "traveler@example.com",
+        "subject": "Iran Trip Photo Backup",
+        "body": "Attached is the backup of my Iran trip photo."
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "msg_email_101"
+      }
+    },
+    {
+      "tool": "attach_resource",
+      "arguments": {
+        "target_collection": "emails",
+        "target_id": "msg_email_101",
+        "resource_id": "file_photo_01",
+        "relationship": "photo_backup",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "verify_delivery",
+      "arguments": {
+        "target_id": "msg_email_101"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002052"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

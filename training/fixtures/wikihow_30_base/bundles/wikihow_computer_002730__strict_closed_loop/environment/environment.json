@@ -1,0 +1,1082 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "ui": {
+      "task_manager_open": false,
+      "task_manager_was_opened": false
+    },
+    "system_metrics": {
+      "performance_tab": {
+        "cpu_usage_percent": 12,
+        "ram_usage_mb": 1024,
+        "ram_total_mb": 4096,
+        "status": "normal"
+      }
+    },
+    "jobs": {
+      "stress_test_01": {
+        "status": "not_started",
+        "load": "high",
+        "target_id": "system_metrics"
+      }
+    },
+    "stress_control": {
+      "ramp_profile": "gradual",
+      "phase": "idle",
+      "baseline_observed": false,
+      "baseline_handle": "",
+      "latest_measurement": "",
+      "peak_observed": false,
+      "peak_cpu_percent": 0,
+      "peak_ram_usage_mb": 0,
+      "stop_evidence": "",
+      "cancellation_handle": "",
+      "settled": false,
+      "overrun": false
+    },
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002730",
+      "source_task_id": "wikihow_computer_002730"
+    }
+  },
+  "capabilities": {
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle",
+            "target_system": "system_metrics",
+            "target_cpu_percent": 95,
+            "target_ram_usage_mb": 3900
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": []
+        }
+      ]
+    },
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "task_manager_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Task Manager"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.task_manager_open",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Task Manager opened with Performance visible."
+          },
+          "effects": [
+            {
+              "set": "$state.ui.task_manager_open",
+              "value": true
+            },
+            {
+              "set": "$state.ui.task_manager_was_opened",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.ui.task_manager_open"
+          ],
+          "writes": [
+            "$state.ui.task_manager_open",
+            "$state.ui.task_manager_was_opened"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.close_resource.v1": {
+      "branches": [
+        {
+          "id": "task_manager_closed_after_settle",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "app"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Task Manager"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.task_manager_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "settled"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.settled",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "closed": "Task Manager"
+          },
+          "effects": [
+            {
+              "set": "$state.ui.task_manager_open",
+              "value": false
+            }
+          ],
+          "reads": [
+            "$state.ui.task_manager_open",
+            "$state.stress_control.phase",
+            "$state.stress_control.settled"
+          ],
+          "writes": [
+            "$state.ui.task_manager_open"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_CLOSE_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.read_state.v1": {
+      "branches": [
+        {
+          "id": "baseline_metrics",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "performance_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "idle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.task_manager_open",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "measurement_handle": "measurement_baseline_12_1024",
+            "phase": "idle",
+            "ramp_profile": "$state.stress_control.ramp_profile",
+            "metrics": "$state.system_metrics.performance_tab"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.baseline_observed",
+              "value": true
+            },
+            {
+              "set": "$state.stress_control.baseline_handle",
+              "value": "measurement_baseline_12_1024"
+            },
+            {
+              "set": "$state.stress_control.latest_measurement",
+              "value": "measurement_baseline_12_1024"
+            }
+          ],
+          "reads": [
+            "$state.system_metrics.performance_tab",
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile",
+            "$state.ui.task_manager_open"
+          ],
+          "writes": [
+            "$state.stress_control.baseline_observed",
+            "$state.stress_control.baseline_handle",
+            "$state.stress_control.latest_measurement"
+          ]
+        },
+        {
+          "id": "cpu_ramp_observed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "performance_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "ramp_cpu"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "measurement_handle": "measurement_ramp_cpu_72_2400",
+            "phase": "ramp_cpu",
+            "ramp_profile": "$state.stress_control.ramp_profile",
+            "target_reached": false,
+            "metrics": "$state.system_metrics.performance_tab"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.latest_measurement",
+              "value": "measurement_ramp_cpu_72_2400"
+            }
+          ],
+          "reads": [
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile",
+            "$state.system_metrics.performance_tab"
+          ],
+          "writes": [
+            "$state.stress_control.latest_measurement"
+          ]
+        },
+        {
+          "id": "memory_ramp_observed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "performance_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "ramp_memory"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "measurement_handle": "measurement_ramp_memory_94_3200",
+            "phase": "ramp_memory",
+            "ramp_profile": "$state.stress_control.ramp_profile",
+            "target_reached": false,
+            "metrics": "$state.system_metrics.performance_tab"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.latest_measurement",
+              "value": "measurement_ramp_memory_94_3200"
+            }
+          ],
+          "reads": [
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile",
+            "$state.system_metrics.performance_tab"
+          ],
+          "writes": [
+            "$state.stress_control.latest_measurement"
+          ]
+        },
+        {
+          "id": "target_load_observed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "performance_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "target_load"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "measurement_handle": "measurement_peak_98_4096",
+            "phase": "target_load",
+            "ramp_profile": "$state.stress_control.ramp_profile",
+            "target_reached": true,
+            "metrics": "$state.system_metrics.performance_tab"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.peak_observed",
+              "value": true
+            },
+            {
+              "set": "$state.stress_control.peak_cpu_percent",
+              "value": 98
+            },
+            {
+              "set": "$state.stress_control.peak_ram_usage_mb",
+              "value": 4096
+            },
+            {
+              "set": "$state.stress_control.latest_measurement",
+              "value": "measurement_peak_98_4096"
+            }
+          ],
+          "reads": [
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile",
+            "$state.system_metrics.performance_tab"
+          ],
+          "writes": [
+            "$state.stress_control.peak_observed",
+            "$state.stress_control.peak_cpu_percent",
+            "$state.stress_control.peak_ram_usage_mb",
+            "$state.stress_control.latest_measurement"
+          ]
+        },
+        {
+          "id": "settled_metrics",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "performance_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "settled"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "measurement_handle": "measurement_settled_5_1200",
+            "phase": "settled",
+            "metrics": {
+              "cpu_usage_percent": 5,
+              "ram_usage_mb": 1200,
+              "ram_total_mb": 4096,
+              "status": "normal"
+            }
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.settled",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ],
+          "writes": [
+            "$state.stress_control.settled"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_READ_STATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "stress_started_from_baseline",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_type",
+                  "stress_test"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.options",
+                  {}
+                ]
+              },
+              {
+                "eq": [
+                  "$args.baseline_handle",
+                  "$state.stress_control.baseline_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.baseline_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "idle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.ramp_profile",
+                  "gradual"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "stress_test_01",
+            "phase": "ramp_cpu"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs.stress_test_01.status",
+              "value": "running"
+            },
+            {
+              "set": "$state.stress_control.phase",
+              "value": "ramp_cpu"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 72,
+                "ram_usage_mb": 2400,
+                "ram_total_mb": 4096,
+                "status": "under_load"
+              }
+            }
+          ],
+          "reads": [
+            "$state.stress_control.baseline_observed",
+            "$state.stress_control.baseline_handle",
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile"
+          ],
+          "writes": [
+            "$state.jobs.stress_test_01.status",
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "stress_started_with_immediate_saturation",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_type",
+                  "stress_test"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "system_metrics"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.options",
+                  {}
+                ]
+              },
+              {
+                "eq": [
+                  "$args.baseline_handle",
+                  "$state.stress_control.baseline_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.baseline_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "idle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.ramp_profile",
+                  "immediate"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "stress_test_01",
+            "phase": "target_load"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs.stress_test_01.status",
+              "value": "running"
+            },
+            {
+              "set": "$state.stress_control.phase",
+              "value": "target_load"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 98,
+                "ram_usage_mb": 4096,
+                "ram_total_mb": 4096,
+                "status": "maxed_out"
+              }
+            }
+          ],
+          "reads": [
+            "$state.stress_control.baseline_observed",
+            "$state.stress_control.baseline_handle",
+            "$state.stress_control.phase",
+            "$state.stress_control.ramp_profile"
+          ],
+          "writes": [
+            "$state.jobs.stress_test_01.status",
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "continue_after_cpu_sample",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_id",
+                  "stress_test_01"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.jobs.stress_test_01.status",
+                  "running"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "ramp_cpu"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.observation_handle",
+                  "measurement_ramp_cpu_72_2400"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.observation_handle",
+                  "$state.stress_control.latest_measurement"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "job_id": "stress_test_01",
+            "job_status": "running",
+            "continued": true,
+            "new_phase": "ramp_memory"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.phase",
+              "value": "ramp_memory"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 94,
+                "ram_usage_mb": 3200,
+                "ram_total_mb": 4096,
+                "status": "under_load"
+              }
+            }
+          ],
+          "reads": [
+            "$state.jobs.stress_test_01",
+            "$state.stress_control.phase",
+            "$state.stress_control.latest_measurement"
+          ],
+          "writes": [
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "continue_after_memory_sample",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_id",
+                  "stress_test_01"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.jobs.stress_test_01.status",
+                  "running"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "ramp_memory"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.observation_handle",
+                  "measurement_ramp_memory_94_3200"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.observation_handle",
+                  "$state.stress_control.latest_measurement"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "job_id": "stress_test_01",
+            "job_status": "running",
+            "continued": true,
+            "new_phase": "target_load"
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.phase",
+              "value": "target_load"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 98,
+                "ram_usage_mb": 4096,
+                "ram_total_mb": 4096,
+                "status": "maxed_out"
+              }
+            }
+          ],
+          "reads": [
+            "$state.jobs.stress_test_01",
+            "$state.stress_control.phase",
+            "$state.stress_control.latest_measurement"
+          ],
+          "writes": [
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "unsafe_overrun_after_target",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_id",
+                  "stress_test_01"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.jobs.stress_test_01.status",
+                  "running"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "target_load"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "error_code": "STRESS_TARGET_OVERRUN",
+            "emergency_stop_required": true
+          },
+          "effects": [
+            {
+              "set": "$state.stress_control.phase",
+              "value": "overrun"
+            },
+            {
+              "set": "$state.stress_control.overrun",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.jobs.stress_test_01",
+            "$state.stress_control.phase"
+          ],
+          "writes": [
+            "$state.stress_control.phase",
+            "$state.stress_control.overrun"
+          ]
+        },
+        {
+          "id": "cooling_settle_observed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_id",
+                  "stress_test_01"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.jobs.stress_test_01.status",
+                  "cancelling"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "cooling"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.observation_handle",
+                  "$state.stress_control.cancellation_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "job_id": "stress_test_01",
+            "job_status": "cooling",
+            "metrics": "$state.system_metrics.performance_tab"
+          },
+          "effects": [],
+          "after_response_effects": [
+            {
+              "set": "$state.jobs.stress_test_01.status",
+              "value": "cancelled"
+            },
+            {
+              "set": "$state.stress_control.phase",
+              "value": "settled"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 5,
+                "ram_usage_mb": 1200,
+                "ram_total_mb": 4096,
+                "status": "normal"
+              }
+            }
+          ],
+          "reads": [
+            "$state.jobs.stress_test_01",
+            "$state.stress_control.phase",
+            "$state.stress_control.cancellation_handle",
+            "$state.system_metrics.performance_tab"
+          ],
+          "writes": [
+            "$state.jobs.stress_test_01.status",
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.cancel_job.v1": {
+      "branches": [
+        {
+          "id": "stop_after_observed_target",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_id",
+                  "stress_test_01"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.measurement_handle",
+                  "measurement_peak_98_4096"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.phase",
+                  "target_load"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.peak_observed",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "stress_test_01",
+            "stopped_from_measurement": "$args.measurement_handle",
+            "cancellation_handle": "cancellation_stress_test_01"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs.stress_test_01.status",
+              "value": "cancelling"
+            },
+            {
+              "set": "$state.stress_control.stop_evidence",
+              "value": "$args.measurement_handle"
+            },
+            {
+              "set": "$state.stress_control.cancellation_handle",
+              "value": "cancellation_stress_test_01"
+            },
+            {
+              "set": "$state.stress_control.phase",
+              "value": "cooling"
+            },
+            {
+              "set": "$state.system_metrics.performance_tab",
+              "value": {
+                "cpu_usage_percent": 42,
+                "ram_usage_mb": 2200,
+                "ram_total_mb": 4096,
+                "status": "cooling"
+              }
+            }
+          ],
+          "reads": [
+            "$state.stress_control.phase",
+            "$state.stress_control.peak_observed"
+          ],
+          "writes": [
+            "$state.jobs.stress_test_01.status",
+            "$state.stress_control.stop_evidence",
+            "$state.stress_control.cancellation_handle",
+            "$state.stress_control.phase",
+            "$state.system_metrics.performance_tab"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_CANCEL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "settled_workflow_outcome",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.workflow_context_handle",
+                  "$state.workflow_context.handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.stress_control.settled",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "ui": "$state.ui",
+              "jobs": "$state.jobs",
+              "system_metrics": "$state.system_metrics",
+              "stress_control": "$state.stress_control",
+              "workflow_context": "$state.workflow_context"
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.ui",
+            "$state.jobs",
+            "$state.system_metrics",
+            "$state.stress_control",
+            "$state.workflow_context"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_WORKFLOW_OUTCOME_OBSERVE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

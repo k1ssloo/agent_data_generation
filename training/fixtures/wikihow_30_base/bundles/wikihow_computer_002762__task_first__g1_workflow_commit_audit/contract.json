@@ -1,0 +1,74 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Set up a Plex media server on a computer and connect it to an Android device.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.auth_status",
+              {
+                "authenticated": true,
+                "user": "plex_user_99"
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.settings",
+              {
+                "plex_server_config": {
+                  "update_automatically": true,
+                  "update_periodically": true,
+                  "include_music_libraries": true,
+                  "empty_trash_after_scan": false
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.auth_status"
+          },
+          {
+            "exists": "$state.settings"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

@@ -1,0 +1,89 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Calibrate, operate, write on, and save work on a smartboard.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.jobs",
+              {
+                "job_cal_992": {
+                  "status": "completed",
+                  "type": "calibration"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.notebook_sessions",
+              {
+                "session_001": {
+                  "title": "Morning Brainstorm",
+                  "content": "Discussing project milestones",
+                  "status": "saved"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.smartboard_status",
+              {
+                "calibration": {
+                  "status": "calibrated",
+                  "last_calibrated": "just now"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.jobs"
+          },
+          {
+            "exists": "$state.notebook_sessions"
+          },
+          {
+            "exists": "$state.smartboard_status"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

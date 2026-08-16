@@ -1,0 +1,55 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "GarageBand"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "midi_status",
+        "target_id": ""
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "midi_keyboard_0"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "midi_test",
+        "target_id": "midi_keyboard_0",
+        "options": {},
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_midi_test_01"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002756"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

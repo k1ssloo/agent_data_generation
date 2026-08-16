@@ -1,0 +1,83 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "https://france-visas.gouv.fr"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "visa_applications",
+        "fields": {
+          "applicant_name": "John Doe",
+          "visa_type": "Tourist"
+        }
+      }
+    },
+    {
+      "tool": "attach_resource",
+      "arguments": {
+        "target_collection": "visa_applications",
+        "target_id": "visa_app_9921",
+        "resource_id": "photo_john_123",
+        "relationship": "Passport Photo"
+      }
+    },
+    {
+      "tool": "attach_resource",
+      "arguments": {
+        "target_collection": "visa_applications",
+        "target_id": "visa_app_9921",
+        "resource_id": "insurance_john_456",
+        "relationship": "Proof of Health Insurance"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "visa_processing",
+        "target_id": "visa_app_9921",
+        "options": {}
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "job_visa_771"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_visa_771",
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "resume_templates",
+        "query": "French"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002084"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

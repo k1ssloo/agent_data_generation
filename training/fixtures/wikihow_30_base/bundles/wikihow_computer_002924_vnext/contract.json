@@ -1,0 +1,625 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Format the discovered target pen drive and leave it no longer write-protected, with visible recovery if formatting exposes active write protection.",
+  "preserved_requirements": [
+    "The user-visible objective remains formatting a write-protected pen drive and removing its write-protection.",
+    "Registry and formatting outcomes must be based on ordinary Windows UI observations available in the simulated environment.",
+    "The formatted device must be the same pen drive discovered from the public USB/Explorer affordances."
+  ],
+  "new_requirements": [
+    "A visible environment condition selects among genuinely different successful strategies."
+  ],
+  "discoverable_evidence": [
+    {
+      "source": "Format dialog result or error message",
+      "reveals": [
+        "$state.format.last_result.error_code",
+        "$state.format.last_success.status",
+        "$state.outcome.target_pen_drive_formatted"
+      ]
+    },
+    {
+      "source": "Registry Editor right pane at the public StorageDevicePolicies location",
+      "reveals": [
+        "$state.registry.policy_status.write_protect_effective",
+        "whether the relevant policy value is missing, active, or inactive"
+      ]
+    },
+    {
+      "source": "Windows Explorer drive listing and context menu",
+      "reveals": [
+        "$state.usb.target_handle_discovered",
+        "$state.usb.discovered_target_drive_handle",
+        "$state.format_dialog.selected_drive_handle",
+        "$state.outcome.target_pen_drive_write_protection_removed"
+      ]
+    },
+    {
+      "source": "Public action/result trace exposed by the environment",
+      "reveals": [
+        "$state.format.write_protect_failure_observed",
+        "$state.recovery.visible_error_code_used",
+        "$state.recovery.policy_repair_after_write_protect_error_observed",
+        "$state.recovery.successful_format_after_policy_repair"
+      ]
+    }
+  ],
+  "goal_predicates": [
+    {
+      "id": "terminal_target_formatted_and_unprotected",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_formatted",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_write_protection_removed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.status",
+              "success"
+            ]
+          },
+          {
+            "ne": [
+              "$state.usb.discovered_target_drive_handle",
+              "undiscovered"
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.drive_handle",
+              "$state.usb.discovered_target_drive_handle"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "conditional_write_protect_recovery_completed",
+      "predicate": {
+        "any": [
+          {
+            "eq": [
+              "$state.format.write_protect_failure_observed",
+              false
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.visible_error_code_used",
+                  "WRITE_PROTECT_ACTIVE"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.policy_repair_after_write_protect_error_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.successful_format_after_policy_repair",
+                  true
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "format_target_must_be_discovered_public_drive",
+      "predicate": {
+        "any": [
+          {
+            "eq": [
+              "$state.format_dialog.target_selected",
+              false
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.usb.target_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.discovered_target_drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.selected_drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "never_start_format_on_non_target_drive",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.safety.non_target_drive_format_started",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "do_not_use_undiscovered_drive_handle",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.safety.undiscovered_handle_used",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "registry_edits_stay_within_public_storage_policy_scope",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.safety.registry_write_outside_storage_device_policy",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "no_format_attempt_while_restart_is_pending",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.safety.format_started_while_restart_pending",
+              false
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "public_drive_status_matches_inactive_policy",
+      "predicate": {
+        "any": [
+          {
+            "ne": [
+              "$state.registry.policy_status.write_protect_effective",
+              "inactive"
+            ]
+          },
+          {
+            "eq": [
+              "$state.system.restart_pending",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.usb.connected_drive_status",
+              "not_write_protected"
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "forbidden_shortcuts": [
+    "Claiming completion from a registry edit alone without a public successful format result for the discovered pen drive.",
+    "Ignoring a visible WRITE_PROTECT_ACTIVE error and accepting a later state that lacks public policy-repair evidence.",
+    "Formatting or selecting any drive whose handle was not first discovered from the public Explorer/USB listing.",
+    "Using a hidden, memorized, or private drive identifier instead of the currently visible drive handle.",
+    "Editing unrelated registry locations or treating creation of an unrelated value as clearing write-protection.",
+    "Assuming StorageDevicePolicies or WriteProtect state without observing the public registry view when recovery is needed."
+  ],
+  "counterfactual_axes": [
+    {
+      "state_path": "$state.registry.policy_status.storage_device_policies_exists",
+      "variants": [
+        true,
+        false
+      ]
+    },
+    {
+      "state_path": "$state.usb.actual_target_drive_handle",
+      "variants": [
+        "visible_target_a",
+        "visible_target_b"
+      ]
+    },
+    {
+      "state_path": "$state.format_dialog.supported_profile",
+      "variants": [
+        "visible_defaults_supported",
+        "visible_defaults_rejected_with_supported_alternative"
+      ]
+    },
+    {
+      "state_path": "$state.system.policy_activation_mode",
+      "variants": [
+        "restart_required",
+        "session_refresh_supported"
+      ]
+    }
+  ],
+  "expected_reasoning_features": [
+    "delayed_handle_use",
+    "observation_dependent_decision",
+    "semantic_recovery",
+    "alternative_plan",
+    "goal_grounded_verification"
+  ],
+  "selected_operator": "alternative_recovery_affordance",
+  "rationale": "The extension preserves the original objective but makes success depend on a visible failure state: a WRITE_PROTECT_ACTIVE format error changes the required strategy from ordinary formatting to diagnosis and policy repair before a successful reattempt. The added dependency is executable and publicly observable rather than a longer prescribed action list.",
+  "instruction_claims": [
+    {
+      "evidence_span": "Using the simulated Windows UI, discover the target pen drive through ordinary USB and Explorer surfaces, format that same drive, and leave it no longer write-protected.",
+      "clause_ids": [
+        "c1",
+        "c2"
+      ],
+      "kind": "goal"
+    },
+    {
+      "evidence_span": "Base every choice on visible application state, never format an undiscovered or non-target drive, do not start formatting while a restart is pending, keep any system change within a visibly authorized scope, and finish by checking an ordinary status view.",
+      "clause_ids": [
+        "c3",
+        "c4",
+        "c5",
+        "c6",
+        "c7"
+      ],
+      "kind": "constraint"
+    }
+  ],
+  "goal_clauses": [
+    {
+      "id": "c1",
+      "predicate": {
+        "ne": [
+          "$state.usb.discovered_target_drive_handle",
+          "undiscovered"
+        ]
+      },
+      "transition_paths": [
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "evidence_paths": [
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "witness_tools": [
+        "inspect_explorer_removable_drives"
+      ]
+    },
+    {
+      "id": "c2",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_formatted",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_write_protection_removed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.status",
+              "success"
+            ]
+          },
+          {
+            "ne": [
+              "$state.usb.discovered_target_drive_handle",
+              "undiscovered"
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.drive_handle",
+              "$state.usb.discovered_target_drive_handle"
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.outcome.target_pen_drive_write_protection_removed",
+        "$state.format.last_success.status",
+        "$state.format.last_success.drive_handle"
+      ],
+      "evidence_paths": [
+        "$state.format.last_success.drive_handle",
+        "$state.format.last_success.status",
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.outcome.target_pen_drive_write_protection_removed",
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "witness_tools": [
+        "start_format_from_dialog"
+      ]
+    },
+    {
+      "id": "c3",
+      "predicate": {
+        "any": [
+          {
+            "eq": [
+              "$state.format.write_protect_failure_observed",
+              false
+            ]
+          },
+          {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.visible_error_code_used",
+                  "WRITE_PROTECT_ACTIVE"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.policy_repair_after_write_protect_error_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.successful_format_after_policy_repair",
+                  true
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.format.write_protect_failure_observed",
+        "$state.recovery.visible_error_code_used",
+        "$state.recovery.policy_repair_after_write_protect_error_observed",
+        "$state.recovery.successful_format_after_policy_repair"
+      ],
+      "evidence_paths": [
+        "$state.format.write_protect_failure_observed",
+        "$state.recovery.policy_repair_after_write_protect_error_observed",
+        "$state.recovery.successful_format_after_policy_repair",
+        "$state.recovery.visible_error_code_used"
+      ],
+      "witness_tools": [
+        "start_format_from_dialog",
+        "open_storage_device_policy_view",
+        "inspect_storage_policy_values",
+        "set_write_protect_policy_inactive"
+      ]
+    },
+    {
+      "id": "c4",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_formatted",
+              true
+            ]
+          },
+          {
+            "ne": [
+              "$state.usb.discovered_target_drive_handle",
+              "undiscovered"
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.drive_handle",
+              "$state.usb.discovered_target_drive_handle"
+            ]
+          },
+          {
+            "eq": [
+              "$state.safety.non_target_drive_format_started",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.safety.undiscovered_handle_used",
+              false
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.format.last_success.drive_handle",
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "evidence_paths": [
+        "$state.format.last_success.drive_handle",
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.safety.non_target_drive_format_started",
+        "$state.safety.undiscovered_handle_used",
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "witness_tools": [
+        "inspect_explorer_removable_drives",
+        "start_format_from_dialog"
+      ]
+    },
+    {
+      "id": "c5",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_formatted",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.safety.format_started_while_restart_pending",
+              false
+            ]
+          },
+          {
+            "eq": [
+              "$state.system.restart_pending",
+              false
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.system.restart_pending"
+      ],
+      "evidence_paths": [
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.safety.format_started_while_restart_pending",
+        "$state.system.restart_pending"
+      ],
+      "witness_tools": [
+        "restart_computer_to_apply_policy",
+        "start_format_from_dialog"
+      ]
+    },
+    {
+      "id": "c6",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.recovery.policy_repair_after_write_protect_error_observed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.registry.policy_status.write_protect_effective",
+              "inactive"
+            ]
+          },
+          {
+            "eq": [
+              "$state.safety.registry_write_outside_storage_device_policy",
+              false
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.recovery.policy_repair_after_write_protect_error_observed",
+        "$state.registry.policy_status.write_protect_effective"
+      ],
+      "evidence_paths": [
+        "$state.recovery.policy_repair_after_write_protect_error_observed",
+        "$state.registry.policy_status.write_protect_effective",
+        "$state.safety.registry_write_outside_storage_device_policy"
+      ],
+      "witness_tools": [
+        "set_write_protect_policy_inactive"
+      ]
+    },
+    {
+      "id": "c7",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_formatted",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.outcome.target_pen_drive_write_protection_removed",
+              true
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.status",
+              "success"
+            ]
+          },
+          {
+            "ne": [
+              "$state.usb.discovered_target_drive_handle",
+              "undiscovered"
+            ]
+          },
+          {
+            "eq": [
+              "$state.format.last_success.drive_handle",
+              "$state.usb.discovered_target_drive_handle"
+            ]
+          }
+        ]
+      },
+      "transition_paths": [
+        "$state.format.last_success.status",
+        "$state.format.last_success.drive_handle",
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.outcome.target_pen_drive_write_protection_removed"
+      ],
+      "evidence_paths": [
+        "$state.format.last_success.drive_handle",
+        "$state.format.last_success.status",
+        "$state.outcome.target_pen_drive_formatted",
+        "$state.outcome.target_pen_drive_write_protection_removed",
+        "$state.usb.discovered_target_drive_handle"
+      ],
+      "witness_tools": [
+        "start_format_from_dialog"
+      ]
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": true
+  }
+}

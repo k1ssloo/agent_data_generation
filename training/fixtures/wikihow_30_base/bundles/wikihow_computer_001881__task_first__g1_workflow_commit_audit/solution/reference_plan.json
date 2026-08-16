@@ -1,0 +1,82 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "workspace",
+        "target": "Smart Notebook"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "calibration_status",
+        "target_id": ""
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "calibration",
+        "target_id": "smartboard_01",
+        "options": {}
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_cal_992"
+      }
+    },
+    {
+      "tool": "create_record",
+      "arguments": {
+        "collection": "notebook_sessions",
+        "fields": {
+          "title": "Morning Brainstorm"
+        }
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "session_001"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "notebook_sessions",
+        "record_id": "session_001",
+        "patch": {
+          "content": "Discussing project milestones",
+          "status": "saved"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "verify_resource",
+      "arguments": {
+        "resource_id": "session_001",
+        "expected_status": "saved"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_001881"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

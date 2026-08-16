@@ -1,0 +1,244 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "website"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open."
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "authenticate",
+      "description": "Authenticate to a service or account using a provided credential.",
+      "capability_id": "wikihow.authenticate.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "service": {
+            "type": "string",
+            "description": "Service or application to authenticate against."
+          },
+          "account_id": {
+            "type": "string",
+            "description": "Account, user, or profile identifier."
+          },
+          "credential_type": {
+            "type": "string",
+            "description": "Credential type, such as password, picture_password, token, or sso."
+          },
+          "credential_value": {
+            "type": "string",
+            "description": "Credential value supplied by the user or prior state."
+          }
+        },
+        "required": [
+          "service",
+          "account_id",
+          "credential_type",
+          "credential_value"
+        ]
+      }
+    },
+    {
+      "name": "list_records",
+      "description": "List records from a named collection, optionally narrowed by a simple query string.",
+      "capability_id": "wikihow.list_records.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection to list, such as classes, emails, files, accounts, map_regions, or assignments.",
+            "enum": [
+              "files"
+            ]
+          },
+          "query": {
+            "type": "string",
+            "description": "Simple query, filter, or empty string when listing the whole collection.",
+            "default": ""
+          }
+        },
+        "required": [
+          "collection"
+        ]
+      }
+    },
+    {
+      "name": "set_permission",
+      "description": "Set sharing or access permission for a resource.",
+      "capability_id": "wikihow.set_permission.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "description": "Resource whose permission should be changed."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Requested visibility, such as private, shared, public_link, or organization."
+          }
+        },
+        "required": [
+          "resource_id",
+          "visibility"
+        ]
+      },
+      "provenance_required": [
+        "resource_id",
+        "visibility"
+      ]
+    },
+    {
+      "name": "add_recipient",
+      "description": "Add a recipient to an existing message, job, or sharing target.",
+      "capability_id": "wikihow.add_recipient.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "target_id": {
+            "type": "string",
+            "description": "Message, job, or resource identifier."
+          },
+          "recipient": {
+            "type": "string",
+            "description": "Recipient to add."
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "target_id",
+          "recipient",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "target_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "verify_permission",
+      "description": "Verify that a resource has the required sharing or access permission.",
+      "capability_id": "wikihow.verify_permission.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "description": "Resource to verify."
+          },
+          "visibility": {
+            "type": "string",
+            "description": "Expected visibility or permission state."
+          }
+        },
+        "required": [
+          "resource_id",
+          "visibility"
+        ]
+      },
+      "provenance_required": [
+        "resource_id",
+        "visibility"
+      ]
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

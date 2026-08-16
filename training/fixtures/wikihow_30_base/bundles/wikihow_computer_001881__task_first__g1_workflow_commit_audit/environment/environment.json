@@ -1,0 +1,560 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "smartboard_status": {
+      "calibration": {
+        "status": "needs_calibration",
+        "last_calibrated": "never"
+      }
+    },
+    "jobs": {},
+    "notebook_sessions": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_001881",
+      "source_task_id": "wikihow_computer_001881"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "workspace"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "Smart Notebook"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "message": "Smart Notebook workspace opened successfully."
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.read_state.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.target_id",
+                  ""
+                ]
+              },
+              {
+                "eq": [
+                  "$args.view",
+                  "calibration_status"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "calibration": {
+              "status": "needs_calibration",
+              "last_calibrated": "never"
+            }
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_READ_STATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.start_job.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.job_type",
+                  "calibration"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.options",
+                  {}
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  "smartboard_01"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_id": "job_cal_992"
+          },
+          "effects": [
+            {
+              "set": "$state.jobs",
+              "value": {
+                "job_cal_992": {
+                  "status": "completed",
+                  "type": "calibration"
+                }
+              }
+            },
+            {
+              "set": "$state.smartboard_status",
+              "value": {
+                "calibration": {
+                  "status": "calibrated",
+                  "last_calibrated": "just now"
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.jobs",
+            "$state.smartboard_status"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_START_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.poll_job.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "eq": [
+              "$args.job_id",
+              "job_cal_992"
+            ]
+          },
+          "response": {
+            "status": "success",
+            "job_status": "completed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.jobs[$args.job_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_POLL_JOB_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.create_record.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "notebook_sessions"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.fields",
+                  {
+                    "title": "Morning Brainstorm"
+                  }
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record_id": "session_001",
+            "fields": {
+              "title": "Morning Brainstorm"
+            }
+          },
+          "effects": [
+            {
+              "set": "$state.notebook_sessions",
+              "value": {
+                "session_001": {
+                  "title": "Morning Brainstorm",
+                  "content": "",
+                  "status": "draft"
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.notebook_sessions"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_CREATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.update_record.v1": {
+      "branches": [
+        {
+          "id": "observed_06",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.collection",
+                      "notebook_sessions"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.patch",
+                      {
+                        "content": "Discussing project milestones",
+                        "status": "saved"
+                      }
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.record_id",
+                      "session_001"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record_id": "session_001"
+          },
+          "effects": [
+            {
+              "set": "$state.notebook_sessions",
+              "value": {
+                "session_001": {
+                  "title": "Morning Brainstorm",
+                  "content": "Discussing project milestones",
+                  "status": "saved"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.notebook_sessions[$args.record_id]",
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.notebook_sessions",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_UPDATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.verify_resource.v1": {
+      "branches": [
+        {
+          "id": "observed_07",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.expected_status",
+                  "saved"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "session_001"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "verified": true,
+            "resource_id": "session_001",
+            "current_status": "saved"
+          },
+          "effects": [],
+          "reads": [
+            "$state.notebook_sessions[$args.resource_id]",
+            "$state.notebook_sessions[$args.resource_id].status"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_VERIFY_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "jobs": "$state.jobs",
+              "notebook_sessions": "$state.notebook_sessions",
+              "smartboard_status": "$state.smartboard_status",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.jobs",
+            "$state.notebook_sessions",
+            "$state.smartboard_status",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

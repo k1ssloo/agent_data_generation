@@ -1,0 +1,76 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "stereos",
+        "query": ""
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "stereos",
+        "record_id": "stereo_model_x"
+      }
+    },
+    {
+      "tool": "search_records",
+      "arguments": {
+        "collection": "manuals",
+        "query": "Pioneer DEH-S1100UB"
+      }
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "website",
+        "target": "https://pioneer-car.eu/manuals/deh-s1100ub"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "stereo_model_x"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "speaker_diagnostic_test",
+        "target_id": "stereo_model_x",
+        "options": {},
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "job_diag_999"
+      }
+    },
+    {
+      "tool": "verify_job_result",
+      "arguments": {
+        "job_id": "job_diag_999",
+        "expected_status": "completed"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002916"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

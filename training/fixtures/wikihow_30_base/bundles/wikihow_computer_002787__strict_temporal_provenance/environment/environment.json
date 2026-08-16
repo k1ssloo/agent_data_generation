@@ -1,0 +1,1107 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "ui": {
+      "bitcasa_open": false
+    },
+    "session": {
+      "authenticated": false,
+      "current_view": "login",
+      "target_date": "today",
+      "selected_snapshot_handle": "",
+      "workspace_revision": 1
+    },
+    "revision_catalog": {
+      "rev_tax_2023_morning": {
+        "revision_id": "rev_tax_2023_morning",
+        "name": "tax_return_2023.pdf",
+        "source_date": "2023-10-15",
+        "capture_sequence": 1,
+        "completeness": "complete"
+      },
+      "rev_tax_2023_evening": {
+        "revision_id": "rev_tax_2023_evening",
+        "name": "tax_return_2023.pdf",
+        "source_date": "2023-10-15",
+        "capture_sequence": 2,
+        "completeness": "complete"
+      },
+      "rev_tax_2023_partial": {
+        "revision_id": "rev_tax_2023_partial",
+        "name": "tax_return_2023.pdf",
+        "source_date": "2023-10-15",
+        "capture_sequence": 3,
+        "completeness": "partial"
+      }
+    },
+    "local_downloads": {
+      "selected": {
+        "artifact_id": "",
+        "name": "",
+        "source_date": "",
+        "source_revision_id": "",
+        "source_snapshot_handle": "",
+        "downloaded": false
+      }
+    },
+    "upload_sessions": {
+      "current": {
+        "session_id": "",
+        "workspace_ref": "",
+        "workspace_revision": 0
+      }
+    },
+    "files": {
+      "restored_tax_return_2023": {
+        "record_id": "restored_tax_return_2023",
+        "name": "",
+        "status": "absent",
+        "source_date": "",
+        "source_revision_id": "",
+        "restored_from_artifact_id": "",
+        "version_date": ""
+      }
+    },
+    "selection_violation": false,
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002787",
+      "source_task_id": "wikihow_computer_002787",
+      "requested_name": "tax_return_2023.pdf",
+      "requested_date": "2023-10-15",
+      "recovery_policy": "latest_complete_on_date"
+    }
+  },
+  "capabilities": {
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "latest_complete_policy_visible",
+          "when": {
+            "eq": [
+              "$state.workflow_context.recovery_policy",
+              "latest_complete_on_date"
+            ]
+          },
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle",
+            "requested_name": "$state.workflow_context.requested_name",
+            "requested_date": "$state.workflow_context.requested_date",
+            "recovery_policy": "$state.workflow_context.recovery_policy",
+            "policy_description": "When multiple complete captures exist on the requested date, restore the latest complete capture."
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context"
+          ],
+          "writes": []
+        },
+        {
+          "id": "earliest_complete_policy_visible",
+          "when": {
+            "eq": [
+              "$state.workflow_context.recovery_policy",
+              "earliest_complete_on_date"
+            ]
+          },
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle",
+            "requested_name": "$state.workflow_context.requested_name",
+            "requested_date": "$state.workflow_context.requested_date",
+            "recovery_policy": "$state.workflow_context.recovery_policy",
+            "policy_description": "When multiple complete captures exist on the requested date, restore the earliest complete capture."
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_WORKFLOW_CONTEXT_OBSERVE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.open_resource.v1": {
+      "branches": [
+        {
+          "id": "bitcasa_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_type",
+                  "website"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target",
+                  "https://my.bitcasa.com"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "page": "Bitcasa login"
+          },
+          "effects": [
+            {
+              "set": "$state.ui.bitcasa_open",
+              "value": true
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.ui.bitcasa_open"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_OPEN_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.authenticate.v1": {
+      "branches": [
+        {
+          "id": "bitcasa_authenticated",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.service",
+                  "bitcasa"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.account_id",
+                  "user_99"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_type",
+                  "password"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.credential_value",
+                  "secure_pass_123"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.bitcasa_open",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "authenticated_session_ref": "bitcasa_user_99_session"
+          },
+          "effects": [
+            {
+              "set": "$state.session.authenticated",
+              "value": true
+            },
+            {
+              "set": "$state.session.current_view",
+              "value": "dashboard"
+            }
+          ],
+          "reads": [
+            "$state.ui.bitcasa_open"
+          ],
+          "writes": [
+            "$state.session.authenticated",
+            "$state.session.current_view"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_AUTHENTICATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.read_state.v1": {
+      "branches": [
+        {
+          "id": "versions_view_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.view",
+                  "versions"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.target_id",
+                  ""
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.authenticated",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "view_ref": "versions_view_user_99",
+            "session_record_id": "current",
+            "current_target_date": "$state.session.target_date",
+            "available_range": "historical"
+          },
+          "effects": [
+            {
+              "set": "$state.session.current_view",
+              "value": "versions"
+            }
+          ],
+          "reads": [
+            "$state.session.authenticated",
+            "$state.session.target_date"
+          ],
+          "writes": [
+            "$state.session.current_view"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_READ_STATE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.update_record.v1": {
+      "branches": [
+        {
+          "id": "historical_snapshot_selected",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "session"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "current"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.patch",
+                  {
+                    "target_date": "2023-10-15"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.navigation_handle",
+                  "versions_view_user_99"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.current_view",
+                  "versions"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "snapshot_handle": "snapshot_2023_10_15_user_99_r7",
+            "target_date": "2023-10-15",
+            "recovery_policy": "$state.workflow_context.recovery_policy"
+          },
+          "effects": [
+            {
+              "set": "$state.session.target_date",
+              "value": "2023-10-15"
+            },
+            {
+              "set": "$state.session.selected_snapshot_handle",
+              "value": "snapshot_2023_10_15_user_99_r7"
+            }
+          ],
+          "reads": [
+            "$state.session.current_view",
+            "$state.workflow_context.recovery_policy"
+          ],
+          "writes": [
+            "$state.session.target_date",
+            "$state.session.selected_snapshot_handle"
+          ]
+        },
+        {
+          "id": "current_workspace_selected",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "session"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "current"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.patch",
+                  {
+                    "target_date": "today"
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.navigation_handle",
+                  "$state.local_downloads.selected.artifact_id"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.downloaded",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "current_workspace_ref": "workspace_today_user_99_r2",
+            "target_date": "today",
+            "workspace_revision": 2
+          },
+          "effects": [
+            {
+              "set": "$state.session.target_date",
+              "value": "today"
+            },
+            {
+              "set": "$state.session.workspace_revision",
+              "value": 2
+            },
+            {
+              "set": "$state.session.current_view",
+              "value": "current_files"
+            }
+          ],
+          "reads": [
+            "$state.local_downloads.selected"
+          ],
+          "writes": [
+            "$state.session.target_date",
+            "$state.session.workspace_revision",
+            "$state.session.current_view"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_UPDATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "historical_candidates_listed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "files"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "tax_return_2023.pdf"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.snapshot_handle",
+                  "$state.session.selected_snapshot_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "2023-10-15"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "snapshot_handle": "$state.session.selected_snapshot_handle",
+            "recovery_policy": "$state.workflow_context.recovery_policy",
+            "candidates": [
+              {
+                "revision_id": "rev_tax_2023_morning",
+                "name": "tax_return_2023.pdf",
+                "source_date": "2023-10-15",
+                "capture_sequence": 1,
+                "completeness": "complete"
+              },
+              {
+                "revision_id": "rev_tax_2023_evening",
+                "name": "tax_return_2023.pdf",
+                "source_date": "2023-10-15",
+                "capture_sequence": 2,
+                "completeness": "complete"
+              },
+              {
+                "revision_id": "rev_tax_2023_partial",
+                "name": "tax_return_2023.pdf",
+                "source_date": "2023-10-15",
+                "capture_sequence": 3,
+                "completeness": "partial"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [
+            "$state.revision_catalog",
+            "$state.session.selected_snapshot_handle",
+            "$state.session.target_date",
+            "$state.workflow_context.recovery_policy"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.download_resource.v1": {
+      "branches": [
+        {
+          "id": "latest_complete_revision_downloaded",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.destination",
+                  "local_downloads"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "rev_tax_2023_evening"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.snapshot_handle",
+                  "$state.session.selected_snapshot_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_context.recovery_policy",
+                  "latest_complete_on_date"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "2023-10-15"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "artifact_id": "artifact_tax_return_evening",
+            "name": "tax_return_2023.pdf",
+            "source_date": "2023-10-15",
+            "source_revision_id": "rev_tax_2023_evening",
+            "source_snapshot_handle": "$state.session.selected_snapshot_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.local_downloads.selected",
+              "value": {
+                "artifact_id": "artifact_tax_return_evening",
+                "name": "tax_return_2023.pdf",
+                "source_date": "2023-10-15",
+                "source_revision_id": "rev_tax_2023_evening",
+                "source_snapshot_handle": "$state.session.selected_snapshot_handle",
+                "downloaded": true
+              }
+            }
+          ],
+          "reads": [
+            "$state.revision_catalog.rev_tax_2023_evening",
+            "$state.session.selected_snapshot_handle",
+            "$state.session.target_date",
+            "$state.workflow_context.recovery_policy"
+          ],
+          "writes": [
+            "$state.local_downloads.selected"
+          ]
+        },
+        {
+          "id": "earliest_complete_revision_downloaded",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.destination",
+                  "local_downloads"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "rev_tax_2023_morning"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.snapshot_handle",
+                  "$state.session.selected_snapshot_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_context.recovery_policy",
+                  "earliest_complete_on_date"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "2023-10-15"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "artifact_id": "artifact_tax_return_morning",
+            "name": "tax_return_2023.pdf",
+            "source_date": "2023-10-15",
+            "source_revision_id": "rev_tax_2023_morning",
+            "source_snapshot_handle": "$state.session.selected_snapshot_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.local_downloads.selected",
+              "value": {
+                "artifact_id": "artifact_tax_return_morning",
+                "name": "tax_return_2023.pdf",
+                "source_date": "2023-10-15",
+                "source_revision_id": "rev_tax_2023_morning",
+                "source_snapshot_handle": "$state.session.selected_snapshot_handle",
+                "downloaded": true
+              }
+            }
+          ],
+          "reads": [
+            "$state.revision_catalog.rev_tax_2023_morning",
+            "$state.session.selected_snapshot_handle",
+            "$state.session.target_date",
+            "$state.workflow_context.recovery_policy"
+          ],
+          "writes": [
+            "$state.local_downloads.selected"
+          ]
+        },
+        {
+          "id": "revision_policy_mismatch",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.destination",
+                  "local_downloads"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.snapshot_handle",
+                  "$state.session.selected_snapshot_handle"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "latest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "ne": [
+                          "$args.resource_id",
+                          "rev_tax_2023_evening"
+                        ]
+                      }
+                    ]
+                  },
+                  {
+                    "all": [
+                      {
+                        "eq": [
+                          "$state.workflow_context.recovery_policy",
+                          "earliest_complete_on_date"
+                        ]
+                      },
+                      {
+                        "ne": [
+                          "$args.resource_id",
+                          "rev_tax_2023_morning"
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "error_code": "REVISION_POLICY_MISMATCH",
+            "message": "The selected revision does not satisfy the visible recovery policy for this date."
+          },
+          "effects": [
+            {
+              "set": "$state.selection_violation",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.session.selected_snapshot_handle",
+            "$state.workflow_context.recovery_policy"
+          ],
+          "writes": [
+            "$state.selection_violation"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_DOWNLOAD_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.create_upload_session.v1": {
+      "branches": [
+        {
+          "id": "current_upload_session_created",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.provider",
+                  "bitcasa"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.destination",
+                  "root"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.workspace_handle",
+                  "workspace_today_user_99_r2"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "today"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.workspace_revision",
+                  2
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "session_id": "upload_session_user_99_r2",
+            "workspace_revision": 2
+          },
+          "effects": [
+            {
+              "set": "$state.upload_sessions.current",
+              "value": {
+                "session_id": "upload_session_user_99_r2",
+                "workspace_ref": "workspace_today_user_99_r2",
+                "workspace_revision": 2
+              }
+            }
+          ],
+          "reads": [
+            "$state.session"
+          ],
+          "writes": [
+            "$state.upload_sessions.current"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_CREATE_UPLOAD_SESSION_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.upload_resource.v1": {
+      "branches": [
+        {
+          "id": "evening_revision_restored",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.session_id",
+                  "$state.upload_sessions.current.session_id"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "artifact_tax_return_evening"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.artifact_id",
+                  "artifact_tax_return_evening"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.downloaded",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "today"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.upload_sessions.current.workspace_revision",
+                  "$state.session.workspace_revision"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "restored_record_id": "restored_tax_return_2023",
+            "restored_name": "tax_return_2023.pdf",
+            "source_revision_id": "rev_tax_2023_evening"
+          },
+          "effects": [
+            {
+              "set": "$state.files.restored_tax_return_2023",
+              "value": {
+                "record_id": "restored_tax_return_2023",
+                "name": "tax_return_2023.pdf",
+                "status": "active",
+                "source_date": "2023-10-15",
+                "source_revision_id": "rev_tax_2023_evening",
+                "restored_from_artifact_id": "artifact_tax_return_evening",
+                "version_date": "today"
+              }
+            }
+          ],
+          "reads": [
+            "$state.local_downloads.selected",
+            "$state.session",
+            "$state.upload_sessions.current"
+          ],
+          "writes": [
+            "$state.files.restored_tax_return_2023"
+          ]
+        },
+        {
+          "id": "morning_revision_restored",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.session_id",
+                  "$state.upload_sessions.current.session_id"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "artifact_tax_return_morning"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.artifact_id",
+                  "artifact_tax_return_morning"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.local_downloads.selected.downloaded",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.session.target_date",
+                  "today"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.upload_sessions.current.workspace_revision",
+                  "$state.session.workspace_revision"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "restored_record_id": "restored_tax_return_2023",
+            "restored_name": "tax_return_2023.pdf",
+            "source_revision_id": "rev_tax_2023_morning"
+          },
+          "effects": [
+            {
+              "set": "$state.files.restored_tax_return_2023",
+              "value": {
+                "record_id": "restored_tax_return_2023",
+                "name": "tax_return_2023.pdf",
+                "status": "active",
+                "source_date": "2023-10-15",
+                "source_revision_id": "rev_tax_2023_morning",
+                "restored_from_artifact_id": "artifact_tax_return_morning",
+                "version_date": "today"
+              }
+            }
+          ],
+          "reads": [
+            "$state.local_downloads.selected",
+            "$state.session",
+            "$state.upload_sessions.current"
+          ],
+          "writes": [
+            "$state.files.restored_tax_return_2023"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_UPLOAD_RESOURCE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.verify_resource.v1": {
+      "branches": [
+        {
+          "id": "restored_file_visible",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.resource_id",
+                  "restored_tax_return_2023"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.expected_status",
+                  "active"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.files.restored_tax_return_2023.status",
+                  "active"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record": "$state.files.restored_tax_return_2023"
+          },
+          "effects": [],
+          "reads": [
+            "$state.files.restored_tax_return_2023"
+          ],
+          "writes": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "recovery_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "ui": "$state.ui",
+              "session": "$state.session",
+              "local_downloads": "$state.local_downloads",
+              "files": "$state.files",
+              "upload_sessions": "$state.upload_sessions",
+              "selection_violation": "$state.selection_violation",
+              "workflow_context": "$state.workflow_context"
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.ui",
+            "$state.session",
+            "$state.local_downloads",
+            "$state.files",
+            "$state.upload_sessions",
+            "$state.selection_violation",
+            "$state.workflow_context"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_WORKFLOW_OUTCOME_OBSERVE_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

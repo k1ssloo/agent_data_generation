@@ -1,0 +1,2875 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "ui": {
+      "desktop_available": true,
+      "start_search_open": false,
+      "start_search_handle": "start_search_surface",
+      "search_query": "",
+      "program_result_visible": false,
+      "program_result_handle": "program_result_regedit",
+      "regedit_launch_available": true
+    },
+    "system": {
+      "restart_pending": false,
+      "restart_completed_after_policy_repair": false,
+      "policy_activation_mode": "restart_required",
+      "policy_activation_completed": false
+    },
+    "usb": {
+      "slot_available": true,
+      "slot_handle": "usb_slot_primary",
+      "inserted": false,
+      "device_session_handle": "pen_drive_session_01",
+      "actual_target_drive_handle": "visible_target_a",
+      "explorer_open": false,
+      "explorer_handle": "explorer_window_01",
+      "target_handle_discovered": false,
+      "discovered_target_drive_handle": "undiscovered",
+      "drive_listing_observed": false,
+      "connected_drive_status": "write_protected",
+      "context_menu_open": false,
+      "context_menu_handle": "context_menu_pen_drive",
+      "context_menu_drive_handle": "undiscovered"
+    },
+    "registry": {
+      "editor_open": false,
+      "window_handle": "registry_editor_main",
+      "current_path": "closed",
+      "storage_policy_path_handle": "storage_policy_view",
+      "policy_location_open": false,
+      "closed_cleanly": false,
+      "policy_status": {
+        "storage_device_policies_exists": true,
+        "write_protect_effective": "active",
+        "write_protect_value_state": "active",
+        "write_protect_data": 1,
+        "observed_after_write_protect_error": false
+      }
+    },
+    "format": {
+      "dialog_open": false,
+      "dialog_handle": "format_dialog_pen_drive",
+      "write_protect_failure_observed": false,
+      "last_result": {
+        "error_code": "NO_ERROR",
+        "status": "none",
+        "drive_handle": "undiscovered",
+        "message": ""
+      },
+      "last_success": {
+        "status": "none",
+        "drive_handle": "undiscovered"
+      }
+    },
+    "format_dialog": {
+      "target_selected": false,
+      "selected_drive_handle": "undiscovered",
+      "allocation_size": "unselected",
+      "format_type": "unselected",
+      "options_configured": false,
+      "supported_profile": "visible_defaults_supported"
+    },
+    "recovery": {
+      "visible_error_code_used": "NONE",
+      "policy_repair_after_write_protect_error_observed": false,
+      "successful_format_after_policy_repair": false
+    },
+    "outcome": {
+      "target_pen_drive_formatted": false,
+      "target_pen_drive_write_protection_removed": false
+    },
+    "safety": {
+      "non_target_drive_format_started": false,
+      "undiscovered_handle_used": false,
+      "registry_write_outside_storage_device_policy": false,
+      "format_started_while_restart_pending": false
+    }
+  },
+  "capabilities": {
+    "observe_usb_slots": {
+      "branches": [
+        {
+          "id": "available_slot_visible",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.slot_available",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "slot_handle": "$state.usb.slot_handle",
+            "slot_status": "available"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.usb.slot_available",
+            "$state.usb.slot_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "no_visible_usb_slot",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.slot_available",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_NO_USB_SLOT_VISIBLE",
+            "message": "No open USB slot is visible."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.usb.slot_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "usb_slot_observation_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "USB slots cannot be inspected until the desktop is available."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "insert_target_pen_drive": {
+      "branches": [
+        {
+          "id": "insert_into_visible_slot",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.slot_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.slot_handle",
+                  "$state.usb.slot_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "device_session_handle": "$state.usb.device_session_handle",
+            "connection_status": "connected"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.usb.slot_available",
+            "$state.usb.slot_handle",
+            "$state.usb.device_session_handle"
+          ],
+          "writes": [
+            "$state.usb.inserted"
+          ],
+          "effects": [
+            {
+              "set": "$state.usb.inserted",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_usb_slot_handle",
+          "when": {
+            "ne": [
+              "$args.slot_handle",
+              "$state.usb.slot_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_USB_SLOT_HANDLE",
+            "message": "The supplied USB slot handle is not visible."
+          },
+          "reads": [
+            "$state.usb.slot_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "pen_drive_insert_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_USB_INSERT_NOT_READY",
+            "message": "The pen drive cannot be inserted until a visible slot and desktop are available."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.usb.slot_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "open_windows_explorer": {
+      "branches": [
+        {
+          "id": "explorer_opened",
+          "when": {
+            "eq": [
+              "$state.ui.desktop_available",
+              true
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "explorer_handle": "$state.usb.explorer_handle",
+            "window": "Windows Explorer"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.usb.explorer_handle"
+          ],
+          "writes": [
+            "$state.usb.explorer_open"
+          ],
+          "effects": [
+            {
+              "set": "$state.usb.explorer_open",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "explorer_desktop_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "Windows Explorer cannot open before the desktop is available."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "inspect_removable_drives": {
+      "branches": [
+        {
+          "id": "target_drive_listed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.usb.explorer_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.inserted",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.explorer_handle",
+                  "$state.usb.explorer_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.device_session_handle",
+                  "$state.usb.device_session_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "drive_handle": "$state.usb.actual_target_drive_handle",
+            "drive_role": "target_pen_drive",
+            "write_protection_status": "$state.usb.connected_drive_status"
+          },
+          "reads": [
+            "$state.usb.explorer_open",
+            "$state.usb.inserted",
+            "$state.usb.explorer_handle",
+            "$state.usb.device_session_handle",
+            "$state.usb.actual_target_drive_handle",
+            "$state.usb.connected_drive_status"
+          ],
+          "writes": [
+            "$state.usb.target_handle_discovered",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.usb.drive_listing_observed"
+          ],
+          "effects": [
+            {
+              "set": "$state.usb.target_handle_discovered",
+              "value": true
+            },
+            {
+              "set": "$state.usb.discovered_target_drive_handle",
+              "value": "$state.usb.actual_target_drive_handle"
+            },
+            {
+              "set": "$state.usb.drive_listing_observed",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_listing_handles",
+          "when": {
+            "any": [
+              {
+                "ne": [
+                  "$args.explorer_handle",
+                  "$state.usb.explorer_handle"
+                ]
+              },
+              {
+                "ne": [
+                  "$args.device_session_handle",
+                  "$state.usb.device_session_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_EXPLORER_OR_DEVICE_HANDLE",
+            "message": "The Explorer or device session handle was not produced by the visible UI."
+          },
+          "reads": [
+            "$state.usb.explorer_handle",
+            "$state.usb.device_session_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "drive_listing_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DRIVE_LISTING_NOT_READY",
+            "message": "A connected pen drive and open Explorer window are required before listing removable drives."
+          },
+          "reads": [
+            "$state.usb.explorer_open",
+            "$state.usb.inserted"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "open_start_search": {
+      "branches": [
+        {
+          "id": "start_search_opened",
+          "when": {
+            "eq": [
+              "$state.ui.desktop_available",
+              true
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "search_surface_handle": "$state.ui.start_search_handle"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.ui.start_search_handle"
+          ],
+          "writes": [
+            "$state.ui.start_search_open"
+          ],
+          "effects": [
+            {
+              "set": "$state.ui.start_search_open",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "start_search_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "Start search cannot open before the desktop is available."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "search_registry_editor_program": {
+      "branches": [
+        {
+          "id": "regedit_result_visible",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.start_search_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.search_surface_handle",
+                  "$state.ui.start_search_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "regedit.exe"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.regedit_launch_available",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "program_result_handle": "$state.ui.program_result_handle",
+            "program_name": "regedit.exe"
+          },
+          "reads": [
+            "$state.ui.start_search_open",
+            "$state.ui.start_search_handle",
+            "$state.ui.regedit_launch_available",
+            "$state.ui.program_result_handle"
+          ],
+          "writes": [
+            "$state.ui.program_result_visible",
+            "$state.ui.search_query"
+          ],
+          "effects": [
+            {
+              "set": "$state.ui.program_result_visible",
+              "value": true
+            },
+            {
+              "set": "$state.ui.search_query",
+              "value": "$args.query"
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "wrong_search_surface",
+          "when": {
+            "ne": [
+              "$args.search_surface_handle",
+              "$state.ui.start_search_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_SEARCH_HANDLE",
+            "message": "The search surface handle is not visible."
+          },
+          "reads": [
+            "$state.ui.start_search_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "registry_editor_search_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_REGEDIT_SEARCH_NOT_READY",
+            "message": "Registry Editor search requires the visible Start search surface."
+          },
+          "reads": [
+            "$state.ui.start_search_open",
+            "$state.ui.regedit_launch_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "launch_registry_editor": {
+      "branches": [
+        {
+          "id": "registry_editor_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.ui.program_result_visible",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.program_result_handle",
+                  "$state.ui.program_result_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "registry_window_handle": "$state.registry.window_handle",
+            "current_path": "Computer"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.ui.program_result_visible",
+            "$state.ui.program_result_handle",
+            "$state.registry.window_handle"
+          ],
+          "writes": [
+            "$state.registry.editor_open",
+            "$state.registry.current_path"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.editor_open",
+              "value": true
+            },
+            {
+              "set": "$state.registry.current_path",
+              "value": "Computer"
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_program_result",
+          "when": {
+            "ne": [
+              "$args.program_result_handle",
+              "$state.ui.program_result_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_PROGRAM_RESULT_HANDLE",
+            "message": "The program result handle was not produced by Start search."
+          },
+          "reads": [
+            "$state.ui.program_result_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "registry_launch_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_REGISTRY_LAUNCH_NOT_READY",
+            "message": "Registry Editor cannot launch until the regedit.exe result is visible."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.ui.program_result_visible"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "observe_restart_status": {
+      "branches": [
+        {
+          "id": "restart_status_visible",
+          "when": {
+            "eq": [
+              "$state.ui.desktop_available",
+              true
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "restart_pending": "$state.system.restart_pending"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.system.restart_pending"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "restart_status_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "Restart status is not visible until the desktop is available."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "open_drive_context_menu": {
+      "branches": [
+        {
+          "id": "target_context_menu_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.usb.explorer_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.target_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.discovered_target_drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.explorer_handle",
+                  "$state.usb.explorer_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "context_menu_handle": "$state.usb.context_menu_handle",
+            "menu_for_drive": "$args.drive_handle"
+          },
+          "reads": [
+            "$state.usb.explorer_open",
+            "$state.usb.target_handle_discovered",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.usb.explorer_handle",
+            "$state.usb.context_menu_handle"
+          ],
+          "writes": [
+            "$state.usb.context_menu_open",
+            "$state.usb.context_menu_drive_handle"
+          ],
+          "effects": [
+            {
+              "set": "$state.usb.context_menu_open",
+              "value": true
+            },
+            {
+              "set": "$state.usb.context_menu_drive_handle",
+              "value": "$args.drive_handle"
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "undiscovered_or_wrong_drive_context",
+          "when": {
+            "any": [
+              {
+                "eq": [
+                  "$state.usb.target_handle_discovered",
+                  false
+                ]
+              },
+              {
+                "eq": [
+                  "$args.drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "ne": [
+                  "$args.drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_UNDISCOVERED_OR_NON_TARGET_DRIVE_HANDLE",
+            "message": "The drive handle is not the discovered target pen drive."
+          },
+          "reads": [
+            "$state.usb.target_handle_discovered",
+            "$state.usb.discovered_target_drive_handle"
+          ],
+          "writes": [
+            "$state.safety.undiscovered_handle_used"
+          ],
+          "effects": [
+            {
+              "set": "$state.safety.undiscovered_handle_used",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "context_menu_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_EXPLORER_CONTEXT_NOT_READY",
+            "message": "Explorer must be open before the drive context menu can be shown."
+          },
+          "reads": [
+            "$state.usb.explorer_open"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "choose_format_from_context": {
+      "branches": [
+        {
+          "id": "format_dialog_opened_for_target",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.usb.context_menu_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.context_menu_handle",
+                  "$state.usb.context_menu_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.usb.context_menu_drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.context_menu_drive_handle",
+                  "undiscovered"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "format_dialog_handle": "$state.format.dialog_handle",
+            "selected_drive_handle": "$state.usb.context_menu_drive_handle",
+            "format_option_available": true
+          },
+          "reads": [
+            "$state.usb.context_menu_open",
+            "$state.usb.context_menu_handle",
+            "$state.usb.context_menu_drive_handle",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.format.dialog_handle"
+          ],
+          "writes": [
+            "$state.format.dialog_open",
+            "$state.format_dialog.target_selected",
+            "$state.format_dialog.selected_drive_handle",
+            "$state.usb.context_menu_open"
+          ],
+          "effects": [
+            {
+              "set": "$state.format.dialog_open",
+              "value": true
+            },
+            {
+              "set": "$state.format_dialog.target_selected",
+              "value": true
+            },
+            {
+              "set": "$state.format_dialog.selected_drive_handle",
+              "value": "$state.usb.context_menu_drive_handle"
+            },
+            {
+              "set": "$state.usb.context_menu_open",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_context_is_not_target",
+          "when": {
+            "ne": [
+              "$state.usb.context_menu_drive_handle",
+              "$state.usb.discovered_target_drive_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_FORMAT_CONTEXT_NOT_TARGET",
+            "message": "The context menu is not associated with the discovered target pen drive."
+          },
+          "reads": [
+            "$state.usb.context_menu_drive_handle",
+            "$state.usb.discovered_target_drive_handle"
+          ],
+          "writes": [
+            "$state.safety.undiscovered_handle_used"
+          ],
+          "effects": [
+            {
+              "set": "$state.safety.undiscovered_handle_used",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_menu_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_FORMAT_MENU_NOT_READY",
+            "message": "A valid drive context menu must be open before choosing Format."
+          },
+          "reads": [
+            "$state.usb.context_menu_open",
+            "$state.usb.context_menu_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "configure_format_dialog": {
+      "branches": [
+        {
+          "id": "visible_default_profile_applied",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.allocation_size",
+                  "default_allocation_size"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_type",
+                  "quick_format"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.supported_profile",
+                  "visible_defaults_supported"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.profile_evidence_ref",
+                  "$state.format_dialog.supported_profile"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "allocation_size": "$args.allocation_size",
+            "format_type": "$args.format_type",
+            "start_button_available": true
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.supported_profile"
+          ],
+          "writes": [
+            "$state.format_dialog.allocation_size",
+            "$state.format_dialog.format_type",
+            "$state.format_dialog.options_configured"
+          ],
+          "effects": [
+            {
+              "set": "$state.format_dialog.allocation_size",
+              "value": "$args.allocation_size"
+            },
+            {
+              "set": "$state.format_dialog.format_type",
+              "value": "$args.format_type"
+            },
+            {
+              "set": "$state.format_dialog.options_configured",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_dialog_handle_invalid",
+          "when": {
+            "ne": [
+              "$args.format_dialog_handle",
+              "$state.format.dialog_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_FORMAT_DIALOG_HANDLE",
+            "message": "The format dialog handle is not visible."
+          },
+          "reads": [
+            "$state.format.dialog_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_options_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_FORMAT_OPTIONS_NOT_READY",
+            "message": "The format dialog must be open before options can be set."
+          },
+          "reads": [
+            "$state.format.dialog_open"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "start_format": {
+      "branches": [
+        {
+          "id": "reject_format_while_restart_pending",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.target_selected",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_RESTART_PENDING_FORMAT_ATTEMPT",
+            "message": "Formatting was attempted while a restart was pending."
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format_dialog.target_selected",
+            "$state.format.dialog_handle",
+            "$state.system.restart_pending"
+          ],
+          "writes": [
+            "$state.safety.format_started_while_restart_pending"
+          ],
+          "effects": [
+            {
+              "set": "$state.safety.format_started_while_restart_pending",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "reject_non_target_format_start",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.target_selected",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "eq": [
+                      "$state.usb.target_handle_discovered",
+                      false
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.format_dialog.selected_drive_handle",
+                      "undiscovered"
+                    ]
+                  },
+                  {
+                    "ne": [
+                      "$state.format_dialog.selected_drive_handle",
+                      "$state.usb.discovered_target_drive_handle"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_NON_TARGET_FORMAT_ATTEMPT",
+            "message": "The selected drive is not the discovered target pen drive."
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format_dialog.target_selected",
+            "$state.format.dialog_handle",
+            "$state.usb.target_handle_discovered",
+            "$state.format_dialog.selected_drive_handle",
+            "$state.usb.discovered_target_drive_handle"
+          ],
+          "writes": [
+            "$state.safety.non_target_drive_format_started",
+            "$state.safety.undiscovered_handle_used"
+          ],
+          "effects": [
+            {
+              "set": "$state.safety.non_target_drive_format_started",
+              "value": true
+            },
+            {
+              "set": "$state.safety.undiscovered_handle_used",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_reports_active_write_protect",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.target_selected",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.selected_drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.discovered_target_drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.options_configured",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  false
+                ]
+              },
+              {
+                "in": [
+                  "$state.registry.policy_status.write_protect_effective",
+                  [
+                    "active",
+                    "missing"
+                  ]
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "WRITE_PROTECT_ACTIVE",
+            "message": "The format dialog reports that the pen drive is write-protected."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.target_selected",
+            "$state.format_dialog.selected_drive_handle",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.format_dialog.options_configured",
+            "$state.system.restart_pending",
+            "$state.registry.policy_status.write_protect_effective"
+          ],
+          "writes": [
+            "$state.format.last_result.error_code",
+            "$state.format.last_result.status",
+            "$state.format.last_result.drive_handle",
+            "$state.format.last_result.message",
+            "$state.format.write_protect_failure_observed"
+          ],
+          "effects": [
+            {
+              "set": "$state.format.last_result.error_code",
+              "value": "WRITE_PROTECT_ACTIVE"
+            },
+            {
+              "set": "$state.format.last_result.status",
+              "value": "failure"
+            },
+            {
+              "set": "$state.format.last_result.drive_handle",
+              "value": "$state.format_dialog.selected_drive_handle"
+            },
+            {
+              "set": "$state.format.last_result.message",
+              "value": "The format dialog reports that the pen drive is write-protected."
+            },
+            {
+              "set": "$state.format.write_protect_failure_observed",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_succeeds_after_policy_repair",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.target_selected",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.selected_drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.discovered_target_drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.options_configured",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  false
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.write_protect_effective",
+                  "inactive"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.recovery.policy_repair_after_write_protect_error_observed",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "status": "success",
+            "drive_handle": "$state.format_dialog.selected_drive_handle",
+            "message": "Format completed after clearing write protection."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.target_selected",
+            "$state.format_dialog.selected_drive_handle",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.format_dialog.options_configured",
+            "$state.system.restart_pending",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.format.write_protect_failure_observed",
+            "$state.recovery.policy_repair_after_write_protect_error_observed"
+          ],
+          "writes": [
+            "$state.format.last_result.error_code",
+            "$state.format.last_result.status",
+            "$state.format.last_result.drive_handle",
+            "$state.format.last_result.message",
+            "$state.format.last_success.status",
+            "$state.format.last_success.drive_handle",
+            "$state.outcome.target_pen_drive_formatted",
+            "$state.outcome.target_pen_drive_write_protection_removed",
+            "$state.recovery.successful_format_after_policy_repair",
+            "$state.usb.connected_drive_status",
+            "$state.format.dialog_open",
+            "$state.format_dialog.options_configured"
+          ],
+          "effects": [
+            {
+              "set": "$state.format.last_result.error_code",
+              "value": "NO_ERROR"
+            },
+            {
+              "set": "$state.format.last_result.status",
+              "value": "success"
+            },
+            {
+              "set": "$state.format.last_result.drive_handle",
+              "value": "$state.format_dialog.selected_drive_handle"
+            },
+            {
+              "set": "$state.format.last_result.message",
+              "value": "Format completed after clearing write protection."
+            },
+            {
+              "set": "$state.format.last_success.status",
+              "value": "success"
+            },
+            {
+              "set": "$state.format.last_success.drive_handle",
+              "value": "$state.format_dialog.selected_drive_handle"
+            },
+            {
+              "set": "$state.outcome.target_pen_drive_formatted",
+              "value": true
+            },
+            {
+              "set": "$state.outcome.target_pen_drive_write_protection_removed",
+              "value": true
+            },
+            {
+              "set": "$state.recovery.successful_format_after_policy_repair",
+              "value": true
+            },
+            {
+              "set": "$state.usb.connected_drive_status",
+              "value": "not_write_protected"
+            },
+            {
+              "set": "$state.format.dialog_open",
+              "value": false
+            },
+            {
+              "set": "$state.format_dialog.options_configured",
+              "value": false
+            }
+          ],
+          "resolves_errors": [
+            "WRITE_PROTECT_ACTIVE"
+          ]
+        },
+        {
+          "id": "format_succeeds_without_write_protect_error",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.target_selected",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.selected_drive_handle",
+                  "$state.usb.discovered_target_drive_handle"
+                ]
+              },
+              {
+                "ne": [
+                  "$state.usb.discovered_target_drive_handle",
+                  "undiscovered"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.options_configured",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  false
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.write_protect_effective",
+                  "inactive"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "status": "success",
+            "drive_handle": "$state.format_dialog.selected_drive_handle",
+            "message": "Format completed successfully."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.target_selected",
+            "$state.format_dialog.selected_drive_handle",
+            "$state.usb.discovered_target_drive_handle",
+            "$state.format_dialog.options_configured",
+            "$state.system.restart_pending",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.format.write_protect_failure_observed"
+          ],
+          "writes": [
+            "$state.format.last_result.error_code",
+            "$state.format.last_result.status",
+            "$state.format.last_result.drive_handle",
+            "$state.format.last_result.message",
+            "$state.format.last_success.status",
+            "$state.format.last_success.drive_handle",
+            "$state.outcome.target_pen_drive_formatted",
+            "$state.outcome.target_pen_drive_write_protection_removed",
+            "$state.usb.connected_drive_status",
+            "$state.format.dialog_open",
+            "$state.format_dialog.options_configured"
+          ],
+          "effects": [
+            {
+              "set": "$state.format.last_result.error_code",
+              "value": "NO_ERROR"
+            },
+            {
+              "set": "$state.format.last_result.status",
+              "value": "success"
+            },
+            {
+              "set": "$state.format.last_result.drive_handle",
+              "value": "$state.format_dialog.selected_drive_handle"
+            },
+            {
+              "set": "$state.format.last_result.message",
+              "value": "Format completed successfully."
+            },
+            {
+              "set": "$state.format.last_success.status",
+              "value": "success"
+            },
+            {
+              "set": "$state.format.last_success.drive_handle",
+              "value": "$state.format_dialog.selected_drive_handle"
+            },
+            {
+              "set": "$state.outcome.target_pen_drive_formatted",
+              "value": true
+            },
+            {
+              "set": "$state.outcome.target_pen_drive_write_protection_removed",
+              "value": true
+            },
+            {
+              "set": "$state.usb.connected_drive_status",
+              "value": "not_write_protected"
+            },
+            {
+              "set": "$state.format.dialog_open",
+              "value": false
+            },
+            {
+              "set": "$state.format_dialog.options_configured",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_start_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_FORMAT_DIALOG_NOT_READY",
+            "message": "The format dialog must be open, configured, and pointed at the discovered pen drive before Start can be used."
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format_dialog.options_configured",
+            "$state.format_dialog.target_selected"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "open_storage_policy_location": {
+      "branches": [
+        {
+          "id": "storage_policy_location_opened",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.editor_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_window_handle",
+                  "$state.registry.window_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.location_choice",
+                  "StorageDevicePolicies"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.storage_device_policies_exists",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "registry_path_handle": "$state.registry.storage_policy_path_handle",
+            "current_path": "Computer/HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/StorageDevicePolicies",
+            "key_state": "present"
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.window_handle",
+            "$state.registry.policy_status.storage_device_policies_exists",
+            "$state.registry.storage_policy_path_handle"
+          ],
+          "writes": [
+            "$state.registry.policy_location_open",
+            "$state.registry.current_path"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.policy_location_open",
+              "value": true
+            },
+            {
+              "set": "$state.registry.current_path",
+              "value": "Computer/HKEY_LOCAL_MACHINE/SYSTEM/CurrentControlSet/Control/StorageDevicePolicies"
+            }
+          ],
+          "resolves_errors": [],
+          "observes": [
+            "$state.registry.policy_status.storage_device_policies_exists"
+          ]
+        },
+        {
+          "id": "storage_policy_key_missing",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.editor_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_window_handle",
+                  "$state.registry.window_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.location_choice",
+                  "StorageDevicePolicies"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.storage_device_policies_exists",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_STORAGE_DEVICE_POLICIES_MISSING",
+            "key_state": "missing",
+            "message": "The StorageDevicePolicies key is not present in the public registry view."
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.window_handle",
+            "$state.registry.policy_status.storage_device_policies_exists"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": [],
+          "observes": [
+            "$state.registry.policy_status.storage_device_policies_exists"
+          ]
+        },
+        {
+          "id": "storage_policy_location_invalid",
+          "when": true,
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_REGISTRY_POLICY_LOCATION",
+            "message": "Only the public StorageDevicePolicies location can be opened for this repair."
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.window_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "inspect_storage_policy": {
+      "branches": [
+        {
+          "id": "policy_values_observed_after_error",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.policy_location_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_path_handle",
+                  "$state.registry.storage_policy_path_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "write_protect_effective": "$state.registry.policy_status.write_protect_effective",
+            "value_state": "$state.registry.policy_status.write_protect_value_state",
+            "value_data": "$state.registry.policy_status.write_protect_data"
+          },
+          "reads": [
+            "$state.registry.policy_location_open",
+            "$state.registry.storage_policy_path_handle",
+            "$state.format.write_protect_failure_observed",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.registry.policy_status.write_protect_value_state",
+            "$state.registry.policy_status.write_protect_data"
+          ],
+          "writes": [
+            "$state.registry.policy_status.observed_after_write_protect_error"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.policy_status.observed_after_write_protect_error",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "policy_values_observed_without_error",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.policy_location_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_path_handle",
+                  "$state.registry.storage_policy_path_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "write_protect_effective": "$state.registry.policy_status.write_protect_effective",
+            "value_state": "$state.registry.policy_status.write_protect_value_state",
+            "value_data": "$state.registry.policy_status.write_protect_data"
+          },
+          "reads": [
+            "$state.registry.policy_location_open",
+            "$state.registry.storage_policy_path_handle",
+            "$state.format.write_protect_failure_observed",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.registry.policy_status.write_protect_value_state",
+            "$state.registry.policy_status.write_protect_data"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "policy_inspection_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_STORAGE_POLICY_VIEW_NOT_READY",
+            "message": "The StorageDevicePolicies right pane must be open before its values can be inspected."
+          },
+          "reads": [
+            "$state.registry.policy_location_open",
+            "$state.registry.storage_policy_path_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "clear_write_protect_policy": {
+      "branches": [
+        {
+          "id": "write_protect_policy_cleared_after_visible_error",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.policy_location_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_path_handle",
+                  "$state.registry.storage_policy_path_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.new_value_data",
+                  0
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_error_code",
+                  "WRITE_PROTECT_ACTIVE"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.last_result.error_code",
+                  "$args.format_error_code"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.observed_after_write_protect_error",
+                  true
+                ]
+              },
+              {
+                "in": [
+                  "$state.registry.policy_status.write_protect_effective",
+                  [
+                    "active",
+                    "missing"
+                  ]
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "write_protect_effective": "inactive",
+            "restart_required": true,
+            "used_format_error_code": "$args.format_error_code"
+          },
+          "reads": [
+            "$state.registry.policy_location_open",
+            "$state.registry.storage_policy_path_handle",
+            "$state.format.write_protect_failure_observed",
+            "$state.format.last_result.error_code",
+            "$state.registry.policy_status.observed_after_write_protect_error",
+            "$state.registry.policy_status.write_protect_effective"
+          ],
+          "writes": [
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.registry.policy_status.write_protect_value_state",
+            "$state.registry.policy_status.write_protect_data",
+            "$state.registry.policy_status.storage_device_policies_exists",
+            "$state.recovery.visible_error_code_used",
+            "$state.recovery.policy_repair_after_write_protect_error_observed",
+            "$state.system.restart_pending"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.policy_status.write_protect_effective",
+              "value": "inactive"
+            },
+            {
+              "set": "$state.registry.policy_status.write_protect_value_state",
+              "value": "inactive"
+            },
+            {
+              "set": "$state.registry.policy_status.write_protect_data",
+              "value": 0
+            },
+            {
+              "set": "$state.registry.policy_status.storage_device_policies_exists",
+              "value": true
+            },
+            {
+              "set": "$state.recovery.visible_error_code_used",
+              "value": "$args.format_error_code"
+            },
+            {
+              "set": "$state.recovery.policy_repair_after_write_protect_error_observed",
+              "value": true
+            },
+            {
+              "set": "$state.system.restart_pending",
+              "value": true
+            }
+          ],
+          "resolves_errors": [
+            "WRITE_PROTECT_ACTIVE"
+          ]
+        },
+        {
+          "id": "reject_policy_repair_without_visible_write_protect_error",
+          "when": {
+            "any": [
+              {
+                "ne": [
+                  "$args.format_error_code",
+                  "WRITE_PROTECT_ACTIVE"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  false
+                ]
+              },
+              {
+                "ne": [
+                  "$state.format.last_result.error_code",
+                  "$args.format_error_code"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_POLICY_REPAIR_WITHOUT_VISIBLE_WRITE_PROTECT_ERROR",
+            "message": "A visible WRITE_PROTECT_ACTIVE format error is required before this policy repair."
+          },
+          "reads": [
+            "$state.format.write_protect_failure_observed",
+            "$state.format.last_result.error_code"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "write_protect_policy_edit_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_WRITE_PROTECT_POLICY_EDIT_NOT_READY",
+            "message": "The public StorageDevicePolicies value view must be observed before editing WriteProtect."
+          },
+          "reads": [
+            "$state.registry.policy_location_open",
+            "$state.registry.storage_policy_path_handle",
+            "$state.registry.policy_status.observed_after_write_protect_error"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "close_registry_editor": {
+      "branches": [
+        {
+          "id": "registry_editor_closed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.editor_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_window_handle",
+                  "$state.registry.window_handle"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "closed": true
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.window_handle"
+          ],
+          "writes": [
+            "$state.registry.editor_open",
+            "$state.registry.policy_location_open",
+            "$state.registry.current_path",
+            "$state.registry.closed_cleanly"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.editor_open",
+              "value": false
+            },
+            {
+              "set": "$state.registry.policy_location_open",
+              "value": false
+            },
+            {
+              "set": "$state.registry.current_path",
+              "value": "closed"
+            },
+            {
+              "set": "$state.registry.closed_cleanly",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "registry_close_invalid_handle",
+          "when": {
+            "ne": [
+              "$args.registry_window_handle",
+              "$state.registry.window_handle"
+            ]
+          },
+          "response": {
+            "ok": false,
+            "terminal": true,
+            "error_code": "TERMINAL_INVALID_REGISTRY_WINDOW_HANDLE",
+            "message": "The Registry Editor window handle is not visible."
+          },
+          "reads": [
+            "$state.registry.window_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "registry_close_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_REGISTRY_EDITOR_NOT_OPEN",
+            "message": "Registry Editor is not open."
+          },
+          "reads": [
+            "$state.registry.editor_open"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "restart_computer": {
+      "branches": [
+        {
+          "id": "restart_completed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.policy_activation_mode",
+                  "restart_required"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.activation_evidence_ref",
+                  "$state.system.policy_activation_mode"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "restart_pending": false,
+            "desktop_available": true,
+            "activation_method": "computer_restart"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_mode"
+          ],
+          "writes": [
+            "$state.system.restart_pending",
+            "$state.system.restart_completed_after_policy_repair",
+            "$state.usb.connected_drive_status",
+            "$state.usb.explorer_open",
+            "$state.usb.context_menu_open",
+            "$state.format.dialog_open",
+            "$state.format_dialog.target_selected",
+            "$state.format_dialog.options_configured",
+            "$state.registry.editor_open",
+            "$state.registry.policy_location_open",
+            "$state.registry.current_path",
+            "$state.system.policy_activation_completed"
+          ],
+          "effects": [
+            {
+              "set": "$state.system.restart_pending",
+              "value": false
+            },
+            {
+              "set": "$state.system.restart_completed_after_policy_repair",
+              "value": true
+            },
+            {
+              "set": "$state.usb.connected_drive_status",
+              "value": "not_write_protected"
+            },
+            {
+              "set": "$state.usb.explorer_open",
+              "value": false
+            },
+            {
+              "set": "$state.usb.context_menu_open",
+              "value": false
+            },
+            {
+              "set": "$state.format.dialog_open",
+              "value": false
+            },
+            {
+              "set": "$state.format_dialog.target_selected",
+              "value": false
+            },
+            {
+              "set": "$state.format_dialog.options_configured",
+              "value": false
+            },
+            {
+              "set": "$state.registry.editor_open",
+              "value": false
+            },
+            {
+              "set": "$state.registry.policy_location_open",
+              "value": false
+            },
+            {
+              "set": "$state.registry.current_path",
+              "value": "closed"
+            },
+            {
+              "set": "$state.system.policy_activation_completed",
+              "value": true
+            }
+          ],
+          "resolves_errors": [
+            "RECOVERABLE_RESTART_REQUIRED"
+          ]
+        },
+        {
+          "id": "restart_not_supported_for_current_activation_mode",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.policy_activation_mode",
+                  "session_refresh_supported"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "ACTIVATION_RESTART_NOT_AVAILABLE",
+            "message": "The visible policy status offers session refresh instead of restart."
+          },
+          "reads": [
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_mode"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "no_restart_pending",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_NO_RESTART_PENDING",
+            "message": "No restart is pending."
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.system.restart_pending"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "restart_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "The computer cannot be restarted from an unavailable desktop."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "observe_format_outcome": {
+      "branches": [
+        {
+          "id": "format_status_visible",
+          "when": {
+            "eq": [
+              "$state.ui.desktop_available",
+              true
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "target_pen_drive_formatted": "$state.outcome.target_pen_drive_formatted",
+            "target_pen_drive_write_protection_removed": "$state.outcome.target_pen_drive_write_protection_removed",
+            "last_success_status": "$state.format.last_success.status",
+            "last_success_drive_handle": "$state.format.last_success.drive_handle",
+            "discovered_target_drive_handle": "$state.usb.discovered_target_drive_handle",
+            "write_protect_failure_observed": "$state.format.write_protect_failure_observed",
+            "visible_error_code_used": "$state.recovery.visible_error_code_used",
+            "policy_repair_after_write_protect_error_observed": "$state.recovery.policy_repair_after_write_protect_error_observed",
+            "successful_format_after_policy_repair": "$state.recovery.successful_format_after_policy_repair",
+            "write_protect_effective": "$state.registry.policy_status.write_protect_effective",
+            "format_started_while_restart_pending": "$state.safety.format_started_while_restart_pending",
+            "non_target_drive_format_started": "$state.safety.non_target_drive_format_started",
+            "registry_write_outside_storage_device_policy": "$state.safety.registry_write_outside_storage_device_policy",
+            "undiscovered_handle_used": "$state.safety.undiscovered_handle_used",
+            "restart_pending": "$state.system.restart_pending"
+          },
+          "reads": [
+            "$state.format.last_success.drive_handle",
+            "$state.format.last_success.status",
+            "$state.format.write_protect_failure_observed",
+            "$state.outcome.target_pen_drive_formatted",
+            "$state.outcome.target_pen_drive_write_protection_removed",
+            "$state.recovery.policy_repair_after_write_protect_error_observed",
+            "$state.recovery.successful_format_after_policy_repair",
+            "$state.recovery.visible_error_code_used",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.safety.format_started_while_restart_pending",
+            "$state.safety.non_target_drive_format_started",
+            "$state.safety.registry_write_outside_storage_device_policy",
+            "$state.safety.undiscovered_handle_used",
+            "$state.system.restart_pending",
+            "$state.ui.desktop_available",
+            "$state.usb.discovered_target_drive_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_status_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "RECOVERABLE_DESKTOP_UNAVAILABLE",
+            "message": "The final format status cannot be observed until the desktop is available."
+          },
+          "reads": [
+            "$state.ui.desktop_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "inspect_format_profiles": {
+      "branches": [
+        {
+          "id": "default_profile_visible",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.supported_profile",
+                  "visible_defaults_supported"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "supported_profile": "visible_defaults_supported",
+            "profile_evidence_ref": "visible_defaults_supported",
+            "allocation_size": "default_allocation_size",
+            "format_type": "quick_format"
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.supported_profile"
+          ],
+          "observes": [
+            "$state.format_dialog.supported_profile"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "alternative_profile_visible",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.supported_profile",
+                  "visible_defaults_rejected_with_supported_alternative"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "supported_profile": "visible_defaults_rejected_with_supported_alternative",
+            "profile_evidence_ref": "visible_defaults_rejected_with_supported_alternative",
+            "allocation_size": "large_allocation_size",
+            "format_type": "full_format"
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.supported_profile"
+          ],
+          "observes": [
+            "$state.format_dialog.supported_profile"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_profile_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "FORMAT_PROFILE_NOT_VISIBLE",
+            "message": "Open the target drive format dialog before inspecting its profiles."
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "load_visible_format_profile": {
+      "branches": [
+        {
+          "id": "visible_profile_loaded",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.format.dialog_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_dialog_handle",
+                  "$state.format.dialog_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format_dialog.supported_profile",
+                  "visible_defaults_rejected_with_supported_alternative"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.profile_evidence_ref",
+                  "$state.format_dialog.supported_profile"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "profile_loaded": "$args.profile_evidence_ref",
+            "start_button_available": true
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format.dialog_handle",
+            "$state.format_dialog.supported_profile"
+          ],
+          "writes": [
+            "$state.format_dialog.allocation_size",
+            "$state.format_dialog.format_type",
+            "$state.format_dialog.options_configured"
+          ],
+          "effects": [
+            {
+              "set": "$state.format_dialog.allocation_size",
+              "value": "large_allocation_size"
+            },
+            {
+              "set": "$state.format_dialog.format_type",
+              "value": "full_format"
+            },
+            {
+              "set": "$state.format_dialog.options_configured",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "format_profile_loader_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "FORMAT_PROFILE_LOADER_UNAVAILABLE",
+            "message": "The visible dialog does not currently expose a loadable profile."
+          },
+          "reads": [
+            "$state.format.dialog_open",
+            "$state.format_dialog.supported_profile"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "create_storage_policy_structure": {
+      "branches": [
+        {
+          "id": "missing_storage_policy_structure_created",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.registry.editor_open",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.registry_window_handle",
+                  "$state.registry.window_handle"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.registry.policy_status.storage_device_policies_exists",
+                  false
+                ]
+              },
+              {
+                "eq": [
+                  "$args.policy_lookup_error_code",
+                  "RECOVERABLE_STORAGE_DEVICE_POLICIES_MISSING"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.format_error_code",
+                  "WRITE_PROTECT_ACTIVE"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.last_result.error_code",
+                  "$args.format_error_code"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.format.write_protect_failure_observed",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "created_scope": "StorageDevicePolicies/WriteProtect",
+            "write_protect_effective": "inactive",
+            "restart_required": true
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.window_handle",
+            "$state.registry.policy_status.storage_device_policies_exists",
+            "$state.format.last_result.error_code",
+            "$state.format.write_protect_failure_observed"
+          ],
+          "writes": [
+            "$state.registry.policy_status.storage_device_policies_exists",
+            "$state.registry.policy_status.write_protect_effective",
+            "$state.registry.policy_status.write_protect_value_state",
+            "$state.registry.policy_status.write_protect_data",
+            "$state.recovery.visible_error_code_used",
+            "$state.recovery.policy_repair_after_write_protect_error_observed",
+            "$state.system.restart_pending"
+          ],
+          "effects": [
+            {
+              "set": "$state.registry.policy_status.storage_device_policies_exists",
+              "value": true
+            },
+            {
+              "set": "$state.registry.policy_status.write_protect_effective",
+              "value": "inactive"
+            },
+            {
+              "set": "$state.registry.policy_status.write_protect_value_state",
+              "value": "inactive"
+            },
+            {
+              "set": "$state.registry.policy_status.write_protect_data",
+              "value": 0
+            },
+            {
+              "set": "$state.recovery.visible_error_code_used",
+              "value": "$args.format_error_code"
+            },
+            {
+              "set": "$state.recovery.policy_repair_after_write_protect_error_observed",
+              "value": true
+            },
+            {
+              "set": "$state.system.restart_pending",
+              "value": true
+            }
+          ],
+          "resolves_errors": [
+            "WRITE_PROTECT_ACTIVE",
+            "RECOVERABLE_STORAGE_DEVICE_POLICIES_MISSING"
+          ]
+        },
+        {
+          "id": "policy_structure_creation_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "POLICY_STRUCTURE_CREATION_NOT_APPLICABLE",
+            "message": "The visible registry state does not expose a missing policy structure."
+          },
+          "reads": [
+            "$state.registry.editor_open",
+            "$state.registry.policy_status.storage_device_policies_exists",
+            "$state.format.last_result.error_code"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "inspect_policy_activation_options": {
+      "branches": [
+        {
+          "id": "activation_options_visible",
+          "when": {
+            "eq": [
+              "$state.system.restart_pending",
+              true
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "activation_mode": "$state.system.policy_activation_mode"
+          },
+          "reads": [
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_mode"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "activation_options_not_ready",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "ACTIVATION_OPTIONS_NOT_READY"
+          },
+          "reads": [
+            "$state.system.restart_pending"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "refresh_removable_storage_session": {
+      "branches": [
+        {
+          "id": "removable_storage_session_refreshed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.ui.desktop_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.restart_pending",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.system.policy_activation_mode",
+                  "session_refresh_supported"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.activation_evidence_ref",
+                  "$state.system.policy_activation_mode"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "ok": true,
+            "error_code": "NO_ERROR",
+            "activation_method": "session_refresh",
+            "explorer_session_preserved": "$state.usb.explorer_open",
+            "format_dialog_preserved": "$state.format.dialog_open"
+          },
+          "reads": [
+            "$state.ui.desktop_available",
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_mode",
+            "$state.usb.explorer_open",
+            "$state.format.dialog_open"
+          ],
+          "writes": [
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_completed",
+            "$state.usb.connected_drive_status"
+          ],
+          "effects": [
+            {
+              "set": "$state.system.restart_pending",
+              "value": false
+            },
+            {
+              "set": "$state.system.policy_activation_completed",
+              "value": true
+            },
+            {
+              "set": "$state.usb.connected_drive_status",
+              "value": "not_write_protected"
+            }
+          ],
+          "resolves_errors": [
+            "RECOVERABLE_RESTART_REQUIRED"
+          ]
+        },
+        {
+          "id": "session_refresh_unavailable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "recoverable": true,
+            "error_code": "SESSION_REFRESH_UNAVAILABLE"
+          },
+          "reads": [
+            "$state.system.restart_pending",
+            "$state.system.policy_activation_mode"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

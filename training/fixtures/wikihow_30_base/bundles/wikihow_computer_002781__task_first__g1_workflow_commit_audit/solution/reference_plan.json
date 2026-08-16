@@ -1,0 +1,69 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Instagram"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "posts",
+        "query": ""
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "posts",
+        "record_id": "post_982"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "post_982"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "posts",
+        "record_id": "post_982",
+        "patch": {
+          "id": "post_982",
+          "type": "photo",
+          "caption": "Sunset at the beach!",
+          "location": null,
+          "timestamp": "2023-10-01T18:30:00Z"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "posts",
+        "record_id": "post_982"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002781"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

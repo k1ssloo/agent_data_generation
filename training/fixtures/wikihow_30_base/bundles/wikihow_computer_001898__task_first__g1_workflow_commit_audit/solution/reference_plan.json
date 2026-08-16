@@ -1,0 +1,65 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Settings"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "settings",
+        "query": ""
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "system_locale"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "system_locale"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "system_locale",
+        "patch": {
+          "default_language": "Spanish"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "system_language",
+        "target_id": ""
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_001898"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

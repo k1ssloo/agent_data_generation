@@ -1,0 +1,83 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Research visa requirements on the French embassy website, apply for a visa, and search online for French-style résumés to find a job.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.jobs",
+              {
+                "job_visa_771": {
+                  "job_type": "visa_processing",
+                  "target_id": "visa_app_9921",
+                  "status": "completed",
+                  "progress": 50
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.visa_applications",
+              {
+                "visa_app_9921": {
+                  "fields": {
+                    "applicant_name": "John Doe",
+                    "visa_type": "Tourist"
+                  },
+                  "attachments": [
+                    "photo_john_123",
+                    "insurance_john_456"
+                  ],
+                  "status": "submitted"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.jobs"
+          },
+          {
+            "exists": "$state.visa_applications"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

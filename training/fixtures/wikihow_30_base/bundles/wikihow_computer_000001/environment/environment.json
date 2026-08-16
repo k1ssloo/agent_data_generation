@@ -1,0 +1,1432 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "cat": {
+      "on_keyboard": false,
+      "near_keyboard": true,
+      "comfort_state": "excited",
+      "observed_before_intervention": false,
+      "jump_attempts_during_final_observation": 1,
+      "durable_prevention_state": false
+    },
+    "workspace": {
+      "barrier_available": true,
+      "barrier_deployed": false,
+      "barrier_handle": "barrier:desk-books",
+      "barrier_handle_discovered": false
+    },
+    "room": {
+      "door_closable": true,
+      "door_closed": false,
+      "door_handle": "door:office",
+      "door_handle_discovered": false
+    },
+    "screen": {
+      "cat_entertainment_played_at_workspace": false
+    },
+    "safety": {
+      "water_on_keyboard_or_computer": false,
+      "cat_harmed_or_forced": false
+    },
+    "keyboard_lock": {
+      "status": "available",
+      "error_code": null,
+      "unsupported_error_observed": false,
+      "diagnosed_error_code": null,
+      "recovery_completed": false,
+      "recovery_before_error_observation": false,
+      "settings_handle": "keyboard-settings:primary",
+      "settings_handle_discovered": false,
+      "protection_active": false,
+      "attempted": false
+    },
+    "active_program": {
+      "handle": "program:notes",
+      "handle_discovered": false
+    },
+    "input_test": {
+      "text_before": "work note",
+      "text_after": "work note",
+      "key_pressure_inserted_text": false,
+      "last_test_observed": false
+    },
+    "cat_care": {
+      "comfort_spot_available": true,
+      "comfort_spot_handle": "comfort:window-bed",
+      "comfort_spot_handle_discovered": false,
+      "comfort_spot_set": false
+    },
+    "handle_use": {
+      "all_used_handles_discovered": true
+    },
+    "task": {
+      "final_observation_completed": false
+    }
+  },
+  "capabilities": {
+    "observe_cat_workspace": {
+      "branches": [
+        {
+          "id": "observe_visible_workspace",
+          "when": true,
+          "response": {
+            "cat": {
+              "on_keyboard": "$state.cat.on_keyboard",
+              "near_keyboard": "$state.cat.near_keyboard",
+              "comfort_state": "$state.cat.comfort_state"
+            },
+            "workspace": {
+              "barrier_available": "$state.workspace.barrier_available",
+              "barrier_handle": "$state.workspace.barrier_handle"
+            },
+            "room": {
+              "door_closable": "$state.room.door_closable",
+              "door_handle": "$state.room.door_handle"
+            },
+            "cat_care": {
+              "comfort_spot_available": "$state.cat_care.comfort_spot_available",
+              "comfort_spot_handle": "$state.cat_care.comfort_spot_handle"
+            }
+          },
+          "reads": [
+            "$state.cat.on_keyboard",
+            "$state.cat.near_keyboard",
+            "$state.cat.comfort_state",
+            "$state.workspace.barrier_available",
+            "$state.workspace.barrier_handle",
+            "$state.room.door_closable",
+            "$state.room.door_handle",
+            "$state.cat_care.comfort_spot_available",
+            "$state.cat_care.comfort_spot_handle"
+          ],
+          "writes": [
+            "$state.cat.observed_before_intervention",
+            "$state.workspace.barrier_handle_discovered",
+            "$state.room.door_handle_discovered",
+            "$state.cat_care.comfort_spot_handle_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.cat.observed_before_intervention",
+              "value": true
+            },
+            {
+              "set": "$state.workspace.barrier_handle_discovered",
+              "value": true
+            },
+            {
+              "set": "$state.room.door_handle_discovered",
+              "value": true
+            },
+            {
+              "set": "$state.cat_care.comfort_spot_handle_discovered",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "open_keyboard_settings": {
+      "branches": [
+        {
+          "id": "settings_panel_visible",
+          "when": true,
+          "response": {
+            "settings_handle": "$state.keyboard_lock.settings_handle",
+            "keyboard_lock": {
+              "status": "$state.keyboard_lock.status",
+              "error_code": "$state.keyboard_lock.error_code"
+            }
+          },
+          "reads": [
+            "$state.keyboard_lock.settings_handle",
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.keyboard_lock.settings_handle_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.settings_handle_discovered",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "inspect_active_program": {
+      "branches": [
+        {
+          "id": "active_program_visible",
+          "when": true,
+          "response": {
+            "program_handle": "$state.active_program.handle",
+            "input_test": {
+              "text_before": "$state.input_test.text_before",
+              "text_after": "$state.input_test.text_after",
+              "key_pressure_inserted_text": "$state.input_test.key_pressure_inserted_text"
+            }
+          },
+          "reads": [
+            "$state.active_program.handle",
+            "$state.input_test.text_before",
+            "$state.input_test.text_after",
+            "$state.input_test.key_pressure_inserted_text"
+          ],
+          "writes": [
+            "$state.active_program.handle_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.active_program.handle_discovered",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "enable_keyboard_lock": {
+      "branches": [
+        {
+          "id": "lock_already_protected",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.status",
+                  "locked"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  null
+                ]
+              }
+            ]
+          },
+          "response": {
+            "keyboard_lock": {
+              "status": "$state.keyboard_lock.status",
+              "error_code": "$state.keyboard_lock.error_code"
+            },
+            "result": "already_protected"
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.keyboard_lock.protection_active"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.protection_active",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "lock_unsupported_failure",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.status",
+                  "available"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  null
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.recovery_completed",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "keyboard_lock": {
+              "status": "unsupported",
+              "error_code": "KEYBOARD_LOCK_UNSUPPORTED"
+            },
+            "error_code": "KEYBOARD_LOCK_UNSUPPORTED",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.error_code",
+            "$state.keyboard_lock.recovery_completed"
+          ],
+          "writes": [
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.error_code",
+            "$state.keyboard_lock.unsupported_error_observed",
+            "$state.keyboard_lock.attempted",
+            "$state.keyboard_lock.protection_active"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.status",
+              "value": "unsupported"
+            },
+            {
+              "set": "$state.keyboard_lock.error_code",
+              "value": "KEYBOARD_LOCK_UNSUPPORTED"
+            },
+            {
+              "set": "$state.keyboard_lock.unsupported_error_observed",
+              "value": true
+            },
+            {
+              "set": "$state.keyboard_lock.attempted",
+              "value": true
+            },
+            {
+              "set": "$state.keyboard_lock.protection_active",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "lock_after_recovery_success",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.recovery_completed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  null
+                ]
+              }
+            ]
+          },
+          "response": {
+            "keyboard_lock": {
+              "status": "locked",
+              "error_code": "$state.keyboard_lock.error_code"
+            },
+            "result": "keyboard_pressure_blocked"
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.recovery_completed",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.protection_active",
+            "$state.cat.durable_prevention_state"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.status",
+              "value": "locked"
+            },
+            {
+              "set": "$state.keyboard_lock.protection_active",
+              "value": true
+            },
+            {
+              "set": "$state.cat.durable_prevention_state",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "lock_busy_terminal",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  "LOCK_BUSY"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "keyboard_lock": {
+              "status": "busy",
+              "error_code": "LOCK_BUSY"
+            },
+            "error_code": "LOCK_BUSY",
+            "recoverable": false
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.protection_active"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.status",
+              "value": "busy"
+            },
+            {
+              "set": "$state.keyboard_lock.protection_active",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_keyboard_lock_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_KEYBOARD_SETTINGS_HANDLE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.settings_handle"
+          ],
+          "writes": [
+            "$state.handle_use.all_used_handles_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.handle_use.all_used_handles_discovered",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "test_key_pressure": {
+      "branches": [
+        {
+          "id": "test_blocked_by_lock",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.program_handle",
+                  "program:notes"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.active_program.handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.protection_active",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "input_test": {
+              "text_before": "$state.input_test.text_before",
+              "text_after": "$state.input_test.text_before",
+              "key_pressure_inserted_text": false
+            },
+            "keyboard_lock": {
+              "error_code": "$state.keyboard_lock.error_code"
+            }
+          },
+          "reads": [
+            "$args.program_handle",
+            "$state.active_program.handle_discovered",
+            "$state.keyboard_lock.protection_active",
+            "$state.input_test.text_before",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.input_test.text_after",
+            "$state.input_test.key_pressure_inserted_text",
+            "$state.input_test.last_test_observed"
+          ],
+          "effects": [
+            {
+              "set": "$state.input_test.text_after",
+              "value": "work note"
+            },
+            {
+              "set": "$state.input_test.key_pressure_inserted_text",
+              "value": false
+            },
+            {
+              "set": "$state.input_test.last_test_observed",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "test_inserts_without_protection",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.program_handle",
+                  "program:notes"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.active_program.handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.protection_active",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "input_test": {
+              "text_before": "$state.input_test.text_before",
+              "text_after": "work notex",
+              "key_pressure_inserted_text": true
+            },
+            "keyboard_lock": {
+              "error_code": "$state.keyboard_lock.error_code"
+            }
+          },
+          "reads": [
+            "$args.program_handle",
+            "$state.active_program.handle_discovered",
+            "$state.keyboard_lock.protection_active",
+            "$state.input_test.text_before",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.input_test.text_after",
+            "$state.input_test.key_pressure_inserted_text",
+            "$state.input_test.last_test_observed"
+          ],
+          "effects": [
+            {
+              "set": "$state.input_test.text_after",
+              "value": "work notex"
+            },
+            {
+              "set": "$state.input_test.key_pressure_inserted_text",
+              "value": true
+            },
+            {
+              "set": "$state.input_test.last_test_observed",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_input_test_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_ACTIVE_PROGRAM_HANDLE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.program_handle"
+          ],
+          "writes": [
+            "$state.handle_use.all_used_handles_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.handle_use.all_used_handles_discovered",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "diagnose_keyboard_error": {
+      "branches": [
+        {
+          "id": "diagnose_observed_unsupported_code",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.error_code",
+                  "KEYBOARD_LOCK_UNSUPPORTED"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  "KEYBOARD_LOCK_UNSUPPORTED"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.input_test.key_pressure_inserted_text",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "diagnosed_error_code": "KEYBOARD_LOCK_UNSUPPORTED",
+            "diagnosis": "current keyboard lock method is unsupported while key pressure still reaches the program"
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$args.error_code",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.error_code",
+            "$state.input_test.key_pressure_inserted_text"
+          ],
+          "writes": [
+            "$state.keyboard_lock.diagnosed_error_code"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.diagnosed_error_code",
+              "value": "KEYBOARD_LOCK_UNSUPPORTED"
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "diagnose_busy_code",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.error_code",
+                  "LOCK_BUSY"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  "LOCK_BUSY"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "diagnosed_error_code": "LOCK_BUSY",
+            "diagnosis": "keyboard lock is busy and cannot provide protection now"
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$args.error_code",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [
+            "$state.keyboard_lock.diagnosed_error_code"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.diagnosed_error_code",
+              "value": "LOCK_BUSY"
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "diagnosis_missing_public_failure",
+          "when": true,
+          "response": {
+            "error_code": "ERROR_CODE_NOT_OBSERVED_FOR_DIAGNOSIS",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$args.error_code",
+            "$state.keyboard_lock.error_code"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "recover_keyboard_lock_support": {
+      "branches": [
+        {
+          "id": "clear_unsupported_after_diagnosis",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.settings_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.unsupported_error_observed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.diagnosed_error_code",
+                  "KEYBOARD_LOCK_UNSUPPORTED"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.input_test.key_pressure_inserted_text",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "keyboard_lock": {
+              "status": "available",
+              "error_code": null
+            },
+            "recovery_completed": true
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.settings_handle_discovered",
+            "$state.keyboard_lock.unsupported_error_observed",
+            "$state.keyboard_lock.diagnosed_error_code",
+            "$state.input_test.key_pressure_inserted_text"
+          ],
+          "writes": [
+            "$state.keyboard_lock.status",
+            "$state.keyboard_lock.error_code",
+            "$state.keyboard_lock.recovery_completed"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.status",
+              "value": "available"
+            },
+            {
+              "set": "$state.keyboard_lock.error_code",
+              "value": null
+            },
+            {
+              "set": "$state.keyboard_lock.recovery_completed",
+              "value": true
+            }
+          ],
+          "resolves_errors": [
+            "KEYBOARD_LOCK_UNSUPPORTED"
+          ]
+        },
+        {
+          "id": "recovery_attempted_before_error",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.settings_handle",
+                  "keyboard-settings:primary"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.unsupported_error_observed",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "error_code": "RECOVERY_REQUIRES_OBSERVED_UNSUPPORTED_LOCK",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.unsupported_error_observed"
+          ],
+          "writes": [
+            "$state.keyboard_lock.recovery_before_error_observation"
+          ],
+          "effects": [
+            {
+              "set": "$state.keyboard_lock.recovery_before_error_observation",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_recovery_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_RECOVERY_CONTEXT",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.settings_handle",
+            "$state.keyboard_lock.diagnosed_error_code"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "deploy_workspace_barrier": {
+      "branches": [
+        {
+          "id": "barrier_deployed_from_visible_materials",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.barrier_handle",
+                  "barrier:desk-books"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workspace.barrier_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workspace.barrier_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat.observed_before_intervention",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "workspace": {
+              "barrier_deployed": true
+            },
+            "cat": {
+              "on_keyboard": false,
+              "near_keyboard": "$state.cat.near_keyboard"
+            }
+          },
+          "reads": [
+            "$args.barrier_handle",
+            "$state.workspace.barrier_handle_discovered",
+            "$state.workspace.barrier_available",
+            "$state.cat.observed_before_intervention",
+            "$state.cat.near_keyboard"
+          ],
+          "writes": [
+            "$state.workspace.barrier_deployed",
+            "$state.cat.on_keyboard",
+            "$state.cat.durable_prevention_state"
+          ],
+          "effects": [
+            {
+              "set": "$state.workspace.barrier_deployed",
+              "value": true
+            },
+            {
+              "set": "$state.cat.on_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.durable_prevention_state",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "barrier_unavailable",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.barrier_handle",
+                  "barrier:desk-books"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workspace.barrier_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workspace.barrier_available",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "error_code": "BARRIER_UNAVAILABLE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.barrier_handle",
+            "$state.workspace.barrier_handle_discovered",
+            "$state.workspace.barrier_available"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_barrier_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_BARRIER_HANDLE_OR_UNOBSERVED_WORKSPACE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.barrier_handle"
+          ],
+          "writes": [
+            "$state.handle_use.all_used_handles_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.handle_use.all_used_handles_discovered",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "close_room_door": {
+      "branches": [
+        {
+          "id": "door_closed_from_visible_feature",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.door_handle",
+                  "door:office"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.room.door_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.room.door_closable",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat.observed_before_intervention",
+                  true
+                ]
+              }
+            ]
+          },
+          "response": {
+            "room": {
+              "door_closed": true
+            },
+            "cat": {
+              "near_keyboard": false,
+              "on_keyboard": false
+            }
+          },
+          "reads": [
+            "$args.door_handle",
+            "$state.room.door_handle_discovered",
+            "$state.room.door_closable",
+            "$state.cat.observed_before_intervention"
+          ],
+          "writes": [
+            "$state.room.door_closed",
+            "$state.cat.near_keyboard",
+            "$state.cat.on_keyboard",
+            "$state.cat.durable_prevention_state"
+          ],
+          "effects": [
+            {
+              "set": "$state.room.door_closed",
+              "value": true
+            },
+            {
+              "set": "$state.cat.near_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.on_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.durable_prevention_state",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "door_not_closable",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.door_handle",
+                  "door:office"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.room.door_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.room.door_closable",
+                  false
+                ]
+              }
+            ]
+          },
+          "response": {
+            "error_code": "DOOR_NOT_CLOSABLE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.door_handle",
+            "$state.room.door_handle_discovered",
+            "$state.room.door_closable"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_door_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_DOOR_HANDLE_OR_UNOBSERVED_ROOM",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.door_handle"
+          ],
+          "writes": [
+            "$state.handle_use.all_used_handles_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.handle_use.all_used_handles_discovered",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "set_comfort_spot": {
+      "branches": [
+        {
+          "id": "comfort_spot_established",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.comfort_spot_handle",
+                  "comfort:window-bed"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat_care.comfort_spot_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat_care.comfort_spot_available",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat.observed_before_intervention",
+                  true
+                ]
+              },
+              {
+                "ne": [
+                  "$state.cat.comfort_state",
+                  "stressed"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "cat_care": {
+              "comfort_spot_set": true
+            },
+            "cat": {
+              "comfort_state": "calm",
+              "near_keyboard": false,
+              "on_keyboard": false
+            }
+          },
+          "reads": [
+            "$args.comfort_spot_handle",
+            "$state.cat_care.comfort_spot_handle_discovered",
+            "$state.cat_care.comfort_spot_available",
+            "$state.cat.observed_before_intervention",
+            "$state.cat.comfort_state"
+          ],
+          "writes": [
+            "$state.cat_care.comfort_spot_set",
+            "$state.cat.comfort_state",
+            "$state.cat.near_keyboard",
+            "$state.cat.on_keyboard",
+            "$state.cat.durable_prevention_state"
+          ],
+          "effects": [
+            {
+              "set": "$state.cat_care.comfort_spot_set",
+              "value": true
+            },
+            {
+              "set": "$state.cat.comfort_state",
+              "value": "calm"
+            },
+            {
+              "set": "$state.cat.near_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.on_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.durable_prevention_state",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "comfort_spot_not_suitable_now",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.comfort_spot_handle",
+                  "comfort:window-bed"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat_care.comfort_spot_handle_discovered",
+                  true
+                ]
+              },
+              {
+                "any": [
+                  {
+                    "eq": [
+                      "$state.cat_care.comfort_spot_available",
+                      false
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$state.cat.comfort_state",
+                      "stressed"
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          "response": {
+            "error_code": "COMFORT_SPOT_NOT_SUITABLE_NOW",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.comfort_spot_handle",
+            "$state.cat_care.comfort_spot_handle_discovered",
+            "$state.cat_care.comfort_spot_available",
+            "$state.cat.comfort_state"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "invalid_comfort_request",
+          "when": true,
+          "response": {
+            "error_code": "INVALID_COMFORT_SPOT_HANDLE_OR_UNOBSERVED_CAT_CARE",
+            "recoverable": true
+          },
+          "reads": [
+            "$args.comfort_spot_handle"
+          ],
+          "writes": [
+            "$state.handle_use.all_used_handles_discovered"
+          ],
+          "effects": [
+            {
+              "set": "$state.handle_use.all_used_handles_discovered",
+              "value": false
+            }
+          ],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "final_workspace_observation": {
+      "branches": [
+        {
+          "id": "final_interval_success",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$state.cat.observed_before_intervention",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.cat.durable_prevention_state",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$state.keyboard_lock.error_code",
+                  null
+                ]
+              },
+              {
+                "eq": [
+                  "$state.input_test.key_pressure_inserted_text",
+                  false
+                ]
+              },
+              {
+                "eq": [
+                  "$state.input_test.text_after",
+                  "$state.input_test.text_before"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "cat": {
+              "on_keyboard": false,
+              "jump_attempts_during_final_observation": 0
+            },
+            "input_test": {
+              "text_before": "$state.input_test.text_before",
+              "text_after": "$state.input_test.text_after",
+              "key_pressure_inserted_text": "$state.input_test.key_pressure_inserted_text"
+            },
+            "keyboard_lock": {
+              "error_code": "$state.keyboard_lock.error_code",
+              "status": "$state.keyboard_lock.status"
+            }
+          },
+          "reads": [
+            "$state.cat.observed_before_intervention",
+            "$state.cat.durable_prevention_state",
+            "$state.keyboard_lock.error_code",
+            "$state.input_test.key_pressure_inserted_text",
+            "$state.input_test.text_after",
+            "$state.input_test.text_before",
+            "$state.keyboard_lock.status"
+          ],
+          "writes": [
+            "$state.cat.on_keyboard",
+            "$state.cat.jump_attempts_during_final_observation",
+            "$state.task.final_observation_completed"
+          ],
+          "effects": [
+            {
+              "set": "$state.cat.on_keyboard",
+              "value": false
+            },
+            {
+              "set": "$state.cat.jump_attempts_during_final_observation",
+              "value": 0
+            },
+            {
+              "set": "$state.task.final_observation_completed",
+              "value": true
+            }
+          ],
+          "resolves_errors": []
+        },
+        {
+          "id": "final_interval_not_safe_to_claim",
+          "when": true,
+          "response": {
+            "error_code": "FINAL_OBSERVATION_PRECONDITIONS_UNMET",
+            "recoverable": true
+          },
+          "reads": [
+            "$state.cat.observed_before_intervention",
+            "$state.cat.durable_prevention_state",
+            "$state.keyboard_lock.error_code",
+            "$state.input_test.key_pressure_inserted_text"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "deterministic_final_domain_observation": {
+      "branches": [
+        {
+          "id": "current_domain_state_visible",
+          "when": true,
+          "response": {
+            "goal_evidence_01": "$state.cat.jump_attempts_during_final_observation",
+            "goal_evidence_02": "$state.cat.on_keyboard",
+            "goal_evidence_03": "$state.input_test.key_pressure_inserted_text",
+            "goal_evidence_04": "$state.input_test.text_after",
+            "goal_evidence_05": "$state.input_test.text_before",
+            "goal_evidence_06": "$state.keyboard_lock.diagnosed_error_code",
+            "goal_evidence_07": "$state.keyboard_lock.error_code",
+            "goal_evidence_08": "$state.keyboard_lock.recovery_completed",
+            "goal_evidence_09": "$state.keyboard_lock.unsupported_error_observed"
+          },
+          "reads": [
+            "$state.cat.jump_attempts_during_final_observation",
+            "$state.cat.on_keyboard",
+            "$state.input_test.key_pressure_inserted_text",
+            "$state.input_test.text_after",
+            "$state.input_test.text_before",
+            "$state.keyboard_lock.diagnosed_error_code",
+            "$state.keyboard_lock.error_code",
+            "$state.keyboard_lock.recovery_completed",
+            "$state.keyboard_lock.unsupported_error_observed"
+          ],
+          "writes": [],
+          "effects": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

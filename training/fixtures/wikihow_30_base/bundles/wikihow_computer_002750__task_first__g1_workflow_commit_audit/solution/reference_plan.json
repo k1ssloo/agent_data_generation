@@ -1,0 +1,59 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "open_resource",
+      "arguments": {
+        "resource_type": "app",
+        "target": "Settings"
+      }
+    },
+    {
+      "tool": "get_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "security_settings"
+      }
+    },
+    {
+      "tool": "inspect_workflow_commit_policy",
+      "arguments": {}
+    },
+    {
+      "tool": "approve_workflow_commit_action",
+      "arguments": {
+        "policy_ref": "policy_workflow_commit_audit_1",
+        "target_ref": "security_settings"
+      }
+    },
+    {
+      "tool": "update_record",
+      "arguments": {
+        "collection": "settings",
+        "record_id": "security_settings",
+        "patch": {
+          "screen_lock_type": "pin",
+          "lock_value": "2580"
+        },
+        "approval_ref": "approval_workflow_commit_1"
+      }
+    },
+    {
+      "tool": "read_state",
+      "arguments": {
+        "view": "device_status",
+        "target_id": ""
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002750"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

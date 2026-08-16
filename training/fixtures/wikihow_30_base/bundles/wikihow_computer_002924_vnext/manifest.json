@@ -1,0 +1,18 @@
+{
+  "bundle_version": "task-bundle-v1",
+  "task_id": "wikihow_computer_002924_vnext",
+  "instruction_file": "instruction.md",
+  "contract_file": "contract.json",
+  "environment_file": "environment/environment.json",
+  "bindings_file": "capabilities/bindings.json",
+  "reference_plan_file": "solution/reference_plan.json",
+  "lineage": {
+    "parent_task_id": "wikihow_computer_002924",
+    "generation": 1,
+    "operators": [
+      "alternative_recovery_affordance"
+    ]
+  },
+  "assigned_operator": "alternative_recovery_affordance",
+  "compiler": "model_planned_code_compiled_v2"
+}

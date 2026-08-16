@@ -1,0 +1,73 @@
+{
+  "actions": [
+    {
+      "tool": "observe_workflow_context",
+      "arguments": {}
+    },
+    {
+      "tool": "locate_file",
+      "arguments": {
+        "file_name": "backup.nbf"
+      }
+    },
+    {
+      "tool": "export_resource",
+      "arguments": {
+        "resource_id": "backup_nbf",
+        "format": "zip",
+        "export_name": "backup.zip"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "extract",
+        "target_id": "backup_zip",
+        "options": {}
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "extract_job_01"
+      }
+    },
+    {
+      "tool": "list_records",
+      "arguments": {
+        "collection": "files",
+        "query": "contacts"
+      }
+    },
+    {
+      "tool": "start_job",
+      "arguments": {
+        "job_type": "merge_vcf",
+        "target_id": "contacts_folder",
+        "options": {}
+      }
+    },
+    {
+      "tool": "poll_job",
+      "arguments": {
+        "job_id": "merge_job_01"
+      }
+    },
+    {
+      "tool": "send_message",
+      "arguments": {
+        "channel": "email",
+        "recipient": "user@example.com",
+        "subject": "Your Merged Contacts File",
+        "body": "Please find attached your merged contacts file: allcontacts.vcf"
+      }
+    },
+    {
+      "tool": "observe_workflow_outcome",
+      "arguments": {
+        "workflow_context_handle": "workflow_context_wikihow_computer_002902"
+      }
+    }
+  ],
+  "counterfactuals": []
+}

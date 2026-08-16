@@ -1,0 +1,92 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Format an SSD drive on a Windows computer using Disk Management.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.drives",
+              {
+                "disk_1": {
+                  "id": "disk_1",
+                  "name": "Crucial MX500 SSD",
+                  "type": "SSD",
+                  "connection": "USB",
+                  "file_system": "NTFS",
+                  "status": "active"
+                },
+                "disk_2": {
+                  "id": "disk_2",
+                  "name": "Samsung 970 EVO SSD",
+                  "type": "SSD",
+                  "connection": "Internal",
+                  "file_system": "NTFS",
+                  "status": "active"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.jobs",
+              {
+                "job_format_01": {
+                  "id": "job_format_01",
+                  "type": "format",
+                  "target_id": "disk_2",
+                  "options": {
+                    "file_system": "NTFS",
+                    "quick_format": true
+                  },
+                  "status": "completed"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.drives"
+          },
+          {
+            "exists": "$state.jobs"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

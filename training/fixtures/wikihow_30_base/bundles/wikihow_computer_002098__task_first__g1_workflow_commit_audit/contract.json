@@ -1,0 +1,70 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Download Skype, register an account, add a contact, and make a call to Ireland.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.active_session",
+              "skype_session_abc123"
+            ]
+          },
+          {
+            "eq": [
+              "$state.contacts",
+              {
+                "sean_ireland_99": {
+                  "id": "sean_ireland_99",
+                  "name": "Sean Murphy",
+                  "status": "online"
+                }
+              }
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.active_session"
+          },
+          {
+            "exists": "$state.contacts"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}

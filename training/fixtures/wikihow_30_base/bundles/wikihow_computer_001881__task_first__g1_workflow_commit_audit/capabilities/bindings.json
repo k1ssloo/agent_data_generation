@@ -1,0 +1,268 @@
+{
+  "binding_version": "tool-binding-v1",
+  "tools": [
+    {
+      "name": "observe_workflow_context",
+      "description": "Observe the public context for the current workflow before acting.",
+      "capability_id": "wikihow.workflow_context.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": [],
+        "additionalProperties": false
+      },
+      "provenance_required": []
+    },
+    {
+      "name": "open_resource",
+      "description": "Open an application, page, service, URL, or workspace so later tools can inspect or modify it.",
+      "capability_id": "wikihow.open_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_type": {
+            "type": "string",
+            "description": "Kind of resource, such as app, website, page, service, folder, or workspace.",
+            "enum": [
+              "workspace"
+            ]
+          },
+          "target": {
+            "type": "string",
+            "description": "Name, URL, or identifier of the resource to open."
+          }
+        },
+        "required": [
+          "resource_type",
+          "target"
+        ]
+      }
+    },
+    {
+      "name": "read_state",
+      "description": "Read a named state view or status summary exposed by the environment.",
+      "capability_id": "wikihow.read_state.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "view": {
+            "type": "string",
+            "description": "Name of the state view or status area to read.",
+            "enum": [
+              "calibration_status"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Optional target identifier or empty string for a global view.",
+            "default": ""
+          }
+        },
+        "required": [
+          "view"
+        ]
+      }
+    },
+    {
+      "name": "start_job",
+      "description": "Start a long-running job such as scan, export, download, import, or conversion.",
+      "capability_id": "wikihow.start_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_type": {
+            "type": "string",
+            "description": "Type of job to start.",
+            "enum": [
+              "calibration"
+            ]
+          },
+          "target_id": {
+            "type": "string",
+            "description": "Target resource or record for the job."
+          },
+          "options": {
+            "type": "object",
+            "description": "Job options.",
+            "default": {}
+          }
+        },
+        "required": [
+          "job_type",
+          "target_id"
+        ]
+      }
+    },
+    {
+      "name": "poll_job",
+      "description": "Poll a long-running job for its current status and outputs.",
+      "capability_id": "wikihow.poll_job.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "job_id": {
+            "type": "string",
+            "description": "Job identifier returned by start_job."
+          }
+        },
+        "required": [
+          "job_id"
+        ]
+      },
+      "provenance_required": [
+        "job_id"
+      ]
+    },
+    {
+      "name": "create_record",
+      "description": "Create a record in a named collection.",
+      "capability_id": "wikihow.create_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection where the record should be created.",
+            "enum": [
+              "notebook_sessions"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "description": "Fields for the new record."
+          }
+        },
+        "required": [
+          "collection",
+          "fields"
+        ]
+      }
+    },
+    {
+      "name": "update_record",
+      "description": "Update fields on an existing record.",
+      "capability_id": "wikihow.update_record.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "collection": {
+            "type": "string",
+            "description": "Collection containing the record.",
+            "enum": [
+              "notebook_sessions"
+            ]
+          },
+          "record_id": {
+            "type": "string",
+            "description": "Record to update."
+          },
+          "patch": {
+            "type": "object",
+            "description": "Fields to merge into the record."
+          },
+          "approval_ref": {
+            "type": "string",
+            "description": "Approval evidence derived for the exact commit target."
+          }
+        },
+        "required": [
+          "collection",
+          "record_id",
+          "patch",
+          "approval_ref"
+        ]
+      },
+      "provenance_required": [
+        "record_id",
+        "approval_ref"
+      ],
+      "input_map": {
+        "approval_ref": "approval_handle"
+      }
+    },
+    {
+      "name": "verify_resource",
+      "description": "Verify that a resource exists and has the expected status.",
+      "capability_id": "wikihow.verify_resource.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "resource_id": {
+            "type": "string",
+            "description": "Resource to verify."
+          },
+          "expected_status": {
+            "type": "string",
+            "description": "Expected status, such as uploaded, attached, downloaded, exported, or saved."
+          }
+        },
+        "required": [
+          "resource_id",
+          "expected_status"
+        ]
+      },
+      "provenance_required": [
+        "resource_id"
+      ]
+    },
+    {
+      "name": "observe_workflow_outcome",
+      "description": "Observe the resulting state for the same public workflow context.",
+      "capability_id": "wikihow.workflow_outcome.observe.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "workflow_context_handle": {
+            "type": "string",
+            "description": "Opaque context returned by the initial workflow observation."
+          }
+        },
+        "required": [
+          "workflow_context_handle"
+        ],
+        "additionalProperties": false
+      },
+      "provenance_required": [
+        "workflow_context_handle"
+      ]
+    },
+    {
+      "name": "inspect_workflow_commit_policy",
+      "description": "Inspect the current evidence policy for workflow_commit.",
+      "capability_id": "audit.inspect.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {},
+        "required": []
+      }
+    },
+    {
+      "name": "approve_workflow_commit_action",
+      "description": "Review a discovered target under the workflow_commit policy.",
+      "capability_id": "audit.approve.workflow_commit.v1",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "policy_ref": {
+            "type": "string"
+          },
+          "target_ref": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "policy_ref",
+          "target_ref"
+        ]
+      },
+      "input_map": {
+        "policy_ref": "policy_handle",
+        "target_ref": "target_handle"
+      },
+      "provenance_required": [
+        "policy_ref",
+        "target_ref"
+      ]
+    }
+  ]
+}

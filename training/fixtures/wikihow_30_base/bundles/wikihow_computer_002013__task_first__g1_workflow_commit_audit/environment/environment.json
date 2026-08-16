@@ -1,0 +1,482 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "settings": {
+      "browser_settings": {
+        "id": "browser_settings",
+        "cookies_cleared": false,
+        "browser_name": "Internet Explorer"
+      }
+    },
+    "flights": {
+      "flight_nyc_lon_blooper": {
+        "id": "flight_nyc_lon_blooper",
+        "route": "NYC to LON",
+        "price": 180,
+        "notes": "Saturday morning typo fare"
+      },
+      "flight_nyc_lon_standard": {
+        "id": "flight_nyc_lon_standard",
+        "route": "NYC to LON",
+        "price": 650,
+        "notes": "Standard fare"
+      }
+    },
+    "bookings": {},
+    "workflow_context": {
+      "handle": "workflow_context_wikihow_computer_002013",
+      "source_task_id": "wikihow_computer_002013"
+    },
+    "workflow_commit_audit": {
+      "reviewed": false,
+      "target": "",
+      "committed": false
+    }
+  },
+  "capabilities": {
+    "wikihow.list_records.v1": {
+      "branches": [
+        {
+          "id": "observed_01",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "settings"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  ""
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "records": [
+              {
+                "id": "browser_settings",
+                "cookies_cleared": false,
+                "browser_name": "Internet Explorer"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_LIST_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.update_record.v1": {
+      "branches": [
+        {
+          "id": "observed_02",
+          "when": {
+            "all": [
+              {
+                "all": [
+                  {
+                    "eq": [
+                      "$args.collection",
+                      "settings"
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.patch",
+                      {
+                        "cookies_cleared": true
+                      }
+                    ]
+                  },
+                  {
+                    "eq": [
+                      "$args.record_id",
+                      "browser_settings"
+                    ]
+                  }
+                ]
+              },
+              {
+                "eq": [
+                  "$args.approval_handle",
+                  "approval_workflow_commit_1"
+                ]
+              },
+              {
+                "eq": [
+                  "$state.workflow_commit_audit.reviewed",
+                  true
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "$state.workflow_commit_audit.target"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record": {
+              "id": "browser_settings",
+              "cookies_cleared": true,
+              "browser_name": "Internet Explorer"
+            }
+          },
+          "effects": [
+            {
+              "set": "$state.settings",
+              "value": {
+                "browser_settings": {
+                  "id": "browser_settings",
+                  "cookies_cleared": true,
+                  "browser_name": "Internet Explorer"
+                }
+              }
+            },
+            {
+              "set": "$state.workflow_commit_audit.committed",
+              "value": true
+            }
+          ],
+          "reads": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ],
+          "writes": [
+            "$state.settings",
+            "$state.workflow_commit_audit.committed"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_UPDATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.search_records.v1": {
+      "branches": [
+        {
+          "id": "observed_03",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "flights"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.query",
+                  "NYC to LON"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "results": [
+              {
+                "id": "flight_nyc_lon_blooper",
+                "route": "NYC to LON",
+                "price": 180,
+                "notes": "Saturday morning typo fare"
+              }
+            ]
+          },
+          "effects": [],
+          "reads": [
+            "$state.settings.browser_settings.cookies_cleared"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_SEARCH_RECORDS_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.get_record.v1": {
+      "branches": [
+        {
+          "id": "observed_04",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "flights"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.record_id",
+                  "flight_nyc_lon_blooper"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record": {
+              "id": "flight_nyc_lon_blooper",
+              "route": "NYC to LON",
+              "price": 180,
+              "notes": "Saturday morning typo fare"
+            }
+          },
+          "effects": [],
+          "reads": [
+            "$state.flights[$args.record_id]"
+          ],
+          "writes": []
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_GET_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.create_record.v1": {
+      "branches": [
+        {
+          "id": "observed_05",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.collection",
+                  "bookings"
+                ]
+              },
+              {
+                "eq": [
+                  "$args.fields",
+                  {
+                    "flight_id": "flight_nyc_lon_blooper"
+                  }
+                ]
+              }
+            ]
+          },
+          "response": {
+            "status": "success",
+            "record_id": "booking_991",
+            "record": {
+              "id": "booking_991",
+              "flight_id": "flight_nyc_lon_blooper",
+              "status": "confirmed"
+            }
+          },
+          "effects": [
+            {
+              "set": "$state.bookings",
+              "value": {
+                "booking_991": {
+                  "id": "booking_991",
+                  "flight_id": "flight_nyc_lon_blooper",
+                  "status": "confirmed"
+                }
+              }
+            }
+          ],
+          "reads": [],
+          "writes": [
+            "$state.bookings"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "WIKIHOW_CREATE_RECORD_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_context.observe.v1": {
+      "branches": [
+        {
+          "id": "workflow_context_visible",
+          "when": true,
+          "response": {
+            "workflow_context_handle": "$state.workflow_context.handle"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "wikihow.workflow_outcome.observe.v1": {
+      "branches": [
+        {
+          "id": "current_workflow_outcome_visible",
+          "when": {
+            "eq": [
+              "$args.workflow_context_handle",
+              "$state.workflow_context.handle"
+            ]
+          },
+          "response": {
+            "outcome_state": {
+              "bookings": "$state.bookings",
+              "settings": "$state.settings",
+              "workflow_context": "$state.workflow_context"
+            },
+            "audit_committed": "$state.workflow_commit_audit.committed"
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle",
+            "$state.bookings",
+            "$state.settings",
+            "$state.workflow_context",
+            "$state.workflow_commit_audit.committed"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        },
+        {
+          "id": "workflow_context_mismatch",
+          "when": true,
+          "response": {
+            "error_code": "WORKFLOW_CONTEXT_MISMATCH",
+            "recoverable": false
+          },
+          "effects": [],
+          "reads": [
+            "$state.workflow_context.handle"
+          ],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    },
+    "audit.inspect.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "policy_discovered",
+          "when": true,
+          "response": {
+            "policy_handle": "policy_workflow_commit_audit_1",
+            "scope": "workflow_commit",
+            "requires_explicit_review": true
+          },
+          "reads": [
+            "$state.workflow_commit_audit"
+          ]
+        }
+      ]
+    },
+    "audit.approve.workflow_commit.v1": {
+      "branches": [
+        {
+          "id": "target_reviewed",
+          "when": {
+            "all": [
+              {
+                "eq": [
+                  "$args.policy_handle",
+                  "policy_workflow_commit_audit_1"
+                ]
+              }
+            ]
+          },
+          "response": {
+            "approval_handle": "approval_workflow_commit_1",
+            "approved_target": "$args.target_handle"
+          },
+          "effects": [
+            {
+              "set": "$state.workflow_commit_audit.reviewed",
+              "value": true
+            },
+            {
+              "set": "$state.workflow_commit_audit.target",
+              "value": "$args.target_handle"
+            }
+          ],
+          "writes": [
+            "$state.workflow_commit_audit.reviewed",
+            "$state.workflow_commit_audit.target"
+          ]
+        },
+        {
+          "id": "public_input_not_applicable",
+          "when": true,
+          "response": {
+            "ok": false,
+            "error_code": "AUDIT_APPROVE_WORKFLOW_COMMIT_V1_INPUT_NOT_APPLICABLE",
+            "message": "The public arguments are well-formed but do not identify an applicable action in the current observable workflow.",
+            "retryable": true
+          },
+          "effects": [],
+          "reads": [],
+          "writes": [],
+          "resolves_errors": []
+        }
+      ]
+    }
+  }
+}

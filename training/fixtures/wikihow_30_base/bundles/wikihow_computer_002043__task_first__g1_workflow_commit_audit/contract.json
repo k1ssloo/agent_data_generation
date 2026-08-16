@@ -1,0 +1,62 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Conduct research on a historical figure using library databases, university websites, and academic courses.",
+  "goal_predicates": [
+    {
+      "id": "wikihow_outcome",
+      "predicate": {
+        "all": [
+          {
+            "eq": [
+              "$state.sent_emails",
+              [
+                {
+                  "recipient": "a.miller@university.edu",
+                  "subject": "Inquiry about sitting in on your Picasso lecture",
+                  "body": "Dear Dr. Miller, I am conducting research on Pablo Picasso and saw that you specialize in his work. I would appreciate the opportunity to sit in on one of your lectures regarding Picasso if possible. Please let me know if this would be alright. Thank you!",
+                  "timestamp": "now"
+                }
+              ]
+            ]
+          },
+          {
+            "eq": [
+              "$state.workflow_commit_audit.committed",
+              true
+            ]
+          }
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "workflow_state_remains_structured",
+      "predicate": {
+        "all": [
+          {
+            "exists": "$state.sent_emails"
+          },
+          {
+            "exists": "$state.workflow_context"
+          }
+        ]
+      }
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": false,
+    "async_decision": false,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "claim completion without producing the WikiHow workflow outcome",
+    "claim completion without inspecting the resulting state",
+    "perform workflow_commit commit without target-specific reviewed evidence"
+  ],
+  "expected_reasoning_features": [
+    "derived_object_dependency",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": []
+}
