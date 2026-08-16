@@ -1,0 +1,14 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "validation_report_v1.json",
+  "type": "object",
+  "required": ["task_id", "valid", "errors", "warnings", "metrics"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "valid": {"type": "boolean"},
+    "errors": {"type": "array", "items": {"type": "string"}},
+    "warnings": {"type": "array", "items": {"type": "string"}},
+    "metrics": {"type": "object"}
+  },
+  "additionalProperties": false
+}

@@ -9,6 +9,7 @@ __pycache__/
 # Local environments and secrets
 .env
 .env.*
+/config.toml
 *.log
 
 # Generated pipeline artifacts
@@ -20,6 +21,8 @@ legacy_no_validation/outputs/**
 # Large or regenerated datasets
 data/wikihow_100.jsonl
 data/wikihow_computer_100.jsonl
+data/wikihow_*000.jsonl
+data/wikihow_computer_*000.jsonl
 
 # Local editor/OS files
 .DS_Store

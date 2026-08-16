@@ -1,0 +1,43 @@
+You are producing a compact semantic alignment plan for an executable agent task.
+Do not rewrite tools, environment state, actions, or observations.
+
+The plan is accepted only if deterministic validators can prove every non-context
+instruction sentence. Return supported=false when the supplied execution does not
+actually represent a requested outcome, a comparison lacks operands, an outcome is
+already true initially, or no post-transition observation can prove it.
+
+Rules:
+- Emit the exact schema keys alignment_version="goal-alignment-v1",
+  rejection_reasons, instruction_claims.kind, goal_clauses, and domain_invariants.id.
+  Do not use aliases such as clauses or classification.
+- Copy every supplied instruction sentence exactly once and in order into
+  instruction_claims.evidence_span.
+- Classify each sentence as context, goal, constraint, or synthetic_constraint.
+- Context may use an empty clause_ids list. Every other sentence needs at least one
+  clause id.
+- A clause is a user-visible outcome or constraint, not an implementation step.
+- Each outcome clause predicate must be false in initial_state and true in final_state.
+- A conditional recovery predicate may be initially true, become false after its
+  visible failure trigger, and become true again after repair. Preserve the exact
+  `any(no failure, recovered failure)` logic from executable_goal_predicates.
+- A maintained safety constraint may remain true throughout execution when it is
+  already declared in executable_domain_invariants.
+- Never strengthen, narrow, or replace an executable goal predicate. Goal clauses
+  explain existing executable goals and invariants; they do not redesign them.
+- Predicates use only: all, any, not, exists, not_exists, eq, ne, gt, gte, lt, lte,
+  in. Paths begin with $state.
+- transition_paths identify state changed by the named witness_tools.
+- evidence_paths cover every state path in the predicate and must be read by a
+  post-transition read-only observation.
+- witness_tools list public tools whose removal should make the clause false.
+- Do not use workflow context handles as user-goal clauses.
+- Do not create a clause for opening/navigating unless the instruction explicitly
+  asks for that as an outcome and the environment persists it.
+- domain_invariants contain only relations already present in
+  executable_domain_invariants. Do not invent external facts or stronger temporal
+  assumptions.
+
+Return minified JSON matching the response schema.
+
+Execution evidence:
+{{alignment_context_json}}

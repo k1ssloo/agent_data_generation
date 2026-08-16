@@ -99,8 +99,10 @@ def fallback_invalid_rows(primary_path: Path, fallback_path: Path, validation_pa
     fallback_by_id = {row["id"]: row for row in load_jsonl(fallback_path)}
     changed = False
     rows = []
+    seen_ids = set()
     for row in load_jsonl(primary_path):
         row_id = row["id"]
+        seen_ids.add(row_id)
         if row_id not in valid and row_id in fallback_by_id:
             replacement = dict(fallback_by_id[row_id])
             replacement["fallback_source"] = "stage3_valid_before_refinement"
@@ -108,6 +110,13 @@ def fallback_invalid_rows(primary_path: Path, fallback_path: Path, validation_pa
             changed = True
         else:
             rows.append(row)
+    for row_id, row in fallback_by_id.items():
+        if row_id in seen_ids:
+            continue
+        replacement = dict(row)
+        replacement["fallback_source"] = "stage3_valid_before_refinement"
+        rows.append(replacement)
+        changed = True
     if changed:
         write_jsonl(output_path, rows)
     return changed
@@ -326,7 +335,7 @@ def main() -> None:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--candidate-limit", type=int, default=0, help="Limit raw Stage1 candidates. 0 means all input rows.")
     parser.add_argument("--target", type=int, default=0, help="Keep the first N Stage1-positive rows. 0 means keep all positives.")
-    parser.add_argument("--provider", choices=["openai", "gemini"], default="gemini")
+    parser.add_argument("--provider", choices=["openai", "gemini", "codex"], default="gemini")
     parser.add_argument("--workers", type=int, default=4)
     parser.add_argument("--retries", type=int, default=1)
     parser.add_argument("--retry-backoff", type=float, default=2.0)
@@ -355,6 +364,8 @@ def main() -> None:
     parser.set_defaults(canonicalize_tool_responses=True)
     parser.add_argument("--skip-stage4", action="store_true")
     args = parser.parse_args()
+    if args.provider == "codex" and args.workers != 1:
+        raise SystemExit("--provider codex requires --workers 1")
 
     output_dir = args.output_dir
     output_dir.mkdir(parents=True, exist_ok=True)

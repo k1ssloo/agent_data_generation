@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "episode_v1.json",
+  "type": "object",
+  "required": ["task_id", "status", "messages", "public_tools", "trace", "goal_results", "invariant_history", "errors"],
+  "properties": {
+    "task_id": {"type": "string"},
+    "status": {"enum": ["running", "goal_satisfied", "terminal_failure", "invariant_violation", "budget_exhausted", "agent_stopped_incomplete", "runtime_error"]},
+    "messages": {"type": "array", "items": {"type": "object"}},
+    "public_tools": {"type": "array", "items": {"type": "object"}},
+    "trace": {"type": "array", "items": {"type": "object"}},
+    "goal_results": {"type": "array", "items": {"type": "object"}},
+    "invariant_history": {"type": "array", "items": {"type": "object"}},
+    "errors": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": false
+}

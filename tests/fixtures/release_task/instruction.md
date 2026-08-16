@@ -1,0 +1,1 @@
+Release version 3.4.0 of the Atlas Android app to the beta channel. Follow the workspace release policy, keep the run within its cost limit, and do not distribute an artifact that fails testing, signing, or security requirements.

@@ -1,0 +1,59 @@
+{
+  "runtime_version": "causal-runtime-v1",
+  "initial_state": {
+    "workspace": {"handle": "ws_42", "name": "Atlas Android"},
+    "policy": {"handle": "policy_beta_7", "min_coverage": 85, "max_critical": 0, "signature_required": true, "max_cost": 50},
+    "source": {"handle": "src_128", "version": "3.4.0", "default_plan": "plan_12"},
+    "cost": {"total": 0},
+    "quality": {"coverage": 0},
+    "security": {"critical": 99},
+    "artifact": {"handle": "", "signed": false},
+    "release": {"version": "", "channel": "", "distributed": false},
+    "runs": {}
+  },
+  "capabilities": {
+    "workspace.find.v1": {
+      "branches": [{"id": "found", "when": {"eq": ["$args.query", "Atlas Android"]}, "response": {"workspace_handle": "ws_42", "name": "Atlas Android"}, "reads": ["$state.workspace"]}]
+    },
+    "policy.read.v1": {
+      "branches": [{"id": "beta_policy", "when": {"all": [{"eq": ["$args.workspace_handle", "ws_42"]}, {"eq": ["$args.channel", "beta"]}]}, "response": {"policy_handle": "policy_beta_7", "minimum_coverage": 85, "maximum_critical": 0, "signature_required": true, "maximum_cost": 50}, "reads": ["$state.policy"]}]
+    },
+    "source.resolve.v1": {
+      "branches": [{"id": "version_found", "when": {"all": [{"eq": ["$args.workspace_handle", "ws_42"]}, {"eq": ["$args.version", "3.4.0"]}]}, "response": {"source_handle": "src_128", "plan_handle": "plan_12", "version": "3.4.0"}, "reads": ["$state.source"]}]
+    },
+    "test.start.v1": {
+      "branches": [
+        {"id": "baseline_test", "when": {"eq": ["$args.plan_handle", "plan_12"]}, "response": {"run_handle": "run_test_31", "state": "queued"}, "effects": [{"set": "$state.runs.run_test_31", "value": {"kind": "test", "state": "queued", "plan": "plan_12"}}, {"increment": "$state.cost.total", "by": 6}]},
+        {"id": "revised_test", "when": {"eq": ["$args.plan_handle", "plan_13"]}, "response": {"run_handle": "run_test_32", "state": "queued"}, "effects": [{"set": "$state.runs.run_test_32", "value": {"kind": "test", "state": "queued", "plan": "plan_13"}}, {"increment": "$state.cost.total", "by": 7}]}
+      ]
+    },
+    "run.poll.v1": {
+      "branches": [
+        {"id": "baseline_failed", "when": {"eq": ["$args.run_handle", "run_test_31"]}, "response": {"run_handle": "run_test_31", "state": "failed", "coverage": 82, "report_handle": "report_test_31", "error_code": "COVERAGE_BELOW_TARGET"}, "effects": [{"set": "$state.runs.run_test_31.state", "value": "failed"}, {"set": "$state.quality.coverage", "value": 82}], "reads": ["$state.runs.run_test_31"]},
+        {"id": "revised_succeeded", "when": {"eq": ["$args.run_handle", "run_test_32"]}, "response": {"run_handle": "run_test_32", "state": "succeeded", "coverage": 88, "report_handle": "report_test_32"}, "effects": [{"set": "$state.runs.run_test_32.state", "value": "succeeded"}, {"set": "$state.quality.coverage", "value": 88}], "reads": ["$state.runs.run_test_32"]},
+        {"id": "scan_succeeded", "when": {"eq": ["$args.run_handle", "run_scan_19"]}, "response": {"run_handle": "run_scan_19", "state": "succeeded", "critical_vulnerabilities": 0, "report_handle": "report_sec_19"}, "effects": [{"set": "$state.runs.run_scan_19.state", "value": "succeeded"}, {"set": "$state.security.critical", "value": 0}], "reads": ["$state.runs.run_scan_19"]}
+      ]
+    },
+    "quality.inspect.v1": {
+      "branches": [{"id": "diagnosed", "when": {"eq": ["$args.report_handle", "report_test_31"]}, "response": {"diagnosis_handle": "diagnosis_31", "missing_tests": ["retry_timeout", "expired_token_refresh"]}, "reads": ["$state.quality.coverage"]}]
+    },
+    "test_plan.revise.v1": {
+      "branches": [{"id": "coverage_repaired", "when": {"all": [{"eq": ["$args.plan_handle", "plan_12"]}, {"eq": ["$args.diagnosis_handle", "diagnosis_31"]}]}, "response": {"plan_handle": "plan_13", "added_tests": ["retry_timeout", "expired_token_refresh"]}, "resolves_errors": ["COVERAGE_BELOW_TARGET"]}]
+    },
+    "build.signed.v1": {
+      "branches": [{"id": "signed", "when": {"all": [{"eq": ["$args.source_handle", "src_128"]}, {"gte": ["$state.quality.coverage", 85]}]}, "response": {"artifact_handle": "artifact_91", "signed": true}, "effects": [{"set": "$state.artifact.handle", "value": "artifact_91"}, {"set": "$state.artifact.signed", "value": true}, {"increment": "$state.cost.total", "by": 8}], "reads": ["$state.quality.coverage"]}]
+    },
+    "security.start.v1": {
+      "branches": [{"id": "scan_started", "when": {"eq": ["$args.artifact_handle", "$state.artifact.handle"]}, "response": {"run_handle": "run_scan_19", "state": "queued"}, "effects": [{"set": "$state.runs.run_scan_19", "value": {"kind": "security", "state": "queued"}}, {"increment": "$state.cost.total", "by": 4}], "reads": ["$state.artifact"]}]
+    },
+    "candidate.prepare.v1": {
+      "branches": [{"id": "candidate_ready", "when": {"all": [{"eq": ["$args.policy_handle", "policy_beta_7"]}, {"eq": ["$args.artifact_handle", "artifact_91"]}, {"eq": ["$args.test_report_handle", "report_test_32"]}, {"eq": ["$args.security_report_handle", "report_sec_19"]}, {"gte": ["$state.quality.coverage", 85]}, {"eq": ["$state.security.critical", 0]}, {"eq": ["$state.artifact.signed", true]}]}, "response": {"candidate_handle": "candidate_340b", "ready": true}, "reads": ["$state.policy", "$state.quality.coverage", "$state.security.critical", "$state.artifact.signed"]}]
+    },
+    "release.publish.v1": {
+      "branches": [{"id": "published", "when": {"all": [{"eq": ["$args.candidate_handle", "candidate_340b"]}, {"eq": ["$args.channel", "beta"]}, {"lte": ["$state.cost.total", 50]}]}, "response": {"distribution_handle": "dist_340b", "status": "distributed"}, "effects": [{"set": "$state.release.version", "value": "3.4.0"}, {"set": "$state.release.channel", "value": "beta"}, {"set": "$state.release.distributed", "value": true}], "reads": ["$state.cost.total"]}]
+    },
+    "release.inspect.v1": {
+      "branches": [{"id": "final_evidence", "when": {"eq": ["$args.distribution_handle", "dist_340b"]}, "response": {"version": "$state.release.version", "channel": "$state.release.channel", "distributed": "$state.release.distributed", "coverage": "$state.quality.coverage", "critical_vulnerabilities": "$state.security.critical", "signed": "$state.artifact.signed", "total_cost": "$state.cost.total"}, "reads": ["$state.release.version", "$state.release.channel", "$state.release.distributed", "$state.quality.coverage", "$state.security.critical", "$state.artifact.signed", "$state.cost.total"]}]
+    }
+  }
+}

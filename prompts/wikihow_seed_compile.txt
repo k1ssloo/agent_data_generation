@@ -1,0 +1,50 @@
+Compile this WikiHow procedural text into a grounded semantic seed for an executable hidden environment. Do not generate tools, hidden state, identifiers, a reference plan, or a trajectory yet.
+
+Grounding rules:
+- Every source-supported fact and every normalized step cites one or more exact, verbatim evidence spans copied from the supplied text.
+- Preserve the user-visible objective and causal order, but normalize prose into explicit action/input/output relations.
+- Separate source claims from the synthetic extension. The extension is an environment-design hypothesis, never wording attributed to WikiHow.
+- Do not invent real credentials, people, school codes, hostnames, private IDs, or proprietary facts.
+- Record uncertainties rather than silently resolving missing details.
+- Affordances describe what a future simulated environment can let an agent observe and change. They must remain natural for this procedure.
+- The assigned extension operator is mandatory. Express one discoverable, executable requirement for it without prescribing a solution sequence.
+
+Assigned operator card:
+{{assigned_operator_card_json}}
+
+Return minified JSON only, without indentation or insignificant whitespace:
+{
+  "seed_version": "wikihow-seed-v1",
+  "source_id": "{{source_id}}",
+  "source_sha256": "{{source_sha256}}",
+  "title": "source title",
+  "objective": "user-visible outcome",
+  "source_supported_facts": [
+    {"fact": "normalized fact", "evidence_spans": ["exact source substring"]}
+  ],
+  "normalized_steps": [
+    {"id": "step_01", "action": "...", "inputs": ["..."], "outputs": ["..."], "evidence_spans": ["exact source substring"]}
+  ],
+  "observable_affordances": [
+    {"system": "...", "observations": ["..."], "actions": ["..."]}
+  ],
+  "uncertainties": ["source detail that must remain discoverable or simulated"],
+  "environment_design_limits": [
+    "all record identifiers must be discovered before use",
+    "final success must be checked through an ordinary domain observation"
+  ],
+  "operator_feasibility": {
+    "supported": true,
+    "reason": "why the source workflow naturally supports this extension"
+  },
+  "synthetic_extension": {
+    "operator": "{{assigned_operator}}",
+    "requirement": "one natural executable extension",
+    "discoverable_evidence": ["environment observation that reveals the constraint"],
+    "grounding": "why it fits the source workflow",
+    "claimed_as_source": false
+  }
+}
+
+WikiHow text:
+{{source_text}}

@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execution_trace_v1.json",
+  "type": "object",
+  "required": ["step", "public_tool", "capability_id", "arguments", "read_set", "write_set", "produced_handles", "consumed_handles", "response"],
+  "properties": {
+    "step": {"type": "integer", "minimum": 1},
+    "public_tool": {"type": "string"},
+    "capability_id": {"type": "string"},
+    "arguments": {"type": "object"},
+    "read_set": {"type": "array", "items": {"type": "string"}},
+    "write_set": {"type": "array", "items": {"type": "string"}},
+    "produced_handles": {"type": "array", "items": {"type": "object"}},
+    "consumed_handles": {"type": "array", "items": {"type": "string"}},
+    "response": {"type": "object"}
+  },
+  "additionalProperties": true
+}

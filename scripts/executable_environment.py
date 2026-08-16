@@ -34,8 +34,25 @@ def build_environment(task: str, tool_names: list[str] | None = None) -> dict[st
 
 
 def build_environment_for_row(row: dict[str, Any]) -> dict[str, Any]:
-    tool_names = [tool.get("function", {}).get("name", "") for tool in row.get("tools", [])]
+    tool_names = row_tool_names(row)
     return row.get("environment") or build_environment(row.get("task", ""), tool_names)
+
+
+def row_tool_names(row: dict[str, Any]) -> list[str]:
+    names: list[str] = []
+    tools = row.get("tools", [])
+    if not isinstance(tools, list):
+        return names
+    for tool in tools:
+        if not isinstance(tool, dict):
+            continue
+        function = tool.get("function")
+        if not isinstance(function, dict):
+            continue
+        name = function.get("name")
+        if isinstance(name, str) and name:
+            names.append(name)
+    return names
 
 
 def validate_environment_spec(environment: dict[str, Any], tool_names: set[str] | None = None) -> list[str]:
@@ -232,6 +249,7 @@ def execute_tool(name: str, args: dict[str, Any], state: dict[str, Any], environ
             response = eval_value(branch.get("response", {}), context)
         except ExecutionError as exc:
             return {"status": "failed", "error": str(exc)}, [f"{name}: {exc}"]
+        response = json_safe_copy(response)
         context["response"] = response
         for effect in branch.get("effects", []):
             try:
@@ -283,8 +301,16 @@ def eval_condition(condition: Any, context: dict[str, Any]) -> bool:
         value = eval_value(spec["value"], context)
         if not isinstance(value, (int, float)) or isinstance(value, bool):
             return False
-        return spec.get("min", value) <= value <= spec.get("max", value)
+        min_value = eval_value(spec.get("min", value), context)
+        max_value = eval_value(spec.get("max", value), context)
+        if not is_number(min_value) or not is_number(max_value):
+            return False
+        return min_value <= value <= max_value
     raise ExecutionError(f"unsupported condition op {condition!r}")
+
+
+def is_number(value: Any) -> bool:
+    return isinstance(value, (int, float)) and not isinstance(value, bool)
 
 
 def eval_condition_value(value: Any, context: dict[str, Any]) -> Any:
@@ -300,15 +326,15 @@ def eval_value(value: Any, context: dict[str, Any]) -> Any:
     if isinstance(value, str):
         if value.startswith("$"):
             resolved = resolve_path(value, context, missing_ok=False)
-            return resolved
+            return json_safe_copy(resolved)
         return value
     if isinstance(value, list):
         return [eval_value(item, context) for item in value]
     if isinstance(value, dict):
         if "literal" in value:
-            return value["literal"]
+            return json_safe_copy(value["literal"])
         if "get" in value:
-            return resolve_path(value["get"], context, missing_ok=False)
+            return json_safe_copy(resolve_path(value["get"], context, missing_ok=False))
         if "template" in value:
             return render_template(value["template"], context)
         if "filter_values" in value:
@@ -406,6 +432,11 @@ class _Missing:
 MISSING = _Missing()
 
 
+def json_safe_copy(value: Any) -> Any:
+    """Detach DSL values before inserting them into response or state objects."""
+    return copy.deepcopy(value)
+
+
 def resolve_path(path: str, context: dict[str, Any], missing_ok: bool) -> Any:
     if not isinstance(path, str) or not path.startswith("$"):
         raise ExecutionError(f"invalid path {path!r}")
@@ -446,14 +477,15 @@ def set_path(path: str, context: dict[str, Any], value: Any) -> None:
     final_key = eval_path_token(tokens[-1], context)
     if not is_hashable_key(final_key):
         raise ExecutionError(f"unhashable final path key {final_key!r} in {path!r}")
+    stored_value = json_safe_copy(value)
     if isinstance(current, dict):
-        if isinstance(current.get(final_key), dict) and isinstance(value, dict):
-            current[final_key].update(value)
+        if isinstance(current.get(final_key), dict) and isinstance(stored_value, dict):
+            current[final_key].update(stored_value)
         else:
-            current[final_key] = value
+            current[final_key] = stored_value
         return
     if isinstance(current, list) and isinstance(final_key, int) and 0 <= final_key < len(current):
-        current[final_key] = value
+        current[final_key] = stored_value
         return
     raise ExecutionError(f"cannot set path {path!r}")
 
@@ -462,7 +494,7 @@ def append_path(path: str, context: dict[str, Any], value: Any) -> None:
     target = resolve_path(path, context, missing_ok=False)
     if not isinstance(target, list):
         raise ExecutionError(f"append target {path!r} is not a list")
-    target.append(value)
+    target.append(json_safe_copy(value))
 
 
 def apply_effect(effect: dict[str, Any], context: dict[str, Any]) -> None:
@@ -547,21 +579,50 @@ def eval_path_token(token: Any, context: dict[str, Any]) -> Any:
 
 def replay_row(row: dict[str, Any]) -> dict[str, Any]:
     environment = build_environment_for_row(row)
-    tool_names = {tool.get("function", {}).get("name", "") for tool in row.get("tools", [])}
+    tool_names = set(row_tool_names(row))
     errors = validate_environment_spec(environment, tool_names=tool_names)
+    raw_tools = row.get("tools", [])
+    if not isinstance(raw_tools, list):
+        errors.append(f"tools must be a list, got {type(raw_tools).__name__}")
+    else:
+        for index, tool in enumerate(raw_tools):
+            if not isinstance(tool, dict):
+                errors.append(f"tools[{index}]: tool must be an object, got {type(tool).__name__}")
+                continue
+            function = tool.get("function")
+            if not isinstance(function, dict):
+                errors.append(f"tools[{index}].function must be an object, got {type(function).__name__}")
     state = copy.deepcopy(environment.get("initial_state", {}))
     steps = []
     messages = row.get("messages", [])
+    if not isinstance(messages, list):
+        return {
+            "id": row.get("id"),
+            "valid": False,
+            "errors": errors + [f"messages must be a list, got {type(messages).__name__}"],
+            "steps": steps,
+            "final_state": state,
+        }
     for index, message in enumerate(messages):
+        if not isinstance(message, dict):
+            errors.append(f"message {index}: message must be an object, got {type(message).__name__}")
+            continue
         if message.get("role") != "assistant" or "tool_call" not in message:
             continue
         call = message["tool_call"]
+        if not isinstance(call, dict):
+            errors.append(f"message {index}: tool_call must be an object, got {type(call).__name__}")
+            continue
         name = call.get("name")
         args = call.get("arguments", {})
-        if index + 1 >= len(messages) or messages[index + 1].get("role") != "tool":
+        if not isinstance(args, dict):
+            errors.append(f"message {index}: tool_call.arguments must be an object, got {type(args).__name__}")
+            args = {}
+        next_message = messages[index + 1] if index + 1 < len(messages) and isinstance(messages[index + 1], dict) else {}
+        if index + 1 >= len(messages) or next_message.get("role") != "tool":
             errors.append(f"message {index}: assistant tool_call has no following tool response")
             continue
-        actual_tool = messages[index + 1]
+        actual_tool = next_message
         if actual_tool.get("name") != name:
             errors.append(f"message {index + 1}: tool response name {actual_tool.get('name')!r} does not match {name!r}")
             continue

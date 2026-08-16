@@ -94,6 +94,38 @@ thinking tokens 挤占 JSON 输出空间。
 如果 Stage 4 refinement 把原本已经验证通过的 Stage 3 轨迹改坏，runner
 会自动回退到 Stage 3 的有效版本，避免 refinement 降低最终产出率。
 
+10k 级 WikiHow 生成建议先构建大输入文件，再按 shard 断点续跑：
+
+```bash
+python3 scripts/extract_wikihow_computer_use.py \
+  --output data/wikihow_computer_10000.jsonl \
+  --target 10000 \
+  --scan-limit 1000000 \
+  --max-text-chars 6000 \
+  --progress-every 10000
+
+python3 scripts/run_pipeline_shards.py \
+  --input data/wikihow_computer_10000.jsonl \
+  --input-limit 10000 \
+  --shard-size 100 \
+  --output-dir outputs/runs/wikihow_computer_10k \
+  --provider gemini \
+  --gemini-thinking-budget 0 \
+  --workers 4 \
+  --retries 1 \
+  --stage2-repair-rounds 1 \
+  --trajectory-repair-rounds 2 \
+  --repair-max-tokens 12288 \
+  --min-shard-final-valid 1 \
+  --continue-on-error
+```
+
+分片脚本会把每个 shard 的 artifact 放在 `outputs/runs/.../shards/` 下，
+将通过验证的 SFT 数据合并到 `sft_openai_messages.jsonl`，并写出
+`shard_summary.json`。重复运行同一命令会跳过已有 `summary.json` 的
+shard，除非显式加 `--force`。`--min-shard-final-valid` 用来防止 API
+凭证、额度或模型行为异常时静默跑出零产出的 shard。
+
 ## Stage 2：工具和环境
 
 ```bash

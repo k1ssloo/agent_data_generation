@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task_manifest_v1.json",
+  "type": "object",
+  "required": ["bundle_version", "task_id", "instruction_file", "contract_file", "environment_file", "bindings_file", "reference_plan_file"],
+  "properties": {
+    "bundle_version": {"const": "task-bundle-v1"},
+    "task_id": {"type": "string", "minLength": 1},
+    "instruction_file": {"type": "string", "minLength": 1},
+    "contract_file": {"type": "string", "minLength": 1},
+    "environment_file": {"type": "string", "minLength": 1},
+    "bindings_file": {"type": "string", "minLength": 1},
+    "reference_plan_file": {"type": "string", "minLength": 1}
+  },
+  "additionalProperties": true
+}

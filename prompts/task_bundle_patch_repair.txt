@@ -1,0 +1,29 @@
+Repair the rejected causal-runtime-v1 task bundle with a minimal JSON Patch.
+
+Return only a minified JSON object with an operations array. Do not return the complete candidate.
+Supported operations are add, replace, and remove. Paths are JSON Pointer paths rooted at
+/instruction, /environment, /bindings, or /reference_plan. Preserve all unrelated fields.
+
+The patched candidate must satisfy the approved contract and every validator error below.
+Do not remove source-grounded goals or weaken invariants to make validation pass. Preserve
+public tool identifiability, argument provenance, counterfactual adaptation, and final goal
+evidence. New values must use the same causal-runtime-v1 DSL as the candidate.
+
+Example response:
+{"operations":[{"op":"replace","path":"/environment/capabilities/send/branches/0/when","value":{"all":[]}}]}
+
+Validator errors:
+{{validation_errors_json}}
+
+Approved contract:
+{{contract_json}}
+
+Causal quality floor (empty means no prior baseline):
+{{quality_floor_json}}
+
+Candidate repair context:
+{{candidate_context_json}}
+
+When context_mode is provenance_local_slice, every fragment includes its JSON Pointer in
+the complete parent. Patch those original paths directly. The omitted parent fields are
+unchanged and will be present when the patch is applied and fully validated.

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Extract computer-use procedural WikiHow rows from a HuggingFace dataset."""
+"""Extract procedural WikiHow rows from a HuggingFace dataset."""
 
 from __future__ import annotations
 
@@ -9,7 +9,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-from datasets import load_dataset
+try:
+    from datasets import load_dataset
+except ModuleNotFoundError:  # pragma: no cover - exercised only in minimal envs.
+    load_dataset = None
 
 
 COMPUTER_KEYWORDS = [
@@ -152,6 +155,23 @@ def row_text(row: dict[str, Any]) -> str:
     return "\n".join(pieces)
 
 
+def too_short_or_long(text: str, *, min_chars: int, max_chars: int) -> bool:
+    if min_chars and len(text) < min_chars:
+        return True
+    return bool(max_chars and len(text) > max_chars)
+
+
+def stable_row_id(
+    prefix: str,
+    *,
+    source_index: int,
+    selected_index: int,
+    legacy_sequential: bool = False,
+) -> str:
+    row_number = selected_index if legacy_sequential else source_index
+    return f"{prefix}_{row_number:09d}"
+
+
 def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
@@ -166,32 +186,58 @@ def main() -> None:
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--target", type=int, default=100)
     parser.add_argument("--scan-limit", type=int, default=20000)
+    parser.add_argument("--start-index", type=int, default=0, help="Skip source rows before this streaming index.")
+    parser.add_argument("--filter", choices=["computer", "none"], default="computer")
+    parser.add_argument("--id-prefix", default="wikihow_computer")
+    parser.add_argument(
+        "--legacy-sequential-ids",
+        action="store_true",
+        help="Use selected-row ordinals for backward reproduction; these IDs can collide across extracts.",
+    )
+    parser.add_argument("--min-text-chars", type=int, default=0)
+    parser.add_argument("--max-text-chars", type=int, default=0, help="0 disables the upper bound.")
     parser.add_argument("--min-score", type=int, default=8)
     parser.add_argument("--min-strong-hits", type=int, default=1)
     parser.add_argument("--min-core-hits", type=int, default=1)
     parser.add_argument("--require-title-hit", action="store_true")
+    parser.add_argument("--progress-every", type=int, default=0)
     args = parser.parse_args()
+
+    if load_dataset is None:
+        raise SystemExit("Missing dependency: install HuggingFace datasets with `python3 -m pip install datasets`.")
 
     dataset = load_dataset(args.dataset, split=args.split, streaming=True)
     rows: list[dict[str, Any]] = []
     scanned = 0
     for source_index, source_row in enumerate(dataset):
+        if source_index < args.start_index:
+            continue
         scanned += 1
         text = row_text(source_row)
+        if too_short_or_long(text, min_chars=args.min_text_chars, max_chars=args.max_text_chars):
+            if scanned >= args.scan_limit:
+                break
+            continue
         title = normalize(source_row.get("title"))
         score = procedural_score(text)
         strong_hits = strong_hit_count(text)
         core_hits = core_hit_count(text)
         title_hits = core_hit_count(title)
-        if (
+        is_selected = args.filter == "none" or (
             score >= args.min_score
             and strong_hits >= args.min_strong_hits
             and core_hits >= args.min_core_hits
             and (not args.require_title_hit or title_hits > 0)
-        ):
+        )
+        if is_selected:
             rows.append(
                 {
-                    "id": f"wikihow_computer_{len(rows):06d}",
+                    "id": stable_row_id(
+                        args.id_prefix,
+                        source_index=source_index,
+                        selected_index=len(rows),
+                        legacy_sequential=args.legacy_sequential_ids,
+                    ),
                     "text": text,
                     "metadata": {
                         "source_dataset": args.dataset,
@@ -205,6 +251,8 @@ def main() -> None:
                     },
                 }
             )
+        if args.progress_every and scanned % args.progress_every == 0:
+            print(json.dumps({"scanned": scanned, "written": len(rows)}, ensure_ascii=False), flush=True)
         if len(rows) >= args.target or scanned >= args.scan_limit:
             break
 

@@ -1,0 +1,50 @@
+{
+  "contract_version": "task-contract-v1",
+  "goal": "Atlas Android 3.4.0 is safely distributed to beta within policy.",
+  "goal_predicates": [
+    {
+      "id": "correct_release",
+      "predicate": {
+        "all": [
+          {"eq": ["$state.release.version", "3.4.0"]},
+          {"eq": ["$state.release.channel", "beta"]},
+          {"eq": ["$state.release.distributed", true]},
+          {"gte": ["$state.quality.coverage", 85]},
+          {"eq": ["$state.security.critical", 0]},
+          {"eq": ["$state.artifact.signed", true]},
+          {"lte": ["$state.cost.total", 50]}
+        ]
+      }
+    }
+  ],
+  "invariants": [
+    {
+      "id": "cost_within_limit",
+      "predicate": {"lte": ["$state.cost.total", 50]}
+    }
+  ],
+  "requirements": {
+    "semantic_recovery": true,
+    "async_decision": true,
+    "goal_grounded_verification": true
+  },
+  "forbidden_shortcuts": [
+    "distribute an unsigned artifact",
+    "distribute before tests and security checks pass",
+    "claim completion without reading release evidence"
+  ],
+  "expected_reasoning_features": [
+    "delayed_handle_use",
+    "observation_dependent_decision",
+    "derived_object_dependency",
+    "async_decision",
+    "semantic_recovery",
+    "goal_grounded_verification"
+  ],
+  "counterfactual_axes": [
+    {
+      "state_path": "$state.policy.min_coverage",
+      "variants": [85, 90]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "task_contract_v1.json",
+  "type": "object",
+  "required": ["contract_version", "goal", "goal_predicates", "invariants", "forbidden_shortcuts", "expected_reasoning_features", "counterfactual_axes"],
+  "properties": {
+    "contract_version": {"const": "task-contract-v1"},
+    "goal": {"type": "string", "minLength": 1},
+    "goal_predicates": {"type": "array", "minItems": 1, "items": {"type": "object"}},
+    "invariants": {"type": "array", "items": {"type": "object"}},
+    "forbidden_shortcuts": {"type": "array", "minItems": 1, "items": {"type": "string"}},
+    "expected_reasoning_features": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "enum": ["delayed_handle_use", "observation_dependent_decision", "derived_object_dependency", "async_decision", "semantic_recovery", "goal_grounded_verification", "alternative_plan", "closed_loop_control", "temporal_provenance"]
+      }
+    },
+    "counterfactual_axes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["state_path", "variants"],
+        "properties": {
+          "state_path": {"type": "string", "pattern": "^\\$state"},
+          "variants": {"type": "array", "minItems": 2}
+        },
+        "additionalProperties": true
+      }
+    },
+    "requirements": {"type": "object"}
+    ,"instruction_claims": {"type": "array", "items": {"type": "object"}}
+    ,"goal_clauses": {"type": "array", "minItems": 1, "items": {"type": "object"}}
+  },
+  "additionalProperties": true
+}

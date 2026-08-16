@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "contract_patch_v1.json",
+  "type": "object",
+  "required": [
+    "contract_patch_version",
+    "parent_task_id",
+    "child_task_id",
+    "generation",
+    "operator_id",
+    "semantic_changes",
+    "added_goal_paths"
+  ],
+  "properties": {
+    "contract_patch_version": {"const": "contract-patch-v1"},
+    "parent_task_id": {"type": "string", "minLength": 1},
+    "child_task_id": {"type": "string", "minLength": 1},
+    "generation": {"type": "integer", "minimum": 1},
+    "operator_id": {"type": "string", "minLength": 1},
+    "semantic_changes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {"type": "string", "minLength": 1}
+    },
+    "added_goal_paths": {
+      "type": "array",
+      "items": {"type": "string", "pattern": "^\\$state\\."}
+    }
+  },
+  "additionalProperties": false
+}

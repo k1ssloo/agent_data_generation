@@ -1,0 +1,66 @@
+Repair a rejected causal-runtime-v1 task bundle candidate. Return the entire corrected candidate as minified JSON without indentation or insignificant whitespace, not a patch and not an explanation.
+
+Preserve the approved contract and source-grounded objective. Change only what is needed to fix the validator errors and any directly implied consistency problems.
+The approved contract is immutable. Repair the executable candidate to satisfy
+it; never rewrite goals or invariants to accommodate an incomplete environment.
+
+Exact structural rules:
+- Top-level keys are instruction, environment, bindings, and reference_plan.
+- Each binding uses capability_id, never capability.
+- Each reference action uses {"tool": "public_name", "arguments": {...}}, never args.
+- Each capability branch has id, when, response, reads, writes, effects, and resolves_errors.
+- Predicate operators are only all, any, not, exists, not_exists, eq, ne, gt, gte, lt, lte, and in.
+- Effects are only set/value, increment/by, and delete.
+- Values may be literals or paths rooted at $state, $args, or $response.
+- A catch-all failure branch uses when: true and is last.
+- provenance_required names binding arguments whose values must come from earlier tool outputs.
+- Every other argument still needs an admissible source: public instruction, earlier structured tool observation, JSON Schema enum/const/default, or explicit simple derivation. Arbitrary literals are invalid.
+- Credentials and secrets cannot be free literals or schema enums. Replace credential entry with an opaque account/session handle returned by an ordinary public observation; do not return the secret itself.
+- Every public tool and parameter needs a concise, non-empty semantic description. Tools sharing a parameter shape must remain distinguishable from their public descriptions; oracle replay alone does not establish policy solvability.
+- Every static $state path referenced by contract predicates, capability
+  conditions, responses, or effects must resolve on environment.initial_state.
+  Every invariant must evaluate true initially. Preserve the full top-level
+  instruction, environment, bindings, and reference_plan structure.
+- If not_exists($state.object) represents an object not created yet, omit that
+  key from initial_state; do not set it to null, because null counts as existing.
+
+Counterfactual rules:
+- reference_plan.counterfactuals is either [] or a list of solvable alternate-state witnesses.
+- Each counterfactual is {"name": "...", "state_overrides": {"$state.path": value}, "actions": [{"tool": "...", "arguments": {...}}]}.
+- state_overrides must be non-empty and actions must be an adapted successful strategy for that alternate state.
+- Do not put expected-error probes in counterfactuals. Failure and recovery belong in the main reference actions and capability branches.
+- Every state axis that changes the adapted strategy must be exposed by an ordinary tool response before the baseline and adapted action lists first diverge.
+
+Causal quality repairs:
+- The main reference plan must execute at least six actions and include a handle or URL produced at least four action positions before a later provenance_required use. Do not refresh/re-emit that same value immediately before its delayed use, because the runtime attributes it to the latest producer.
+- Preserve a derived chain depth of at least three: an observed object should lead to a derived object which is consumed later.
+- If semantic recovery is required, the main plan must execute a failing branch with error_code and a later branch must list that exact code in resolves_errors.
+- Do not repair grounding by copying the private value into the public instruction or tool schema. Add a natural discovery/inspection action or replace secrets with an opaque session handle.
+- Do not add a task-card/oracle tool that dumps several future arguments at once. Discover values at their natural surfaces: UI labels from UI inspection, account/session handles from account context, task targets from task context, and artifact identifiers from artifact observations.
+- The final evidence must come from an ordinary domain read/inspect/open tool after all mutations. Its selected branch must declare reads covering every $state path referenced by goal_predicates and return the relevant observable values. Do not add a verify_success tool.
+- Repair missing goal evidence by adding or extending a genuine final domain observation, not by deleting source-grounded goals.
+- Keep the parent plan nontrivial: do not collapse several causal actions into one workflow tool.
+- Meet or exceed every supplied causal quality floor component independently.
+
+Return exactly:
+{
+  "instruction": "public instruction",
+  "environment": {"runtime_version": "causal-runtime-v1", "initial_state": {}, "capabilities": {}},
+  "bindings": {"binding_version": "tool-binding-v1", "tools": []},
+  "reference_plan": {"actions": [], "counterfactuals": []}
+}
+
+Validator errors:
+{{validation_errors_json}}
+
+Approved contract:
+{{contract_json}}
+
+Causal quality floor (empty means no prior baseline):
+{{quality_floor_json}}
+
+Seed context:
+{{seed_json}}
+
+Rejected candidate:
+{{candidate_json}}

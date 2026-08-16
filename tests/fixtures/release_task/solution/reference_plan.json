@@ -1,0 +1,19 @@
+{
+  "actions": [
+    {"tool": "find_project_space", "arguments": {"query": "Atlas Android"}},
+    {"tool": "load_channel_rules", "arguments": {"space_ref": "ws_42", "channel": "beta"}},
+    {"tool": "locate_revision", "arguments": {"space_ref": "ws_42", "version": "3.4.0"}},
+    {"tool": "start_test_run", "arguments": {"source_ref": "src_128", "plan_ref": "plan_12"}},
+    {"tool": "check_run", "arguments": {"run_ref": "run_test_31"}},
+    {"tool": "diagnose_quality", "arguments": {"report_ref": "report_test_31"}},
+    {"tool": "revise_test_plan", "arguments": {"base_plan_ref": "plan_12", "diagnosis_ref": "diagnosis_31"}},
+    {"tool": "start_test_run", "arguments": {"source_ref": "src_128", "plan_ref": "plan_13"}},
+    {"tool": "check_run", "arguments": {"run_ref": "run_test_32"}},
+    {"tool": "build_signed_package", "arguments": {"source_ref": "src_128"}},
+    {"tool": "start_security_scan", "arguments": {"artifact_ref": "artifact_91"}},
+    {"tool": "check_run", "arguments": {"run_ref": "run_scan_19"}},
+    {"tool": "prepare_candidate", "arguments": {"policy_ref": "policy_beta_7", "artifact_ref": "artifact_91", "test_report_ref": "report_test_32", "security_report_ref": "report_sec_19"}},
+    {"tool": "publish_candidate", "arguments": {"candidate_ref": "candidate_340b", "channel": "beta"}},
+    {"tool": "inspect_release_evidence", "arguments": {"distribution_ref": "dist_340b"}}
+  ]
+}

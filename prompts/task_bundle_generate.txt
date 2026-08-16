@@ -1,0 +1,110 @@
+Generate a complete candidate task bundle from the approved task contract. The bundle will be statically checked and executed in a fresh sandbox.
+
+Requirements:
+- The public instruction states only the goal and undiscoverable hard
+  constraints. It must not name a runtime error code or prescribe how to
+  diagnose, repair, retry, or choose a recovery route. Recovery requirements
+  live in the environment and must be discovered through public observations.
+- The hidden environment uses causal-runtime-v1 declarative capabilities.
+- Public tools bind to internal capabilities without exposing capability IDs in their descriptions.
+- Every public tool has a concise, non-empty description that identifies its callable affordance before execution. Every parameter also has a non-empty semantic description. Do not rely only on function or parameter names to communicate behavior.
+- Tools with the same parameter shape must still have distinguishable public descriptions. A replayable oracle is invalid if a policy cannot identify the intended tool from its public name, description, and schema.
+- Name tools by stable domain affordances such as inspecting a log, listing
+  routes, or updating a setting. Never use solution-role names such as
+  diagnose_X, repair_X, recover_X, fix_X, open_exact_X, or
+  open_correct_solution_X. Descriptions must explain observable behavior, not
+  announce that a tool is the correct or recommended solution to a failure.
+- The reference plan is only an executable solvability witness.
+- The verifier contract is expressed by goal predicates and invariants, not by matching the reference action sequence.
+- Include at least one catch-all failure branch for each capability when ordinary invalid input is possible.
+- Include explicit error_code values for recoverable and terminal failures.
+- Treat the approved contract as immutable. Do not reinterpret, weaken, or omit
+  its goals, invariants, counterfactual axes, or selected operator.
+- If contract.requirements declares closed_loop_control or temporal_provenance,
+  preserve its declarative evidence specification exactly. Every declared
+  producer-consumer link must be realized by public tool-output provenance in
+  the executable reference and counterfactual plans.
+- Return minified JSON only, without indentation or insignificant whitespace;
+  do not generate host-language code.
+
+Runtime DSL:
+- Branch conditions use only {"all": [...]}, {"any": [...]}, {"not": ...}, {"exists": "$state.path"}, {"not_exists": "$state.path"}, or binary {"eq"|"ne"|"gt"|"gte"|"lt"|"lte"|"in": [left, right]}.
+- Values may be JSON literals or path strings rooted at $state, $args, or $response. Dynamic map lookup uses $state.records[item_id], where item_id names a public argument.
+- Effects are only {"set": "$state.path", "value": value}, {"increment": "$state.path", "by": value}, or {"delete": "$state.path"}.
+- Every branch has id, when, response, reads, writes, effects, and resolves_errors. reads/writes/resolves_errors are string arrays.
+- A branch may add observes as a $state path array only when its literal response publicly reveals those paths; every observes path must also appear in reads. Hidden when predicates are not observations.
+- A catch-all failure branch uses when: true and must be last. The runtime selects the first matching branch.
+- Every reference argument must be grounded in the public instruction, an earlier structured tool observation, a JSON Schema enum/const/default, or an explicitly declared simple derivation. Arbitrary literals are rejected even when provenance_required omits them.
+- Tool parameters are JSON Schema objects. Arguments requiring prior tool evidence must be listed in the binding's provenance_required array. Credentials, passwords, tokens, record IDs, handles, paths, URLs, names, and task targets must never be treated as free agent choices.
+- Do not expose passwords or secret values as ordinary observations. Model authentication as a discoverable opaque session/account handle from a public session or profile observation, then consume that handle.
+- Predeclare the complete state shape in environment.initial_state. Every static
+  $state path referenced by a contract predicate, capability condition,
+  response, or effect must resolve before execution. Use a semantically correct
+  initial value: every invariant must evaluate true initially, while terminal
+  goals may begin false. Exception: when not_exists($state.object) represents an
+  object that has not been created yet, omit that object key entirely; null still
+  counts as existing in this runtime. Put child comparisons behind the matching
+  existence guard. Otherwise a capability may later replace a predeclared null
+  or false value; do not rely on creating an undeclared nested path at runtime.
+- Do not create a task-card/oracle observation that dumps several future arguments. Values must be discovered at their natural domain surfaces.
+- Every public binding has exactly these core fields: {"name": "public_tool_name", "description": "...", "capability_id": "matching_internal_capability_key", "parameters": {"type": "object", ...}}. Use capability_id, never capability.
+- Every reference action has exactly {"tool": "public_tool_name", "arguments": {...}}. Use arguments, never args.
+- For every counterfactual strategy change, expose the changed task constraint or environment mode through an ordinary tool response before the first action where the adapted plan diverges from the baseline plan.
+- Do not use computed-string templates, host-language expressions, private verifier tools, semantic pseudo-operators, or values unavailable from the instruction, public schema, or earlier tool outputs.
+- reference_plan.counterfactuals is either [] or contains solvable alternate-state witnesses of the form {"name": "...", "state_overrides": {"$state.path": value}, "actions": [{"tool": "...", "arguments": {...}}]}. Each state_overrides map is non-empty and each actions list is an adapted successful plan, not an expected-error probe.
+- The main reference plan must contain 15-25 actions, with at least 15 actions
+  proven necessary by action ablation. A handle or URL
+  produced by an ordinary domain observation must be consumed by a
+  provenance_required argument at least four action positions later. Do not
+  re-emit that value immediately before consumption.
+- Build a handle dependency chain of depth at least three: observe object A,
+  derive or select object B using A, then consume B in a later consequential
+  action.
+- The final action must be a read-only ordinary domain observation after every
+  goal-state mutation. Its selected branch has empty writes/effects, declares
+  reads covering every goal predicate path, and returns those observable values.
+- A counterfactual is valid only when its adapted plan succeeds and replaying
+  the unchanged baseline actions under the same state override fails. If the
+  selected operator is not alternative_plan_affordance and no such strict
+  witness is natural, return an empty counterfactual list.
+
+Before returning, check all of the following:
+1. Every contract goal path and invariant path resolves on initial_state, or is
+   safely short-circuited behind an exists/not_exists guard for an absent object.
+2. Every invariant is true on initial_state.
+3. Every capability condition and static response path resolves on initial_state.
+4. Every binding has name, description, capability_id, parameters, and provenance_required.
+5. Every reference action names one public binding and uses arguments, never args.
+6. The main plan and every counterfactual replay successfully under the declared branches.
+7. When a non-empty causal quality floor is supplied, meet or exceed every
+   component independently. Do not trade a shorter plan or lower decision
+   density for a higher score on another metric.
+8. The main plan has delayed-handle distance >= 4 and handle-chain depth >= 3.
+9. No action writes goal state after the final read-only domain observation.
+10. There are 3-5 valid counterfactual decision groups at distinct grounded
+    divergence points. Each counted decision changes public action topology
+    (different tools or mechanisms); changing only a handle or enum argument and
+    repeated polling do not count as planning decisions.
+    The unchanged parent policy must fail after divergence and before it first
+    satisfies the task goals; an error after goal completion is not a valid
+    counterfactual witness.
+11. The main trace has 1-2 semantic failures, and one failure has two valid
+    recovery strategies across the main and counterfactual traces.
+12. No public tool name or description exposes its privileged solution role.
+
+Return:
+{
+  "instruction": "public instruction",
+  "environment": {"runtime_version": "causal-runtime-v1", "initial_state": {}, "capabilities": {}},
+  "bindings": {"binding_version": "tool-binding-v1", "tools": [{"name": "...", "description": "...", "capability_id": "...", "parameters": {"type": "object", "properties": {}, "required": [], "additionalProperties": false}, "provenance_required": []}]},
+  "reference_plan": {"actions": [{"tool": "...", "arguments": {}}], "counterfactuals": []}
+}
+
+Approved contract:
+{{contract_json}}
+
+Causal quality floor for replacement generation (empty means no prior baseline):
+{{quality_floor_json}}
+
+Seed context:
+{{seed_json}}

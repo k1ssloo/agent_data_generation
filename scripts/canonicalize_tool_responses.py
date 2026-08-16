@@ -26,7 +26,41 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8") as handle:
         for row in rows:
-            handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+            try:
+                handle.write(json.dumps(row, ensure_ascii=False) + "\n")
+            except (TypeError, ValueError) as exc:
+                safe_row = make_json_safe(row)
+                if isinstance(safe_row, dict):
+                    metadata = safe_row.setdefault("tool_response_canonicalization", {})
+                    if isinstance(metadata, dict):
+                        errors = metadata.setdefault("errors", [])
+                        if isinstance(errors, list):
+                            errors.append(f"serialization repair: {type(exc).__name__}: {exc}")
+                handle.write(json.dumps(safe_row, ensure_ascii=False) + "\n")
+
+
+def make_json_safe(value: Any, seen: set[int] | None = None) -> Any:
+    if seen is None:
+        seen = set()
+    if value is None or isinstance(value, (str, int, float, bool)):
+        return value
+    if isinstance(value, dict):
+        object_id = id(value)
+        if object_id in seen:
+            return "<circular_reference>"
+        seen.add(object_id)
+        result = {str(key): make_json_safe(item, seen) for key, item in value.items()}
+        seen.remove(object_id)
+        return result
+    if isinstance(value, list):
+        object_id = id(value)
+        if object_id in seen:
+            return ["<circular_reference>"]
+        seen.add(object_id)
+        result = [make_json_safe(item, seen) for item in value]
+        seen.remove(object_id)
+        return result
+    return repr(value)
 
 
 def canonicalize_row(row: dict[str, Any]) -> dict[str, Any]:
@@ -43,6 +77,8 @@ def canonicalize_row(row: dict[str, Any]) -> dict[str, Any]:
             if message.get("role") != "assistant" or "tool_call" not in message:
                 continue
             call = message["tool_call"]
+            if not isinstance(call, dict):
+                continue
             name = call.get("name")
             args = call.get("arguments", {})
             if index + 1 >= len(messages) or messages[index + 1].get("role") != "tool":
@@ -52,7 +88,11 @@ def canonicalize_row(row: dict[str, Any]) -> dict[str, Any]:
             if tool_message.get("name") != name:
                 errors.append(f"message {index + 1}: tool response name {tool_message.get('name')!r} does not match {name!r}")
                 continue
-            expected, step_errors = execute_tool(name, args, state, environment)
+            try:
+                expected, step_errors = execute_tool(name, args, state, environment)
+            except Exception as exc:
+                errors.append(f"message {index}: executable replay error: {type(exc).__name__}: {exc}")
+                continue
             executable_calls += 1
             if step_errors:
                 errors.extend(f"message {index}: {error}" for error in step_errors)

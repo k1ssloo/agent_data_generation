@@ -18,3 +18,7 @@ Artifacts are grouped by pipeline stage and by role in the pipeline.
 - `stage4/artifacts/`: materialized refined trajectories; Stage 4 replaces messages and preserves tools/environments.
 - `stage4/validation/`: strict grounding, replay execution, and tool-bank validation for refined trajectories.
 - `sft/`: OpenAI-message-style records ready for later conversion to a model-specific SFT template.
+- `task_first/`: generated task-first request batches, materialized task bundles,
+  hidden-environment rollout reports, execution traces, and causal validation
+  reports. Reference plans are oracle proofs and must not be copied into policy
+  training records.

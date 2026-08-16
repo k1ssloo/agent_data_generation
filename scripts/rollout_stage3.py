@@ -20,7 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from executable_environment import build_environment_for_row, execute_tool, validate_environment_spec
-from llm_client import call_chat, parse_json_object, render_template
+from llm_client import PROVIDERS, call_chat, parse_json_object, render_template
 
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
@@ -446,7 +446,7 @@ def main() -> None:
     parser.add_argument("--input", type=Path, required=True, help="Stage 2 artifacts JSONL with workflow, tools, and environment.")
     parser.add_argument("--output", type=Path, required=True, help="Stage 3 rollout artifacts JSONL.")
     parser.add_argument("--limit", type=int, default=0, help="0 means all rows.")
-    parser.add_argument("--provider", choices=["openai", "gemini"], default=os.environ.get("GEM_LLM_PROVIDER", "openai"))
+    parser.add_argument("--provider", choices=PROVIDERS, default=os.environ.get("GEM_LLM_PROVIDER", "openai"))
     parser.add_argument("--seed-mode", choices=["llm", "deterministic"], default="llm")
     parser.add_argument("--seed-max-tokens", type=int, default=2000)
     parser.add_argument("--seed-temperature", type=float, default=0.2)

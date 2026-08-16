@@ -1,0 +1,72 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "required": [
+    "alignment_version",
+    "supported",
+    "rejection_reasons",
+    "instruction_claims",
+    "goal_clauses",
+    "domain_invariants"
+  ],
+  "properties": {
+    "alignment_version": {"const": "goal-alignment-v1"},
+    "supported": {"type": "boolean"},
+    "rejection_reasons": {"type": "array", "items": {"type": "string"}},
+    "instruction_claims": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["evidence_span", "kind", "clause_ids"],
+        "properties": {
+          "evidence_span": {"type": "string"},
+          "kind": {
+            "enum": ["context", "goal", "constraint", "synthetic_constraint"]
+          },
+          "clause_ids": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "goal_clauses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "predicate",
+          "transition_paths",
+          "evidence_paths",
+          "witness_tools"
+        ],
+        "properties": {
+          "id": {"type": "string"},
+          "predicate": {"type": "object"},
+          "transition_paths": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^\\$state\\."}
+          },
+          "evidence_paths": {
+            "type": "array",
+            "items": {"type": "string", "pattern": "^\\$state\\."}
+          },
+          "witness_tools": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": false
+      }
+    },
+    "domain_invariants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "predicate"],
+        "properties": {
+          "id": {"type": "string"},
+          "predicate": {"type": "object"}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

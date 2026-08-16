@@ -42,11 +42,13 @@ def compact_json(value: Any) -> str:
 
 
 def message_stats(messages: list[dict[str, Any]]) -> dict[str, Any]:
-    tool_calls = [
-        message.get("tool_call", {}).get("name", "")
-        for message in messages
-        if message.get("role") == "assistant" and "tool_call" in message
-    ]
+    tool_calls = []
+    for message in messages:
+        if message.get("role") != "assistant":
+            continue
+        tool_call = message.get("tool_call")
+        if isinstance(tool_call, dict):
+            tool_calls.append(tool_call.get("name", ""))
     failure_responses = 0
     for message in messages:
         if message.get("role") != "tool":

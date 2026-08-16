@@ -1,0 +1,57 @@
+Design one task-first transformation contract from a verified seed task summary and its observable affordances.
+
+The contract must make the task harder through executable state dependencies, not through longer wording or a prescribed action list.
+
+Requirements:
+- Preserve the seed's user-visible objective.
+- Add one natural requirement supported by an allowed rewrite operator.
+- Every reward-relevant condition must be public or discoverable from the environment.
+- Define semantic goal predicates and process invariants over state paths.
+- If a goal object may be absent initially, every comparison of one of its
+  children must be short-circuited inside the same any-expression by a
+  not_exists test, or the object and all compared children must be declared in
+  the initial state. Do not mix an absent parent with unguarded child reads.
+- Goal predicates describe the required terminal outcome and may be false initially. Invariants are safety properties checked after every action: every invariant must already be true in the initial state and remain true throughout execution. Never put "final verification happened", "resource exists", or another terminal requirement in invariants.
+- Design 3-5 independent observation-dependent decision nodes. Each node must
+  have an ordinary public observation before divergence and a strict
+  counterfactual witness where the adapted policy succeeds and the unchanged
+  policy fails. Polling state changes and fixed gates do not count.
+- Include 1-2 plausible semantic failures. At least one failure must admit two
+  genuinely different, publicly discoverable recovery strategies; both must
+  resolve the same failure code in successful executable worlds.
+- For adaptive training, design at least one machine-verifiable profile:
+  semantic recovery, closed-loop measurement-to-control, or temporal provenance.
+  The profile must also have a valid counterfactual whose visible state changes
+  the correct public action strategy.
+- Identify shortcuts that a private outcome verifier must reject.
+- Do not reveal a reference solution, tool-call sequence, private verifier path,
+  runtime error code, recovery action, recovery route, or hidden identifier.
+- Return minified JSON only, without indentation or insignificant whitespace.
+
+Predicate DSL (use only these exact forms):
+- Boolean composition: {"all": [predicate, ...]}, {"any": [predicate, ...]}, {"not": predicate}.
+- Path tests: {"exists": "$state.path"}, {"not_exists": "$state.path"}.
+- Binary comparisons: {"eq": [left, right]}, {"ne": [left, right]}, {"gt": [left, right]}, {"gte": [left, right]}, {"lt": [left, right]}, {"lte": [left, right]}, {"in": [item, collection]}.
+- State references are strings beginning with $state. Do not invent semantic operators such as equals, implies, discoverable_before_use, fresh_at_publish, or final_evidence_source; express those semantics with the primitives above.
+
+Return:
+{
+  "contract_version": "task-contract-v1",
+  "goal": "concise semantic goal",
+  "preserved_requirements": ["..."],
+  "new_requirements": ["..."],
+  "discoverable_evidence": [{"source": "...", "reveals": ["..."]}],
+  "goal_predicates": [{"id": "...", "predicate": {"all": []}}],
+  "invariants": [{"id": "...", "predicate": {"all": []}}],
+  "forbidden_shortcuts": ["..."],
+  "counterfactual_axes": [{"state_path": "$state...", "variants": ["..."]}],
+  "expected_reasoning_features": ["delayed_handle_use", "observation_dependent_decision"],
+  "selected_operator": "allowed operator id",
+  "rationale": "why the extension fits the seed"
+}
+
+Allowed rewrite operators:
+{{operators_json}}
+
+Seed task summary and observable affordances:
+{{seed_json}}

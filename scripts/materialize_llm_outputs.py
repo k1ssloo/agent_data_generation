@@ -26,17 +26,37 @@ def write_jsonl(path: Path, rows: list[dict[str, Any]]) -> None:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
 
 
+def called_tool_names(message: dict[str, Any]) -> list[str]:
+    tool_call = message.get("tool_call")
+    names = []
+    if isinstance(tool_call, dict):
+        names.append(str(tool_call.get("name", "")))
+    tool_calls = message.get("tool_calls")
+    if isinstance(tool_calls, list):
+        for call in tool_calls:
+            if not isinstance(call, dict):
+                continue
+            function = call.get("function")
+            if isinstance(function, dict):
+                names.append(str(function.get("name", "")))
+            elif "name" in call:
+                names.append(str(call.get("name", "")))
+    return [name for name in names if name]
+
+
 def message_stats(messages: list[dict[str, Any]]) -> dict[str, Any]:
+    safe_messages = [message for message in messages if isinstance(message, dict)]
     tool_calls = [
-        message.get("tool_call", {}).get("name", "")
-        for message in messages
-        if message.get("role") == "assistant" and "tool_call" in message
+        name
+        for message in safe_messages
+        if message.get("role") == "assistant"
+        for name in called_tool_names(message)
     ]
     return {
-        "messages": len(messages),
-        "user_turns": sum(1 for message in messages if message.get("role") == "user"),
+        "messages": len(safe_messages),
+        "user_turns": sum(1 for message in safe_messages if message.get("role") == "user"),
         "assistant_natural_turns": sum(
-            1 for message in messages if message.get("role") == "assistant" and "content" in message
+            1 for message in safe_messages if message.get("role") == "assistant" and "content" in message
         ),
         "tool_calls": len(tool_calls),
         "unique_called_tools": len(set(tool_calls)),

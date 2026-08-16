@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tool_binding_v1.json",
+  "type": "object",
+  "required": ["binding_version", "tools"],
+  "properties": {
+    "binding_version": {"const": "tool-binding-v1"},
+    "tools": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "capability_id", "parameters"],
+        "properties": {
+          "name": {"type": "string", "minLength": 1},
+          "capability_id": {"type": "string", "minLength": 1},
+          "description": {"type": "string"},
+          "parameters": {"type": "object"},
+          "input_map": {"type": "object", "additionalProperties": {"type": "string"}},
+          "output_map": {"type": "object", "additionalProperties": {"type": "string"}},
+          "provenance_required": {"type": "array", "items": {"type": "string"}}
+        },
+        "additionalProperties": true
+      }
+    }
+  },
+  "additionalProperties": false
+}

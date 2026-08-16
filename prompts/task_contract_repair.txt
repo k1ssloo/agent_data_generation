@@ -1,0 +1,28 @@
+Repair a rejected task-contract-v1 contract using a read-only summary of the executable candidate and the validator errors. Return the entire corrected contract, not a patch or explanation.
+
+Preserve the source-grounded objective, preserved requirements, and explicitly labeled synthetic extension. Do not weaken or delete a requirement merely to pass validation.
+
+Contract semantics:
+- goal_predicates describe terminal success and may be false initially.
+- invariants are safety properties evaluated after every action. Every invariant must evaluate true on environment.initial_state and remain true after every action.
+- A requirement that an action or final observation eventually happens belongs in goal_predicates, never invariants.
+- Use only these predicate operators: all, any, not, exists, not_exists, eq, ne, gt, gte, lt, lte, in.
+- Every predicate references resolvable $state paths present in environment.initial_state.
+- Keep at least one delayed_handle_use, observation_dependent_decision, or derived_object_dependency feature.
+- If the candidate intentionally executes a recoverable failure and repair, set requirements.semantic_recovery to true. If it contains an async observation-dependent choice, set requirements.async_decision to true.
+- Semantic recovery is validated from the execution trace. Do not turn a transient last_error field into a terminal goal and do not require an error to remain in final state. Only add a recovery goal predicate when the environment intentionally persists an explicit recovery-completed fact.
+- Forbidden shortcuts must reject claims based on privileged state or teacher-side visibility when the original goal requires student-facing evidence.
+
+Return a task-contract-v1 JSON object only.
+
+Validator errors:
+{{validation_errors_json}}
+
+Original contract:
+{{contract_json}}
+
+Seed context:
+{{seed_json}}
+
+Executable candidate context (initial state and topology only; do not copy it into the contract):
+{{candidate_context_json}}

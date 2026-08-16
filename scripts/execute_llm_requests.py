@@ -13,7 +13,7 @@ import urllib.error
 from pathlib import Path
 from typing import Any
 
-from llm_client import call_chat, parse_json_object
+from llm_client import PROVIDERS, call_chat, parse_json_object
 
 
 def load_jsonl(path: Path) -> list[dict[str, Any]]:
@@ -42,6 +42,7 @@ def empty_result(request: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": request["id"],
         "stage": request.get("stage"),
+        "metadata": request.get("metadata", {}),
         "request_hash": request_hash(request),
         "ok": False,
         "raw_response": None,
@@ -77,12 +78,25 @@ def execute_request(request: dict[str, Any], args: argparse.Namespace) -> dict[s
             message = str(exc)
             result["error"] = message
             result["errors"].append({"attempt": attempt, "error": message})
+            if is_permanent_error(message):
+                break
             if attempt < max_attempts:
                 time.sleep(args.retry_backoff * attempt)
     result["elapsed_sec"] = round(time.monotonic() - started, 3)
     if args.sleep:
         time.sleep(args.sleep)
     return result
+
+
+def is_permanent_error(message: str) -> bool:
+    """Return true for provider rejections that will not be fixed by retrying."""
+    permanent_markers = [
+        "PROHIBITED_CONTENT",
+        "blockReason",
+        "finishReason': 'SAFETY'",
+        '"finishReason": "SAFETY"',
+    ]
+    return any(marker in message for marker in permanent_markers)
 
 
 def resumable_outputs(path: Path) -> dict[str, dict[str, Any]]:
@@ -112,7 +126,7 @@ def main() -> None:
     parser.add_argument("--resume", action="store_true", help="Reuse successful rows already present in --output.")
     parser.add_argument("--checkpoint-every", type=int, default=0, help="Write partial results every N completed requests. 0 disables.")
     parser.add_argument("--gemini-thinking-budget", type=int, help="Set GEMINI_THINKING_BUDGET for Gemini 2.5 Flash style thinking models. Use a negative value to leave it unset.")
-    parser.add_argument("--provider", choices=["openai", "gemini"], default=os.environ.get("GEM_LLM_PROVIDER", "openai"))
+    parser.add_argument("--provider", choices=PROVIDERS, default=os.environ.get("GEM_LLM_PROVIDER", "openai"))
     args = parser.parse_args()
     if args.gemini_thinking_budget is not None and args.gemini_thinking_budget >= 0:
         os.environ["GEMINI_THINKING_BUDGET"] = str(args.gemini_thinking_budget)
@@ -122,6 +136,8 @@ def main() -> None:
         requests = requests[: args.limit]
     if args.workers < 1:
         raise SystemExit("--workers must be >= 1")
+    if args.provider == "codex" and args.workers > 1:
+        raise SystemExit("--provider codex requires --workers 1 to avoid concurrent agent sessions")
     if args.retries < 0:
         raise SystemExit("--retries must be >= 0")
 

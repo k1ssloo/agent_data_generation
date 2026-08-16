@@ -276,6 +276,13 @@ def stage3_generate(row: dict[str, Any]) -> dict[str, Any]:
             {"role": "assistant", "content": "The edited photo has been queued on printer B."},
         ]
     elif row["task"] == "ecommerce_and_retail":
+        row = {
+            **row,
+            "workflow": {
+                **row["workflow"],
+                "execution_graph": "(sign_in)->(get_order)->(check_return_eligibility)",
+            },
+        }
         messages = [
             {"role": "system", "content": "You help process store returns. Returns must be delivered, within 30 days, and item policy must allow the return. Opened cosmetics are only returnable when damaged."},
             {"role": "user", "content": "I want to return a moisturizer from order R100 because I changed my mind."},

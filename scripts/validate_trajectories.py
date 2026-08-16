@@ -123,6 +123,40 @@ def is_success_response(content: Any) -> bool:
     return any(marker in lowered for marker in ('"success"', '"queued"', '"scheduled"', '"enrolled"', '"ok"'))
 
 
+def collect_tool_schemas(row: dict[str, Any]) -> tuple[dict[str, dict[str, Any]], list[str]]:
+    errors: list[str] = []
+    tools: dict[str, dict[str, Any]] = {}
+    raw_tools = row.get("tools", [])
+    if not isinstance(raw_tools, list):
+        return tools, [f"tools must be a list, got {type(raw_tools).__name__}"]
+    for index, tool in enumerate(raw_tools):
+        if not isinstance(tool, dict):
+            errors.append(f"tools[{index}]: tool must be an object, got {type(tool).__name__}")
+            continue
+        function = tool.get("function")
+        if not isinstance(function, dict):
+            errors.append(f"tools[{index}].function must be an object, got {type(function).__name__}")
+            continue
+        name = function.get("name")
+        if not isinstance(name, str) or not name:
+            errors.append(f"tools[{index}].function.name must be a non-empty string")
+            continue
+        parameters = function.get("parameters", {})
+        if not isinstance(parameters, dict):
+            errors.append(f"tools[{index}].function.parameters must be an object, got {type(parameters).__name__}")
+            parameters = {}
+        if name in tools:
+            errors.append(f"tools[{index}]: duplicate tool {name!r}")
+        tools[name] = parameters
+    return tools, errors
+
+
+def object_at(messages: list[Any], index: int) -> dict[str, Any]:
+    if 0 <= index < len(messages) and isinstance(messages[index], dict):
+        return messages[index]
+    return {}
+
+
 def validate(
     row: dict[str, Any],
     strict_grounding: bool,
@@ -133,10 +167,14 @@ def validate(
     require_final_verification: bool,
     allow_control_arg_literals: bool,
 ) -> list[str]:
-    errors = []
-    tools = {tool["function"]["name"]: tool["function"]["parameters"] for tool in row.get("tools", [])}
+    errors: list[str] = []
+    tools, tool_errors = collect_tool_schemas(row)
+    errors.extend(tool_errors)
     messages = row.get("messages", [])
-    if not messages or messages[0].get("role") != "system":
+    if not isinstance(messages, list):
+        errors.append(f"messages must be a list, got {type(messages).__name__}")
+        messages = []
+    if not messages or not isinstance(messages[0], dict) or messages[0].get("role") != "system":
         errors.append("missing system message")
     used_tools = []
     user_turns = 0
@@ -145,13 +183,19 @@ def validate(
     env_identifiers = environment_identifiers(row)
     prior_context = ""
     for index, message in enumerate(messages):
+        if not isinstance(message, dict):
+            errors.append(f"message {index}: message must be an object, got {type(message).__name__}")
+            continue
         role = message.get("role")
         if role == "user":
             user_turns += 1
         if role == "tool":
-            if index == 0 or messages[index - 1].get("role") != "assistant" or "tool_call" not in messages[index - 1]:
+            previous = object_at(messages, index - 1)
+            if index == 0 or previous.get("role") != "assistant" or "tool_call" not in previous:
                 errors.append(f"message {index}: tool response not preceded by assistant tool call")
-            elif message.get("name") != messages[index - 1]["tool_call"].get("name"):
+            elif not isinstance(previous.get("tool_call"), dict):
+                errors.append(f"message {index}: tool response not preceded by assistant tool call")
+            elif message.get("name") != previous["tool_call"].get("name"):
                 errors.append(f"message {index}: tool response name does not match preceding tool call")
             if is_failure_response(message.get("content")):
                 saw_failure = True
@@ -159,7 +203,7 @@ def validate(
                 saw_success_after_failure = True
             prior_context += " " + message_text(message)
             continue
-        if role != "assistant" or "tool_call" not in message:
+        if role != "assistant" or "tool_call" not in message or not isinstance(message.get("tool_call"), dict):
             if strict_grounding and role == "assistant":
                 current_text = message_text(message).lower()
                 prior_lower = prior_context.lower()
@@ -171,6 +215,9 @@ def validate(
         call = message["tool_call"]
         name = call.get("name")
         args = call.get("arguments", {})
+        if not isinstance(args, dict):
+            errors.append(f"message {index}: tool_call.arguments must be an object, got {type(args).__name__}")
+            args = {}
         used_tools.append(name)
         if name not in tools:
             errors.append(f"message {index}: unknown tool {name}")
@@ -178,7 +225,14 @@ def validate(
             continue
         schema = tools[name]
         properties = schema.get("properties", {})
-        for required in schema.get("required", []):
+        if not isinstance(properties, dict):
+            errors.append(f"message {index}: parameters.properties for {name} must be an object")
+            properties = {}
+        required_args = schema.get("required", [])
+        if not isinstance(required_args, list):
+            errors.append(f"message {index}: parameters.required for {name} must be a list")
+            required_args = []
+        for required in required_args:
             if required not in args:
                 errors.append(f"message {index}: missing required arg {required} for {name}")
         for arg_name, value in args.items():
@@ -194,7 +248,8 @@ def validate(
                 value_text = str(value)
                 if value_text and value_text.lower() not in prior_context.lower():
                     errors.append(f"message {index}: arg {arg_name}={value_text!r} is not grounded in prior context")
-        if index + 1 >= len(messages) or messages[index + 1].get("role") != "tool":
+        next_message = object_at(messages, index + 1)
+        if index + 1 >= len(messages) or next_message.get("role") != "tool":
             errors.append(f"message {index}: tool call not followed by tool response")
         prior_context += " " + message_text(message)
     if require_workflow_tools:
